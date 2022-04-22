@@ -10,9 +10,15 @@ const snap = snapshot()
  * @param {string} input 
  * @param {string} id
  * @param {(...args: any[]) => any} func
- * @returns {Promise<[any, boolean] | [any, false, string]>}
  */
 export async function run (input, id, func) {
+
+    /**
+     * @param {string} input 
+     * @param {string} id 
+     * @param {(...args: any[]) => any} func 
+     * @returns {Promise<[any, boolean] | [any, false, string]>}
+     */
     async function internalRun(input, id, func) {
         const script = parse(input)
         const h = hash(input)
@@ -35,8 +41,9 @@ export async function run (input, id, func) {
             console.log(message)
             console.log()
         }
-        return
+        return 1
     }
 
     console.log(logSymbols.success, `Passed test (${id.split('.')[0]}):`, input)
+    return 0
 }

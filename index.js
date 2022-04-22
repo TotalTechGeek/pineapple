@@ -9,7 +9,7 @@ import { hash } from './hash.js';
 
 program
     .name('pineapple')
-    .version('0.5.0')
+    .version('0.5.1')
     .option('-i, --include <files>', 'Comma separated globs of files.', value => {
         // split by "," but only outside of {}
         const regex = /\,\s?(?![^\{}]*\})/
@@ -83,14 +83,15 @@ async function main () {
         isAsync: true
     })
 
-    testFunc.setBodyText(`${functions.map(func => {
+    testFunc.setBodyText(`let sum = 0;${functions.map(func => {
         return func.tags.map((tag, index) => `
-            await run(${JSON.stringify(tag)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag)}', ${func.alias})
+            sum += await run(${JSON.stringify(tag)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag)}', ${func.alias})
         `).join('')
-    }).join('')}`)
+    }).join('')};
+    return sum`)
 
     // add text to end of file
-    testFile.addStatements(`test()`)
+    testFile.addStatements(`test().then(i => process.exit(i))`)
 
     testFile.saveSync()
 
