@@ -5,19 +5,26 @@ import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
 
 import { program } from 'commander'
+import { hash } from './hash.js';
 
 program
     .name('pineapple')
-    .version('0.0.1')
+    .version('0.5.0')
     .option('-i, --include <files>', 'Comma separated globs of files.', value => {
         // split by "," but only outside of {}
         const regex = /\,\s?(?![^\{}]*\})/
         return value.split(regex)
     })
+    .option('-a, --accept-all', 'Accept all snapshots.')
+    .option('-u, --update-all', 'Update all snapshots.')
 
 program.parse()
 
 const options = program.opts();
+
+// hack for now until I make the code better
+process.env.ACCEPT_ALL = options.acceptAll || '';
+process.env.UPDATE_ALL = options.updateAll || '';
 
 async function main () {
     const tmp = tempy.file({ extension: 'mjs' })
@@ -78,7 +85,7 @@ async function main () {
 
     testFunc.setBodyText(`${functions.map(func => {
         return func.tags.map((tag, index) => `
-            await run(${JSON.stringify(tag)}, '${func.originalName || func.name}.${index}', ${func.alias})
+            await run(${JSON.stringify(tag)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag)}', ${func.alias})
         `).join('')
     }).join('')}`)
 
@@ -91,10 +98,9 @@ async function main () {
     const { stdout, stderr } = await import(tmp)
 }
 
-
+const cwd = process.cwd()
 
 function getFunctions(file, fileText, fileName) {
-    
     const dec = file.getVariableDeclarations().map(i => {
         const text = i.getText();
 
@@ -121,7 +127,8 @@ function getFunctions(file, fileText, fileName) {
             tags,
             name: i.getName(),
             exported: i.isExported(),
-            fileName
+            fileName,
+            relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
         };
     }).filter(i => i);
 
@@ -142,7 +149,8 @@ function getFunctions(file, fileText, fileName) {
             name: item[0],
             tags,
             exported: Boolean(item[2]),
-            fileName
+            fileName,
+            relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
         };
     })].filter(i => {
         if (!i.tags.length)

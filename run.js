@@ -1,17 +1,8 @@
-import crypto from 'crypto'
 import engine from "./methods.js";
 import { parse } from "./parser/dsl.js";
 import { snapshot } from './snapshot.js'
 import logSymbols from 'log-symbols';
-
-/**
- * @test 'Hello World'
- * @test 'Kevin'
- * @param {string} str 
- */
-export function hash (str) {
-    return crypto.createHash('sha256').update(str).digest('hex')
-}
+import { hash } from "./hash.js";
 
 const snap = snapshot()
 
@@ -29,7 +20,7 @@ export async function run (input, id, func) {
         let count = 0
         for (let step of script) {
             if (typeof result[0] !== 'function') return [data, false, 'Does not return a function.']
-            result = await engine.run(step, { func: result[0], id: `${id}.${count}`, snap, hash: h })
+            result = await engine.run(step, { func: result[0], id: `${id}.${count}`, snap, hash: h, rule: input })
             const [data, success, message] = result
             if (!success) return [data, false, message]
             count++

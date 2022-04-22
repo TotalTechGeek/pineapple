@@ -1,0 +1,57 @@
+{
+    "hash.3c7656b25a3b5d6f5ed3b7ebc2632cc8300509e0c042f9434436a748f2126588.0": {
+        "value": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
+        "async": false,
+        "hash": "df5a9122ad2f3a4d367b146b4ad21a9e9d369b12fa8f9c3efc083c0020c3af3f"
+    },
+    "hash.867a5a722a0ce7fd834bb48d08309f164f87b29da2928a11f95d890259b24e12.0": {
+        "value": "0e4dd66217fc8d2e298b78c8cd9392870dcd065d0ff675d0edff5bcd227837e9",
+        "async": false,
+        "hash": "1cc52435df9ced28cac4e61bbb8462711aca6e33e71044148e50de236994f226"
+    },
+    "fib.7515fcd5ed19b7dcf17c0772e1c2adaeb28c7f23bf9ef2fd585f974403ad101d.0": {
+        "value": 1,
+        "async": false,
+        "hash": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+    },
+    "fib.2938e03f4beae5d47ad4124517e3db9a62f489d2efb68f26605e5c01b9ddcf99.0": {
+        "value": 2,
+        "async": false,
+        "hash": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"
+    },
+    "fib.443a2eea753f32083d3a5b25d4a7751462f18b5223fd5fb76f0d2ca600aa0a76.0": {
+        "value": 55,
+        "async": false,
+        "hash": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5"
+    },
+    "add.3ba3358b32a45143dbedf4617e784c67c5713b6e4bc4cd1b4baaf0fed1a6e580.0": {
+        "value": 3,
+        "async": false,
+        "hash": "ba65df3b4c154a9909b52eb2956e1bc2f17a98652bb022d958c9a9f74df88dae"
+    },
+    "add.86763391b662263303d189c41d97abf0fc32c9fdf63dddddbacdbf3bbd120599.0": {
+        "value": 0,
+        "async": false,
+        "hash": "e11ea82fbb3aab44f3a7daa8252e59af18c35ad356e9e7faad876861bb3debf5"
+    },
+    "mul.dee2d10b16958debfbd2dbfd2053a52eb15030cdb0616974035ab95b0a28a631.0": {
+        "value": 15,
+        "async": false,
+        "hash": "aafee354bad8f32e169f737136206112b35def3d1afab2309fabd2b4c84a06de"
+    },
+    "mul.327ee1ef714d73ae2cb6ec414f67db25a6fed6a21ebf88df86d4ff5b36d7c700.0": {
+        "value": -10,
+        "async": false,
+        "hash": "266e6f420b5b1706fd5f751fa8f3b6d0dea31c35dfa95c79f36e6834d2d15659"
+    },
+    "boat.4fe6214cc9fd785b0aeb2876db03215b7341563dfd241a108cfef2129d5ccd6f.0": {
+        "value": {
+            "name": "Boats Rock",
+            "type": "boat",
+            "owner": "Jesse",
+            "length": 32
+        },
+        "async": false,
+        "hash": "725c15eb295c35ee6e5862f757f0d058c4e7243de92d2028b3bb2a5d33d5b85f"
+    }
+}

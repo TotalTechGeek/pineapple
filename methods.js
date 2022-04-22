@@ -3,6 +3,8 @@ import { AsyncLogicEngine, Constants } from 'json-logic-engine'
 import { splitEvery, equals, omit } from 'ramda'
 import { diff } from 'jest-diff'
 import Ajv from 'ajv'
+import inquirer from 'inquirer'
+import chalk from 'chalk'
 
 const engine = new AsyncLogicEngine()
 const ajv = new Ajv()
@@ -52,6 +54,35 @@ engine.addMethod('obj', {
     }
   })
 
+
+/**
+ * @param {*} item 
+ * @param {string} rule 
+ * @param {string} id
+ */
+async function askSnapshot({ item, rule, id }) {
+    if (process.env.CI) return false
+    if (process.env.ACCEPT_ALL) return true
+    console.log(`On test (${id.split('.')[0]}):`, rule)
+    console.log(chalk.green(JSON.stringify(omit(['hash'], item), null, 2)))
+    const {result} = await inquirer.prompt([{ name: 'result', message: 'Accept this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
+    return result === 'Yes' 
+}
+
+/**
+ * @param {*} item 
+ * @param {string} rule 
+ * @param {string} id
+ */
+ async function askSnapshotUpdate({ item, value, rule, id }) {
+    if (process.env.CI) return false
+    if (process.env.UPDATE_ALL) return true
+    console.log(`On test (${id.split('.')[0]}):`, rule)
+    console.log(diff(omit(['hash'], value), omit(['hash'], item)))
+    const {result} = await inquirer.prompt([{ name: 'result', message: 'Do you wish to update to this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
+    return result === 'Yes' 
+}
+
 engine.addMethod('snapshot', async ([inputs], context) => {
     let result = null
     let promise = false
@@ -76,13 +107,21 @@ engine.addMethod('snapshot', async ([inputs], context) => {
 
     const { exists, value } = await context.snap.find(context.id)
 
-    if (!exists || !equals(value.hash, result.hash)) {
+    if ((!exists || !equals(value.hash, result.hash)) && await askSnapshot({ item: result, rule: context.rule, id: context.id})) {
         await context.snap.set(context.id, result)
         return [omit(['hash'], result), true]
     }
 
     if (equals(value, result)) {
         return [omit(['hash'], result), true]
+    }
+
+    if (exists) {
+        // We have a snapshot, but it's different, so we need to ask the user if they want to update the snapshot
+        if(await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id })) {
+            await context.snap.set(context.id, result)
+            return [omit(['hash'], result), true]
+        }
     }
     
     return [omit(['hash'], result), false, diff(omit(['hash'], value), omit(['hash'], result))]

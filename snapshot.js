@@ -5,7 +5,7 @@ import fs from 'fs/promises'
  * @param {*} file 
  * @returns {{ set: async (key: string, value: any) => void, find: async (key: string) => any }}
  */
-export function snapshot(file = './test.json') {
+export function snapshot(file = './pineapple-snapshot.json') {
     const data = fs.readFile(file).catch(() => '{}').then(text => {
         try {
             return JSON.parse(text)
