@@ -64,6 +64,13 @@ function generateErrorText (error) {
     return chalk.red(JSON.stringify(error))
 }
 
+function stringify(obj) {
+    return JSON.stringify(obj, (k, v) => {
+        if (typeof v === "undefined") return '~~~undefined~~~'
+        return v
+    }, 2).replace(/"~~~undefined~~~"/g, 'undefined')
+}
+
 /**
  * @param {*} item 
  * @param {string} rule 
@@ -73,7 +80,7 @@ async function askSnapshot({ item, rule, id }) {
     if (process.env.CI) return false
     if (process.env.ACCEPT_ALL) return true
     console.log(`On test (${id.split('.')[0]}):`, rule)
-    console.log(chalk.green(JSON.stringify(omit(['hash'], item), null, 2)))
+    console.log(chalk.green(stringify(omit(['hash'], item))))
     const {result} = await inquirer.prompt([{ name: 'result', message: 'Accept this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
     return result === 'Yes' 
 }
@@ -97,7 +104,7 @@ engine.addMethod('snapshot', async ([inputs], context) => {
     let promise = false
     try {
         let call = context.func.apply(null, inputs)    
-        if (call.then) {
+        if (call && call.then) {
             promise = true
         }
         result = { value: await call }
@@ -142,7 +149,7 @@ engine.addMethod('to', async ([inputs, output], context) => {
     try {
         const result = context.func.apply(null, inputs)    
         if (!equals(result, output)) {
-            if (result.then) {
+            if (result && result.then) {
                 return [await result, false, `Expected ${JSON.stringify(output)} but got Promise<${JSON.stringify(await result)}>`]
             }
             return [result, false, diffTouchup(output, result)]
@@ -161,8 +168,8 @@ engine.addMethod('toParse', {
     asyncMethod: async ([inputs, output], context, above, engine) => {
         try {
             const result = context.func.apply(null, await engine.run(inputs, context))   
-            if (result.then) return [result.catch(err => err), false, 'Function call returns a promise.'] 
-            return [result, Boolean(await engine.run(output, result))]
+            if (result && result.then) return [result.catch(err => err), false, 'Function call returns a promise.'] 
+            return [result, Boolean(await engine.run(output, { data: result }))]
         } catch (err) {
             return [err, false, `Could not execute condition as function threw ${generateErrorText(err)}`]
         }
@@ -175,7 +182,7 @@ engine.addMethod('toParse', {
 engine.addMethod('resolves', async ([inputs, output], context) => {
     try {
         const result = context.func.apply(null, inputs)    
-        if (!result.then) return [result, false, 'Was not a promise.']
+        if (!result || !result.then) return [result, false, 'Was not a promise.']
         return [await result, equals(await result, output)]
     } catch(err) {
         return [err, false, `Expected ${JSON.stringify(output)} but function rejected with ${generateErrorText(err)}`]
@@ -188,8 +195,8 @@ engine.addMethod('resolvesParse', {
     asyncMethod: async ([inputs, output], context, above, engine) => {
         try {
             const result = context.func.apply(null, await engine.run(inputs, context))    
-            if (!result.then) return [result, false, 'Was not a promise.']
-            return [await result, Boolean(await engine.run(output, await result))]
+            if (!result || !result.then) return [result, false, 'Was not a promise.']
+            return [await result, Boolean(await engine.run(output, { data: await result }))]
         } catch(err) {
             return [err, false, `Could not execute condition as function rejected with ${generateErrorText(err)}`]
         }
@@ -218,7 +225,7 @@ engine.addMethod('execute', {
 engine.addMethod('throws', async ([inputs, output], context) => {
   try {
     const result = context.func.apply(null, await engine.run(inputs, context)) 
-    if (result.then) {
+    if (result && result.then) {
         try {
             return [await result, false, `Expected to throw but got Promise<${JSON.stringify(await result)}>`]
         } catch (err2) {
@@ -244,7 +251,7 @@ engine.addMethod('rejects', async ([inputs, output], context) => {
       try { result = context.func.apply(null, await engine.run(inputs, context)) } catch(err2) {
         return [err2, false, 'Async call threw synchronously.']
       }
-      if (!result.then) return [result, false, 'Was not a promise.']
+      if (!result || !result.then) return [result, false, 'Was not a promise.']
       return [await result, false, 'Did not throw.']
     } catch (err) {
       const errorName = err.constructor.name 

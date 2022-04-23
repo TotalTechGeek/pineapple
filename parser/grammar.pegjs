@@ -203,9 +203,9 @@ Expression "expression"
 Shorthand = "function" { return "function" }
 
 EnglishChecks = 
-      "truthy" { return {var: ''} }
-    / ("falsy"/"falsey")  { return {not:{var: ''}} }
-    / "defined" { return { "!==": [{var:''}, undefined] } }
+      "truthy" { return {var: 'data'} }
+    / ("falsy"/"falsey")  { return {not:{var: 'data'}} }
+    / "defined" { return { "!==": [{var:'data'}, undefined] } }
     
 
 NonArithmeticExpression
@@ -333,8 +333,8 @@ Identifier "identifier"
   / '@' id:Identifier { return text() }
   / '$' id:Identifier { return text() }
 VarIdentifier "@-identifier"
-  = "@." id:MemberIdentifier { return { var: id } }
-  / "@" { return { var: '' } }
+  = "@." id:MemberIdentifier { return { var: `data.${id}` } }
+  / "@" { return { var: 'data' } }
 ContextIdentifier "$-identifier"
   = '$.' id:MemberIdentifier { return { context: id } }
   / "$" { return { context: '' } }
