@@ -6,6 +6,7 @@ import tempy from 'tempy'
 
 import { program } from 'commander'
 import { hash } from './hash.js';
+import url from 'url'
 
 program
     .name('pineapple')
@@ -39,7 +40,7 @@ async function main () {
 
    const functions = files.flatMap(file => {
         const fileText = file.getFullText().split('\n')
-        return getFunctions(file, fileText, file.getFilePath())
+        return getFunctions(file, fileText, url.pathToFileURL(file.getFilePath()).href)
    });
 
     const testFile = project.createSourceFile(tmp, undefined, { 
@@ -51,7 +52,7 @@ async function main () {
     }, groupBy(i => i.fileName, functions)))
     
 
-    const specifier = import.meta.url.substring(7).split('/')
+    const specifier = import.meta.url.split(/\/|\\/)
     specifier.pop()
     specifier.push('run.js')
 
@@ -96,10 +97,10 @@ async function main () {
     testFile.saveSync()
 
     // run the file 
-    const { stdout, stderr } = await import(tmp)
+    const { stdout, stderr } = await import(url.pathToFileURL(tmp))
 }
 
-const cwd = process.cwd()
+const cwd = url.pathToFileURL(process.cwd()).href
 
 function getFunctions(file, fileText, fileName) {
     const dec = file.getVariableDeclarations().map(i => {
