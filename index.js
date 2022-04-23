@@ -10,7 +10,7 @@ import url from 'url'
 
 program
     .name('pineapple')
-    .version('0.5.1')
+    .version('0.5.2')
     .option('-i, --include <files>', 'Comma separated globs of files.', value => {
         // split by "," but only outside of {}
         const regex = /\,\s?(?![^\{}]*\})/
