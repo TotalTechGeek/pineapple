@@ -15,6 +15,7 @@
     "commander": "^9.2.0",
     "inquirer": "^8.2.2",
     "jest-diff": "^27.5.1",
+    "jest-serializer": "^27.5.1",
     "json-logic-engine": "^1.1.19",
     "log-symbols": "^5.1.0",
     "ramda": "^0.28.0",
