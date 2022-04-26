@@ -5,3 +5,4 @@ bench/
 parser/dsl.js
 .idea
 coverage/
+pineapple-runner/

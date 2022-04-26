@@ -10,6 +10,8 @@
     "test": "node index.js -i \"test/*{.js,.mjs},*.js\""
   },
   "dependencies": {
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-sucrase": "^4.0.3",
     "ajv": "^8.11.0",
     "chalk": "^5.0.1",
     "commander": "^9.2.0",
@@ -20,6 +22,8 @@
     "log-symbols": "^5.1.0",
     "ramda": "^0.28.0",
     "ramda-adjunct": "^3.0.0",
+    "rollup": "^2.70.2",
+    "rollup-plugin-require": "^0.0.1",
     "tempy": "^2.0.0",
     "ts-morph": "^14.0.0"
   },
@@ -43,13 +47,11 @@
     "test",
     "testing"
   ],
+  "c8": {
+    "exclude": ["node_modules/**", "parser/**"]
+  },
   "types": "./index.d.ts",
   "author": "Jesse Daniel Mitchell",
   "type": "module",
-  "license": "MIT",
-  "c8": {
-    "include": [
-      "haha/*.js"
-    ]
-  }
+  "license": "MIT"
 }

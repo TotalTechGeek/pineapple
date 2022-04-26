@@ -7,6 +7,8 @@ import tempy from 'tempy'
 import { program } from 'commander'
 import { hash } from './hash.js';
 import url from 'url'
+import { transpile } from './typescriptTranspiler.js';
+
 
 program
     .name('pineapple')
@@ -18,6 +20,7 @@ program
     })
     .option('-a, --accept-all', 'Accept all snapshots.')
     .option('-u, --update-all', 'Update all snapshots.')
+    .option('-t, --typescript', 'Enables typescript (slower).')
 
 program.parse()
 
@@ -65,17 +68,17 @@ async function main () {
     let counter = 0
 
     // add imports
-    imports.forEach(([moduleSpecifier, { namedImports, original }]) => {
-        testFile.addImportDeclaration({
-            moduleSpecifier,
-            namedImports,
-            isTypeOnly: false
-        }).getNamedImports().forEach(i => {
-            original[i.getText()].alias = `$${counter}`
-            i.setAlias(`$${counter}`)
-            counter++
-        })
-    })
+    await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
+        if (options.typescript) moduleSpecifier = await transpile(moduleSpecifier)
+        testFile.addStatements(`
+            import * as $$${index} from '${moduleSpecifier}';
+            const { ${namedImports.map(i => {
+                original[i].alias = `$${counter++}`
+                return `${i}: ${original[i].alias}`
+            }).join(', ')} } = { ...$$${index}.default, ...$$${index} };
+        `)
+    }))
+
  
     // add test functions
     const testFunc = testFile.addFunction({
@@ -92,7 +95,7 @@ async function main () {
     return sum`)
 
     // add text to end of file
-    testFile.addStatements(`test().then(i => process.exit(i))`)
+    testFile.addStatements(`test().then(i => { process.exit(i) });`)
 
     testFile.saveSync()
 
@@ -134,11 +137,49 @@ function getFunctions(file, fileText, fileName) {
         };
     }).filter(i => i);
 
+    
 
-   const statement = file.getStatements().filter(i => {
+   const exports = file.getStatements().filter(i => {
         // expression statement
-        return i.getKindName() === 'ExpressionStatement' && i.getText().includes('module.exports')
-   }).map(i => i.getFullText())[0]
+        return (i.getKindName() === 'ExpressionStatement' && (i.getText().trim().includes('module.exports') || i.getText().trim().startsWith('exports.'))) || (i.getKindName() === 'ExportDeclaration')
+   }).map(i => i.getText().trim()).reduce((exports, statement) => {
+    const [ex, right] = statement.replace(';', '').split(/=|export /).map(i=>i.trim())
+    
+    if (ex === 'module.exports') {
+        if (right.includes('{')) {
+            right.substring(1, right.length - 1).trim().split(',').forEach(i => {
+                if(i.includes(':')) {
+                    const [key, value] = i.split(':').map(i => i.trim())
+                    if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) exports[key] = value
+                }
+                else exports[i.trim()] = i.trim()
+            })
+        }
+        else {
+            // support module.exports = func at some point
+        }
+    }
+
+    if (!ex) {
+        if (right.includes('{')) {
+            right.substring(1, right.length - 1).trim().split(',').forEach(i => {
+                if(i.includes(':')) {
+                    const [key, value] = i.split(':').map(i => i.trim())
+                    if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) exports[key] = value
+                }
+                else exports[i] = i
+            })
+        }
+    }
+
+    if (ex.startsWith('exports.')) {
+        const key = ex.split('.')[1]
+        if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) exports[key] = right
+    }
+
+    return exports
+   }, {})
+
 
     const functions = [...dec, ...file.getFunctions().map(i => [i.getName(), i.getJsDocs().flatMap(i => i.getTags()), i.getExportKeyword()]
     ).map(item => {
@@ -159,18 +200,10 @@ function getFunctions(file, fileText, fileName) {
             return false;
         
             if (!i.exported) {
-                if(statement && statement.includes(i.name)) {
-
-                    const res = new RegExp(`[a-zA-Z_0-9]+:\\s*${i.name}\\s*`).exec(statement)
-                    if (res) {
-                        const newName =  res[0].split(':')[0]
-                        console.log(logSymbols.info, `Function "${i.name}" is being aliased as "${newName}" in ${i.fileName}.`)
-                        i.originalName = i.name
-                        i.name = newName
-                        return true
-                    }
-                    if(!new RegExp(`:\\s*${i.name}\\s*`).test(statement)) return true 
-                    console.log(logSymbols.warning, `Function "${i.name}" is not exported from ${i.fileName} with the same name, skipping its tests.`)
+                if(exports[i.name]) {
+                    i.originalName = i.name
+                    i.name = exports[i.name]
+                    return true
                 }
                 else console.log(logSymbols.warning, `Function "${i.name}" is not exported from ${i.fileName}, skipping its tests.`);
             }
