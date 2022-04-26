@@ -4,3 +4,4 @@ dist/
 bench/
 .idea
 coverage/
+resources/
