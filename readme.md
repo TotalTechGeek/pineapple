@@ -32,6 +32,10 @@ When you omit conditions from your test cases, Pineapple will automatically capt
 
 <img alt="An example of the snapshot functionality where the code is modified and the snapshot fails due to a renamed attribute" src="./resources/snapshot.gif" width=60% />
 
+## Documentation 
+
+Docusaurus website coming soon. 
+
 ## To Install
 
 ```
@@ -75,6 +79,17 @@ If `process.env.CI` / the environment variable `CI` is set, it will automaticall
 ### Q&A
 
 
+#### Does Pineapple support TypeScript?
+Yes. The functionality is experimental at this point in time, but you should be enable to enable it with `-t` or  `--typescript`.
+
+#### Does Pineapple support Babel?
+
+Not yet, but it is on the roadmap. With the recent addition of TypeScript support, it hopefully won't require too much effort. 
+
 #### Should I put pineapple on my pizza?
 
-The author of this project holds no opinion on this subject, but you might want to consider [Cucumber for your scenario tests](https://www.npmjs.com/package/@cucumber/cucumber).
+The author of this project holds no opinion on this subject, but you might want to consider [Cucumber for your scenario tests](https://www.npmjs.com/package/@cucumber/cucumber). 
+
+Pineapple doesn't necessarily go well with every use case, so for certain types of tests we actively encourage you to choose a framework better suited for that style of test. 
+
+Pineapple is oriented towards simplifying unit tests & making it easy to run multiple test cases against functions, but if you're trying to test a series of complex processes against something stateful (transactions against a rewards points system, combat, etc), scenario tests are likely your better bet.
