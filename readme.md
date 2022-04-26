@@ -30,9 +30,7 @@ Pineapple allows you to embed a few example test-cases in your JSDocs, making it
 
 When you omit conditions from your test cases, Pineapple will automatically capture the result of your test & snapshot it, making it easier to preserve expected behavior in your applications, and even easier for users to find examples on how to call your code.
 
-### Snapshot Example
 <img alt="An example of the snapshot functionality where the code is modified and the snapshot fails due to a renamed attribute" src="./resources/snapshot.gif" width=60% />
-
 
 ## To Install
 
@@ -44,6 +42,39 @@ or
 yarn add pineapple --dev
 ```
 
----
 
-Documentation coming soon.
+
+Alternatively, you may install the runner globally (add a `-g` flag).
+
+### To Run
+
+```
+Usage: pineapple [options]
+
+Options:
+  -V, --version             output the version number
+  -i, --include <files...>  Comma separated globs of files.
+  -a, --accept-all          Accept all snapshots.
+  -u, --update-all          Update all snapshots.
+  -t, --typescript          Enables typescript
+  -h, --help                display help for command
+```
+
+
+
+#### Example
+```
+pineapple -i src/**/*.js
+```
+
+#### Continuous Integration
+
+If `process.env.CI` / the environment variable `CI` is set, it will automatically fail if a snapshot is not set or if the snapshot does not match.
+
+
+### Q&A
+
+
+#### Should I put pineapple on my pizza?
+
+The author of this project holds no opinion on this subject, but you might want to consider [Cucumber for your scenario tests](https://www.npmjs.com/package/@cucumber/cucumber).
