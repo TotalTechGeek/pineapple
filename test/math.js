@@ -35,25 +35,6 @@ export function curryAdd (a) {
     return (b) => a + b
 }
 
-
-/**
- * @test 'Jesse', 32
- * @test 'Jesse', '32' throws
- * @test 32, 'Kevin' throws
- * @param {string} owner 
- * @param {number} length 
- */
- export function boat(owner, length) {
-    if (typeof owner !== 'string' || typeof length !== 'number') throw new Error('Types do not match.')
-    return {
-        name: 'Boats Rock',
-        type: 'boat',
-        owner,
-        length
-    }
-}
-
-
 /**
  * @test 1
  * @test 3
