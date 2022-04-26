@@ -12,12 +12,8 @@ import { transpile } from './typescriptTranspiler.js';
 
 program
     .name('pineapple')
-    .version('0.5.2')
-    .option('-i, --include <files>', 'Comma separated globs of files.', value => {
-        // split by "," but only outside of {}
-        const regex = /\,\s?(?![^\{}]*\})/
-        return value.split(regex)
-    })
+    .version('0.5.5')
+    .option('-i, --include <files...>', 'Comma separated globs of files.')
     .option('-a, --accept-all', 'Accept all snapshots.')
     .option('-u, --update-all', 'Update all snapshots.')
     .option('-t, --typescript', 'Enables typescript (slower).')
@@ -26,16 +22,21 @@ program.parse()
 
 const options = program.opts();
 
+if(!options.include || !options.include.length) throw new Error('Please select files to include.')
+
 // hack for now until I make the code better
 process.env.ACCEPT_ALL = options.acceptAll || '';
 process.env.UPDATE_ALL = options.updateAll || '';
 
 async function main () {
     const tmp = tempy.file({ extension: 'mjs' })
-    const project = new Project()
+    const project = new Project({
+        
+    })
     
-
-    const files = options.include.flatMap(i => {
+    const regex = /\,\s?(?![^\{}]*\})/
+      
+    const files = options.include.flatMap(i => i.split(regex)).flatMap(i => {
         return project.addSourceFilesAtPaths(i)
     })
 
