@@ -34,7 +34,7 @@ When you omit conditions from your test cases, Pineapple will automatically capt
 
 ## Documentation 
 
-Visit our [documentation here]('https://jessemitchell.me/pineapple/').
+Visit our [documentation here](https://jessemitchell.me/pineapple/).
 
 ## To Install
 
