@@ -1,8 +1,0 @@
-.vscode/
-node_modules/
-dist/
-bench/
-parser/dsl.js
-.idea
-coverage/
-pineapple-runner/
