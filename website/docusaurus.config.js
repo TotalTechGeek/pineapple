@@ -15,7 +15,7 @@ const config = {
   favicon: 'img/favicon.ico',
   organizationName: 'totaltechgeek', // Usually your GitHub org/user name.
   projectName: 'pineapple', // Usually your repo name.
-
+  trailingSlash: false,
   presets: [
     [
       'classic',
