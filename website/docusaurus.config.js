@@ -9,7 +9,7 @@ const config = {
   title: 'Pineapple',
   tagline: 'A testing framework for humans.',
   url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  baseUrl: '/pineapple/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',

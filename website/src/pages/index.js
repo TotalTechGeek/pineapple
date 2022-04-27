@@ -11,7 +11,7 @@ function LogoHeader() {
   return (
     <header className={clsx('hero', styles.heroBanner)}>
       <div className="container">
-        <img src='/img/pineapple.png' />
+        <img src='./img/pineapple.png' />
         <div className={styles.buttons}>
           <h3>A testing framework for humans.</h3>
         </div>
