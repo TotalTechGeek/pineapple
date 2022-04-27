@@ -127,7 +127,6 @@ Types = val:("string" / "number" / "boolean" / TypeObject) "[]" { return [val] }
       / ("string" / "number" / "boolean" / TypeObject)
 
 
-
 TestExpressionLayered = a:TestExpression "~>" b:TestExpressionLayered { 
  if(a.snapshot) a = { execute: a.snapshot }
   return [a, ...b] 
@@ -150,6 +149,12 @@ TestExpression =
         }
       }
       return { to: [ops, result] } 
+  }
+  /  ops:Operands _req ("resolves") _ { 
+      return { resolvesParse: [ops, true] } 
+  }
+  /  ops:Operands _req ("returns") _ { 
+      return { toParse: [ops, true] } 
   }
   /  ops:Operands _req type:("throws"/ "rejects") _req name:([A-Za-z]+) _ { return { [type]: [ops, name.join('')] } }
   /  ops:Operands _req type:("throws"/ "rejects") _req name:(String) _ { return { [type]: [ops, name] } }

@@ -3,7 +3,7 @@ import { parse } from "./parser/dsl.js";
 import { snapshot } from './snapshot.js'
 import logSymbols from 'log-symbols';
 import { hash } from "./hash.js";
-
+import chalk from 'chalk'
 const snap = snapshot()
 
 /**
@@ -33,16 +33,30 @@ export async function run (input, id, func) {
         }
         return result
     }
-    const [data, success, message] = await internalRun(input, id, func)
+    
+    try {
+        const [data, success, message] = await internalRun(input, id, func)
 
-    if (!success) {
-        console.log(logSymbols.error, `Failed test (${id.split('.')[0]}):`, input)
-        if(message) {
-            console.log(message)
+        if (!success) {
+            console.log(logSymbols.error, `Failed test (${id.split('.')[0]}):`, input)
+            if(message) {
+                console.log(message)
+                console.log()
+            }
+            return 1
+        }
+    } catch(err) {
+        if (err.expected) {
+            const { expected, message } = err
+            console.log(logSymbols.error, `Could not parse on (${id.split('.')[0]}): ${input}`)
+            console.log(chalk.red(message))
             console.log()
         }
+        else console.log(err)
+
         return 1
     }
+    
 
     console.log(logSymbols.success, `Passed test (${id.split('.')[0]}):`, input)
     return 0
