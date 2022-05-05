@@ -288,13 +288,13 @@ FunctionArgs
 Object "object"
   = _ "{" _ body:(ObjectEntry*) _ "}" {
     const arr = body.flat()
-    if (!arr.some(i=>i.merge)) return { obj: arr }
+    if (!arr.some(i=> i && i.merge)) return { obj: arr }
     
     let objs = []
 	  let current = { obj: [] }
 
     for(const i of arr) {
-        if (i.merge) {        
+        if (i && i.merge) {        
             if (current.obj.length) objs.push(current)
             objs.push(i.merge)
             current = { obj: [] }

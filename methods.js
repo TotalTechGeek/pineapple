@@ -12,7 +12,7 @@ const ajv = new Ajv()
 function diffTouchup(expected, received) {
     const result = diff(expected, received)
     if (result.includes('Comparing two different types')) {
-        return `${result}\n  - Expected: ${JSON.stringify(expected)}\n  - Received: ${JSON.stringify(received)}`
+        return `${result}\n  ${chalk.green(`- Expected: ${stringify(expected).replace(/\n/g, '\n  ')}`)}\n${chalk.red(`  - Received: ${stringify(received).replace(/\n/g, '\n  ')}`)}`
     }
     return result
 }
@@ -28,6 +28,11 @@ engine.addMethod('as', {
         return ajv.validate(schema, item)
     },
     traverse: true
+})
+
+engine.addMethod('combine', (data) => Object.assign({}, ...data), {
+    sync: true,
+    deterministic: true
 })
 
 engine.addMethod('list', {
@@ -131,7 +136,7 @@ engine.addMethod('snapshot', async ([inputs], context) => {
     if (equals(value, result)) {
         return [omit(['hash'], result), true]
     }
-
+    
     if (exists) {
         // We have a snapshot, but it's different, so we need to ask the user if they want to update the snapshot
         if(await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id })) {

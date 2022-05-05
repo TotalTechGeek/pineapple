@@ -12,7 +12,7 @@ import { transpile } from './typescriptTranspiler.js';
 
 program
     .name('pineapple')
-    .version('0.5.8')
+    .version('0.5.9')
     .option('-i, --include <files...>', 'Comma separated globs of files.')
     .option('-a, --accept-all', 'Accept all snapshots.')
     .option('-u, --update-all', 'Update all snapshots.')
