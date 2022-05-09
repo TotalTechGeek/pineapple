@@ -12,7 +12,7 @@ import { transpile } from './typescriptTranspiler.js';
 
 program
     .name('pineapple')
-    .version('0.5.9')
+    .version('0.6.0')
     .option('-i, --include <files...>', 'Comma separated globs of files.')
     .option('-a, --accept-all', 'Accept all snapshots.')
     .option('-u, --update-all', 'Update all snapshots.')
@@ -62,7 +62,7 @@ async function main () {
 
     testFile.addImportDeclaration({
         moduleSpecifier: specifier.join('/'),
-        namedImports: ['run'],
+        namedImports: ['run', 'addMethod', 'execute'],
         isTypeOnly: false
     })
 
@@ -88,11 +88,53 @@ async function main () {
         isAsync: true
     })
 
-    testFunc.setBodyText(`let sum = 0;${functions.map(func => {
-        return func.tags.map((tag, index) => `
-            sum += await run(${JSON.stringify(tag)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag)}', ${func.alias})
-        `).join('')
-    }).join('')};
+    const { addedMethods, tests, beforeAll, afterAll } = functions.map(func => {
+        const addedMethods = func.tags.filter(i => i.type === 'pineapple_import').map(i => {
+            return `addMethod(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`
+        }).join('')
+
+        const beforeAll = func.tags.filter(i => i.type === 'beforeAll').map(i => {
+            return `${func.alias}()\n`
+        }).join('')
+
+        const afterAll = func.tags.filter(i => i.type === 'afterAll').map(i => {
+            return `${func.alias}()\n`
+        }).join('')
+
+        // before / beforeEach / after / afterEach will get integrated in directly with the tests.
+        const before = func.tags.filter(i => i.type === 'before').map(tag => {
+            return `await execute(${JSON.stringify(tag.text)})`
+        }).join('\n')
+
+        const beforeEach = func.tags.filter(i => i.type === 'beforeEach').map(tag => {
+            return `await execute(${JSON.stringify(tag.text)})`
+        }).join('\n')
+
+        const after = func.tags.filter(i => i.type === 'after').map(tag => {
+            return `await execute(${JSON.stringify(tag.text)})`
+        }).join('\n')
+
+        const afterEach = func.tags.filter(i => i.type === 'afterEach').map(tag => {
+            return `await execute(${JSON.stringify(tag.text)})`
+        }).join('\n')
+
+        const tests = `${before}\n${func.tags.filter(i => i.type === 'test').map((tag, index) => `
+            ${beforeEach}
+            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${func.alias})
+            ${afterEach}
+        `).join('')}\n${after}`
+
+
+        return { addedMethods, tests, beforeAll, afterAll }
+    }).reduce((acc, i) => {
+        acc.addedMethods = [...acc.addedMethods, ...i.addedMethods]
+        acc.beforeAll = [...acc.beforeAll, ...i.beforeAll]
+        acc.afterAll = [...acc.afterAll, ...i.afterAll]
+        acc.tests = [...acc.tests, ...i.tests]
+        return acc
+    }, { addedMethods: [], tests: [], beforeAll: [], afterAll: [] })
+
+    testFunc.setBodyText(`let sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${tests.join('')}\n${afterAll.join('')};
     return sum`)
 
     // add text to end of file
@@ -106,25 +148,42 @@ async function main () {
 
 const cwd = url.pathToFileURL(process.cwd()).href
 
+
+const tagTypes = [
+    'test',
+    'pineapple_import',
+    'beforeAll',
+    'afterAll',
+    'before',
+    'after',
+    'beforeEach',
+    'afterEach'
+]
+
 function getFunctions(file, fileText, fileName) {
     const dec = file.getVariableDeclarations().map(i => {
         const text = i.getText();
 
         const tags = [];
 
-        if (!text.includes('=>') && !text.includes('function'))
-            return null;
+        if (!text.includes('=>') && !text.includes('function')) return null;
 
         let current = i.getStartLineNumber() - 2;
+
         // check if previous line has a comment ender
         if (fileText[current].includes('*/')) {
             // crawl up until you see comment begin
             while (current > 0 && !fileText[current].includes('/*')) {
                 current--;
-                if (fileText[current].includes('@test'))
-                    tags.push(
-                        fileText[current].split('@test')[1].trim()
-                    );
+                for (const type of tagTypes) {
+                    if (fileText[current].includes(`@${type}`))
+                        tags.push(
+                            { 
+                                type, 
+                                text: fileText[current].split(`@${type}`)[1].trim() 
+                            }
+                        );
+                }
             }
         }
 
@@ -184,9 +243,10 @@ function getFunctions(file, fileText, fileName) {
 
     const functions = [...dec, ...file.getFunctions().map(i => [i.getName(), i.getJsDocs().flatMap(i => i.getTags()), i.getExportKeyword()]
     ).map(item => {
-        const tags = item[1].filter(i => i.getTagName() === 'test')
+        const tags = item[1].filter(i => tagTypes.includes(i.getTagName()))
             .map(tag => {
-                return fileText[tag.getStartLineNumber() - 1].split('@test')[1].trim()
+                const tagName = tag.getTagName()
+                return { type: tagName, text: fileText[tag.getStartLineNumber() - 1].split(`@${tagName}`)[1].trim() }
             });
 
         return {
@@ -210,6 +270,9 @@ function getFunctions(file, fileText, fileName) {
             }
         return i.exported;
     });
+
+    console.log(functions)
+
     return functions;
 }
 

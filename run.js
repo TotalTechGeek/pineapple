@@ -7,12 +7,31 @@ import chalk from 'chalk'
 const snap = snapshot()
 
 /**
+ * Adds a method to the Pineapple JSON Logic Engine.
+ * @param {string} name 
+ * @param {(...args: any[]) => any} fn 
+ */
+export function addMethod(name, fn) {
+    engine.addMethod(name, fn)
+}
+
+/**
+ * Just executes the expression, used for "before" / "beforeEach" / "after" / "afterEach".
+ * @param {string} input 
+ */
+export async function execute(input) {
+    const ast = parse(input, { startRule: 'Expression' })
+    await engine.run(ast)
+}
+
+
+/**
+ * Runs the tests in the Pineapple JSON Logic Engine.
  * @param {string} input 
  * @param {string} id
  * @param {(...args: any[]) => any} func
  */
 export async function run (input, id, func) {
-
     /**
      * @param {string} input 
      * @param {string} id 
