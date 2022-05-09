@@ -14,11 +14,21 @@ If you wish to run a function before / after all of the tests are run (like an i
 
 ```js
 /**
- * A function that sets up some records in a mock database, or creates instances
- * of some objects you may need.
+ * For the purposes of demonstrating beforeAll, this function
+ * is an async function that populates either some set or a database 
  * @beforeAll
  */
-async function setup() {
+export async function initializeCityDatabase() {
+    ...
+}
+
+
+/**
+ * @test 'Vienna' resolves truthy
+ * @test 'San Juan' resolves truthy
+ * @test 'United Kingdom' resolves falsy
+ */
+export async function isCity(city) {
     ...
 }
 ```

@@ -45,3 +45,31 @@ export function levelUp(amount) {
     person.level += amount
     return person
 }
+
+
+let cities = new Set()
+
+
+/**
+ * @beforeAll
+ */
+export async function initializeCityDatabase() {
+    cities = new Set([
+        'New York',
+        'Los Angeles',
+        'San Juan',
+        'Vienna'
+    ])
+}
+
+
+/**
+ * @test 'Vienna' resolves truthy
+ * @test 'San Juan' resolves truthy
+ * @test 'United Kingdom' resolves falsy
+ */
+export async function isCity(city) {
+    return cities.has(city)
+}
+
+
