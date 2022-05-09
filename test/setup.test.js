@@ -21,3 +21,27 @@ export function isPrime(n) {
 export function generatePrime() {
     return 17
 }
+
+let person
+
+/**
+ * Sets a file-scoped variable to be a new person object.
+ * @pineapple_import
+ */
+export function createPerson (name, level) {
+    person = {
+        name,
+        level
+    }
+}
+
+/**
+ * Another silly example to demonstrate the use of beforeEach
+ * @beforeEach createPerson('John', 5)
+ * @test 3 returns @.level === 8
+ * @test 1 returns @.level === 6
+ */
+export function levelUp(amount) {
+    person.level += amount
+    return person
+}

@@ -77,20 +77,20 @@ let person
  * Sets a file-scoped variable to be a new person object.
  * @pineapple_import
  */
-function createPerson (name, level) {
+export function createPerson (name, level) {
     person = {
         name,
-        level: 1
+        level
     }
 }
 
 /**
  * Another silly example to demonstrate the use of beforeEach
  * @beforeEach createPerson('John', 5)
- * @test 3 returns @.age === 8
- * @test 1 returns @.age === 4
+ * @test 3 returns @.level === 8
+ * @test 1 returns @.level === 6
  */
-function levelUp(amount) {
+export function levelUp(amount) {
     person.level += amount
     return person
 }

@@ -12,7 +12,7 @@ Because there may be situations where you wish to use additional functions insid
  * Checks whether a number is prime or not. 
  * @pineapple_import
  */
-function isPrime(n) {
+export function isPrime(n) {
     ...
 }
 
@@ -21,7 +21,7 @@ function isPrime(n) {
  * Generates a prime larger than the given number.
  * @test 100 returns isPrime(@) and @ > 100
  */
-function generatePrime(n) {
+export function generatePrime(n) {
     ...
 }
 ```
