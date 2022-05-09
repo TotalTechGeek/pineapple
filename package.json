@@ -9,6 +9,10 @@
     "generate:parser": "peggy --allowed-start-rules Document,Expression --cache --format es -o parser/dsl.js parser/grammar.pegjs && cd parser && exitzero standard --fix *.js",
     "test": "node index.js -i \"test/*{.js,.mjs},*.js\""
   },
+  "repository": {
+    "url": "https://github.com/TotalTechGeek/pineapple",
+    "type": "git"
+  },
   "dependencies": {
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-sucrase": "^4.0.3",
