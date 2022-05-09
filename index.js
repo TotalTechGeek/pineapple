@@ -12,7 +12,7 @@ import { transpile } from './typescriptTranspiler.js';
 
 program
     .name('pineapple')
-    .version('0.6.0')
+    .version('0.6.1')
     .option('-i, --include <files...>', 'Comma separated globs of files.')
     .option('-a, --accept-all', 'Accept all snapshots.')
     .option('-u, --update-all', 'Update all snapshots.')
@@ -62,7 +62,7 @@ async function main () {
 
     testFile.addImportDeclaration({
         moduleSpecifier: specifier.join('/'),
-        namedImports: ['run', 'addMethod', 'execute'],
+        namedImports: ['run', 'addMethod', 'execute', 'hof'],
         isTypeOnly: false
     })
 
@@ -118,9 +118,12 @@ async function main () {
             return `await execute(${JSON.stringify(tag.text)})`
         }).join('\n')
 
-        const tests = `${before}\n${func.tags.filter(i => i.type === 'test').map((tag, index) => `
+
+        const wrapHof = (alias, tag) => func.isClass ? `hof(${alias}, ${tag.type === 'test_static'})` : alias
+
+        const tests = `${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             ${beforeEach}
-            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${func.alias})
+            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)})
             ${afterEach}
         `).join('')}\n${after}`
 
@@ -151,6 +154,7 @@ const cwd = url.pathToFileURL(process.cwd()).href
 
 const tagTypes = [
     'test',
+    'test_static',
     'pineapple_import',
     'beforeAll',
     'afterAll',
@@ -161,13 +165,15 @@ const tagTypes = [
 ]
 
 function getFunctions(file, fileText, fileName) {
-    const dec = file.getVariableDeclarations().map(i => {
+
+
+    const dec = [...file.getClasses(), ...file.getVariableDeclarations()].map(i => {
         const text = i.getText();
 
         const tags = [];
 
-        if (!text.includes('=>') && !text.includes('function')) return null;
-
+        if (!text.includes('=>') && !text.includes('function') && i.getKindName() !== 'ClassDeclaration') return null;
+        const isClass = i.getKindName() === 'ClassDeclaration'
         let current = i.getStartLineNumber() - 2;
 
         // check if previous line has a comment ender
@@ -176,11 +182,11 @@ function getFunctions(file, fileText, fileName) {
             while (current > 0 && !fileText[current].includes('/*')) {
                 current--;
                 for (const type of tagTypes) {
-                    if (fileText[current].includes(`@${type}`))
+                    if (fileText[current].includes(`@${type} `))
                         tags.push(
                             { 
                                 type, 
-                                text: fileText[current].split(`@${type}`)[1].trim() 
+                                text: fileText[current].split(`@${type} `)[1].trim() 
                             }
                         );
                 }
@@ -190,6 +196,7 @@ function getFunctions(file, fileText, fileName) {
         tags.reverse();
         return {
             tags,
+            isClass,
             name: i.getName(),
             exported: i.isExported(),
             fileName,

@@ -4,6 +4,7 @@ import { snapshot } from './snapshot.js'
 import logSymbols from 'log-symbols';
 import { hash } from "./hash.js";
 import chalk from 'chalk'
+import { SpecialHoF } from "./symbols.js";
 const snap = snapshot()
 
 /**
@@ -43,12 +44,24 @@ export async function run (input, id, func) {
         const h = hash(input)
         let result = [func]
         let count = 0
+        let lastSpecial = false
         for (let step of script) {
-            if (typeof result[0] !== 'function') return [data, false, 'Does not return a function.']
-            result = await engine.run(step, { func: result[0], id: `${id}.${count}`, snap, hash: h, rule: input })
+            // Override to break the special "hof" class thing.
+            if (lastSpecial) {
+                if(!Object.values(step)[0][0].special && typeof result[0].result === 'function')  result[0] = result[0].result
+            }
+            const [current] = result
+            if (typeof result[0] !== 'function') return [result[0], false, 'Does not return a function.']
+            result = await engine.run(step, { func: current, id: `${id}.${count}`, snap, hash: h, rule: input })
             const [data, success, message] = result
             if (!success) return [data, false, message]
             count++
+            // Special Override for the Class-Based HoF thing.
+            if (current[SpecialHoF]) {
+                if (typeof result[0] !== 'function') result[0] = current
+                lastSpecial = true
+            } 
+            else lastSpecial = false
         }
         return result
     }
@@ -79,4 +92,26 @@ export async function run (input, id, func) {
 
     console.log(logSymbols.success, `Passed test (${id.split('.')[0]}):`, input)
     return 0
+}
+
+
+/**
+ * A way to turn a class into a higher-order function chain for testing purposes.
+ * @param {*} classToUse 
+ * @param {boolean} staticClass
+ */
+export function hof(classToUse, staticClass = false) {
+    return (...args) => {
+        let instance = staticClass ? classToUse : new classToUse(...args)
+        const f = ([method, ...args]) => {
+            if (!(method in instance)) throw new Error(`'${method}' is not a method of '${classToUse.name}'`)
+            f.result = instance[method](...args)
+            return f
+        }
+        f[SpecialHoF] = true
+        f.instance = instance
+        if (staticClass) return f(...args)
+        return f 
+    }
+    
 }

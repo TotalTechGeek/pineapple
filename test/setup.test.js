@@ -1,6 +1,3 @@
-
-
-
 /**
  * @pineapple_import
  * @param {number} n 

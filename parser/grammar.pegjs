@@ -172,7 +172,9 @@ Operator
   /     id:OperatorIdentifier { return id }
 
 Operands
-  = _ exp:Expression _ "," _ tail:Operands { return [exp, ...tail] }
+  = 
+    _ "$." call:FunctionCall { const key = Object.keys(call)[0]; const result = [key, ...[].concat(call[key])]; result.special = true; return [result] }
+  / _ exp:Expression _ "," _ tail:Operands { return [exp, ...tail] }
   / _ exp:Expression { return [ exp ]; }
   
 OperationDelimiter
@@ -332,7 +334,6 @@ ArrayEntry
   = value:Expression _ "," _ tail:(ArrayEntry) { return [value, ...tail] }
   / value:Expression _ ","?					   { return [value]          }
  
-
 Identifier "identifier"
   = [a-zA-Z_0-9] [.a-zA-Z0-9_-]* { return text() }
   / '@' id:Identifier { return text() }
@@ -341,8 +342,8 @@ VarIdentifier "@-identifier"
   = "@." id:MemberIdentifier { return { var: `data.${id}` } }
   / "@" { return { var: 'data' } }
 ContextIdentifier "$-identifier"
-  = '$.' id:MemberIdentifier { return { context: id } }
-  / "$" { return { context: '' } }
+  = '$.' id:MemberIdentifier { return { var: `context.${id}` } }
+  / "$" { return { var: 'context' } }
 MemberIdentifier "member-identifier"
   = Identifier
   / Integer { return text() }
