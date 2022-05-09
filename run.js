@@ -104,7 +104,8 @@ export function hof(classToUse, staticClass = false) {
     return (...args) => {
         let instance = staticClass ? classToUse : new classToUse(...args)
         const f = ([method, ...args]) => {
-            if (!(method in instance)) throw new Error(`'${method}' is not a method of '${classToUse.name}'`)
+            if (!(method in instance && (instance.hasOwnProperty(method) || classToUse.prototype.hasOwnProperty(method)))) 
+                throw new Error(`'${method}' is not a method of '${classToUse.name}'`)
             f.result = instance[method](...args)
             return f
         }
