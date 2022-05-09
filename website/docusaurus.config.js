@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Pineapple',
   tagline: 'A testing framework for humans.',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://jessemitchell.me',
   baseUrl: '/pineapple/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -55,9 +55,9 @@ const config = {
             position: 'left',
             label: 'Tutorial',
           },
-          // {to: '/blog', label: 'Blog', position: 'left'},
+          {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/TotalTechGeek/pineapple',
             label: 'GitHub',
             position: 'right',
           },
@@ -90,6 +90,10 @@ const config = {
               {
                 label: 'GitHub',
                 href: 'https://github.com/totaltechgeek/pineapple',
+              },
+              {
+                label: 'npm',
+                href: 'https://www.npmjs.com/package/pineapple'
               },
               {
                 label: 'Project Board',
