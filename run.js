@@ -12,7 +12,7 @@ const snap = snapshot()
  * @param {(...args: any[]) => any} fn 
  */
 export function addMethod(name, fn) {
-    engine.addMethod(name, fn)
+    engine.addMethod(name, data => fn(...[].concat(data)))
 }
 
 /**

@@ -271,8 +271,6 @@ function getFunctions(file, fileText, fileName) {
         return i.exported;
     });
 
-    console.log(functions)
-
     return functions;
 }
 
