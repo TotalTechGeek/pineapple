@@ -8,11 +8,11 @@ import { program } from 'commander'
 import { hash } from './hash.js';
 import url from 'url'
 import { transpile } from './typescriptTranspiler.js';
-
+import { parse } from './parser/dsl.js';
 
 program
     .name('pineapple')
-    .version('0.6.2')
+    .version('0.6.3')
     .option('-i, --include <files...>', 'Comma separated globs of files.')
     .option('-a, --accept-all', 'Accept all snapshots.')
     .option('-u, --update-all', 'Update all snapshots.')
@@ -164,6 +164,28 @@ const tagTypes = [
     'afterEach'
 ]
 
+function multiLine(fileText, start, type) {
+    let end = start + 1;
+                        
+    console.log(fileText[start], type)
+    let text = (fileText[start].split(`@${type} `)[1] || '').trim() 
+    let lastSuccess = text
+
+    // while there isn't a * @ on the line
+    while (fileText[end] && !fileText[end].includes('* @')) {
+        if(fileText[end].includes('*/')) break; 
+        const addition = fileText[end].substring(fileText[end].indexOf('*') + 1).trim()
+        text += ' ' + addition
+        try {
+            parse(text) // attempt a parse
+            lastSuccess = text
+        } catch(err) {}
+        end++;
+    }
+
+    return lastSuccess.trim()
+}
+
 function getFunctions(file, fileText, fileName) {
 
 
@@ -182,13 +204,10 @@ function getFunctions(file, fileText, fileName) {
             while (current > 0 && !fileText[current].includes('/*')) {
                 current--;
                 for (const type of tagTypes) {
-                    if (fileText[current].includes(`@${type} `))
-                        tags.push(
-                            { 
-                                type, 
-                                text: fileText[current].split(`@${type} `)[1].trim() 
-                            }
-                        );
+                    if (fileText[current].includes(`@${type} `)) tags.push({ 
+                        type, 
+                        text: multiLine(fileText, current, type)
+                    });
                 }
             }
         }
@@ -253,7 +272,7 @@ function getFunctions(file, fileText, fileName) {
         const tags = item[1].filter(i => tagTypes.includes(i.getTagName()))
             .map(tag => {
                 const tagName = tag.getTagName()
-                return { type: tagName, text: fileText[tag.getStartLineNumber() - 1].split(`@${tagName}`)[1].trim() }
+                return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName) }
             });
 
         return {

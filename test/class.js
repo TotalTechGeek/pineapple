@@ -82,3 +82,38 @@ export class Adder {
         return this.previousResult
     }
 }
+
+
+/**
+ * @pineapple_import 
+ */
+export function setPersonCount (to = 0) {
+    Person.count = to
+}
+
+/**
+ * @test 'Jesse', 24 
+ * ~> $.grow(3)
+ * ~> $.grow(2) returns 29
+ * 
+ * @test 'Rick', 62 
+ * ~> $.grow(1) returns 63
+ * ~> $.grow(2) returns 65
+ * ~> $.getName() returns 'Rick'
+ * ~> $.grow() returns $.age === 66
+ */
+export class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+
+    grow(amount = 1) {
+        return this.age += amount
+    }
+
+    getName() {
+        return this.name
+    }
+}
+
