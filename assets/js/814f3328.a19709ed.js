@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[535],{5641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Minor Patch: v0.6.3","permalink":"/pineapple/blog/v0.6.3"},{"title":"Introducing Pineapple","permalink":"/pineapple/blog/introducing-pineapple"}]}')}}]);
