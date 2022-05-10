@@ -126,9 +126,19 @@ Pineapple can also be used to test classes, though if you get to a point where y
 ```js
 /**
  * A basic bank account class that allows for withdrawing & depositing money.
- * @test 100 ~> $.withdraw(10) ~> $.deposit(20) returns $.balance === 110
- * @test 0 ~> $.withdraw(100) throws 'Insufficient funds'
- * @test 100 ~> $.withdraw(-10) throws 
+ *
+ * @test 100 
+ * ~> $.withdraw(10) 
+ * ~> $.deposit(20) returns $.balance === 110
+ * 
+ * @test 0 
+ * ~> $.withdraw(100) throws 'Insufficient funds'
+ * ~> $.deposit(50) returns 50
+ * ~> $.withdraw(20) returns 30
+ * 
+ * @test 100 
+ * ~> $.withdraw(-10) throws 
+ * ~> $.deposit(-10) throws
  */
  export class Account {
     constructor(balance) {
@@ -138,12 +148,12 @@ Pineapple can also be used to test classes, though if you get to a point where y
     withdraw (amount) {
         if (amount < 0) throw new Error('Amount must be greater than zero')
         if (this.balance < amount) throw new Error('Insufficient funds')
-        this.balance -= amount
+        return this.balance -= amount
     }
 
     deposit (amount) {
         if (amount < 0) throw new Error('Amount must be greater than zero')
-        this.balance += amount
+        return this.balance += amount
     }
 }
 ```

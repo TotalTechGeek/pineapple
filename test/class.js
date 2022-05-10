@@ -1,9 +1,23 @@
 
 /**
- * @test 100 ~> $.withdraw(10) ~> $.deposit(20) returns $.balance === 110
- * @test 0 ~> $.withdraw(100) throws 'Insufficient funds'
- * @test 0 ~> $.deposit(30) ~> $.deposit(10) returns $.balance === 40 ~> $.withdraw(20) ~> $.withdraw(30) throws 'Insufficient funds'
- * @test 100 ~> $.withdraw(-10) throws ~> $.deposit(-10) throws
+ * A basic bank account class; allows for withdrawing & depositing money.
+ * 
+ * @test 100 
+ * ~> $.withdraw(10) 
+ * ~> $.deposit(20) returns $.balance === 110
+ * 
+ * @test 0 
+ * ~> $.withdraw(100) throws 'Insufficient funds'
+ * 
+ * @test 0 
+ * ~> $.deposit(30) 
+ * ~> $.deposit(10) returns $.balance === 40 
+ * ~> $.withdraw(20) 
+ * ~> $.withdraw(30) throws 'Insufficient funds'
+ * 
+ * @test 100 
+ * ~> $.withdraw(-10) throws 
+ * ~> $.deposit(-10) throws
  */
  export class Account {
     constructor(balance) {
@@ -28,9 +42,15 @@
 
 /**
  * A basic bank account class; allows for withdrawing & depositing money.
- * @test 50 ~> $.deposit(30) returns 80 ~> $.withdraw(20) returns 60
- * @test 0 ~> $.deposit(10) ~> $.deposit(30) returns 40 ~> $.withdraw(5) returns @ === 35 and $.transactions === 3
  * 
+ * @test 50 
+ * ~> $.deposit(30) returns 80 
+ * ~> $.withdraw(20) returns 60
+ * 
+ * @test 0 
+ * ~> $.deposit(10) 
+ * ~> $.deposit(30) returns 40 
+ * ~> $.withdraw(5) returns @ === 35 and $.transactions === 3
  */
  export class Account2 {
     constructor(balance) {
