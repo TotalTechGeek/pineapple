@@ -12,7 +12,7 @@ import { parse } from './parser/dsl.js'
 
 program
   .name('pineapple')
-  .version('0.6.4')
+  .version('0.6.5')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
@@ -147,7 +147,7 @@ async function main () {
 
 const cwd = url.pathToFileURL(process.cwd()).href
 
-const tagTypes = [
+const TAG_TYPES = [
   'test',
   'test_static',
   'pineapple_import',
@@ -208,7 +208,12 @@ function getFunctions (file, fileText, fileName) {
 
     // BUG: This is a bit imprecise because "=>" and "function" could be present in the variable declaration,
     // If this situation comes up, where someone adds a JSDoc to a text string, we can resolve it.
-    if (!text.includes('=>') && !text.includes('function') && i.getKindName() !== 'ClassDeclaration') { return null }
+    if (
+      !text.includes('=>') &&
+      !text.includes('function') &&
+      i.getKindName() !== 'ClassDeclaration'
+      // && !getTags(fileText, i.getStartLineNumber() - 2, ['pineapple_force']).length
+    ) return null
 
     const isClass = i.getKindName() === 'ClassDeclaration'
 
@@ -231,7 +236,7 @@ function getFunctions (file, fileText, fileName) {
       .getFunctions()
       .map(i => [i.getName(), i.getJsDocs().flatMap(i => i.getTags()), i.getExportKeyword()])
       .map(item => {
-        const tags = item[1].filter(i => tagTypes.includes(i.getTagName())).map(tag => {
+        const tags = item[1].filter(i => TAG_TYPES.includes(i.getTagName())).map(tag => {
           const tagName = tag.getTagName()
           return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName) }
         })
@@ -324,7 +329,7 @@ function getFileExports (file) {
  * @param {string[]} fileText
  * @param {number} end
  */
-function getTags (fileText, end) {
+function getTags (fileText, end, tagTypes = TAG_TYPES) {
   const tags = []
   // check if previous line has a comment ender
   if (fileText[end].includes('*/')) {
@@ -332,7 +337,7 @@ function getTags (fileText, end) {
     while (end > 0 && !fileText[end].includes('/*')) {
       end--
       for (const type of tagTypes) {
-        if (fileText[end].includes(`@${type} `)) {
+        if (fileText[end].includes(`@${type}`)) {
           tags.unshift({
             type,
             text: multiLine(fileText, end, type)
