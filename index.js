@@ -183,7 +183,7 @@ function multiLine (fileText, start, type) {
       .substring(fileText[end].indexOf('*') + 1)
       .trim()
 
-    text += ' ' + addition
+    text += '\n' + addition
 
     try {
       // attempt a parse, if it succeeds, flag it as successful & use that.
@@ -256,14 +256,14 @@ main()
  */
 function exportedOnly (exports) {
   return i => {
-    if (!i.tags.length) { return false }
+    if (!i.tags.length) return false
 
     if (!i.exported) {
       if (exports[i.name]) {
         i.originalName = i.name
         i.name = exports[i.name]
         return true
-      } else { console.log(logSymbols.warning, `Function / Class "${i.name}" is not exported from ${i.fileName}, skipping its tests.`) }
+      } else console.log(logSymbols.warning, `Function / Class "${i.name}" is not exported from ${i.fileName}, skipping its tests.`)
     }
     return i.exported
   }
@@ -290,7 +290,7 @@ function getFileExports (file) {
           if (i.includes(':')) {
             const [key, value] = i.split(':').map(i => i.trim())
             if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) { exports[key] = value }
-          } else { exports[i.trim()] = i.trim() }
+          } else exports[i.trim()] = i.trim()
         })
       } else {
         // support module.exports = func at some point

@@ -65,11 +65,13 @@ export async function run (input, id, func) {
     return result
   }
 
+  const format = text => text.includes('\n') ? `\n${text}\n` : text
+
   try {
     const [, success, message] = await internalRun(input, id, func)
 
     if (!success) {
-      console.log(logSymbols.error, `Failed test (${id.split('.')[0]}):`, input)
+      console.log(logSymbols.error, `Failed test (${id.split('.')[0]}):`, format(input))
       if (message) {
         console.log(message)
         console.log()
@@ -87,7 +89,7 @@ export async function run (input, id, func) {
     return 1
   }
 
-  console.log(logSymbols.success, `Passed test (${id.split('.')[0]}):`, input)
+  console.log(logSymbols.success, `Passed test (${id.split('.')[0]}):`, format(input))
   return 0
 }
 
