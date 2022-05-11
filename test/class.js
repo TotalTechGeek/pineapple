@@ -93,7 +93,8 @@ export class Adder {
  * @test_static $.getPrevious() returns 8
  */
  export class Math {
-    static previousResult = null
+    static previousResult = 0;
+    
     static add(a, b) {
         return this.previousResult = a + b
     }

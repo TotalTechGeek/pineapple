@@ -1,303 +1,345 @@
 #!/usr/bin/env node
 import { Project } from 'ts-morph'
-import logSymbols from 'log-symbols';
+import logSymbols from 'log-symbols'
 import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
 
 import { program } from 'commander'
-import { hash } from './hash.js';
+import { hash } from './hash.js'
 import url from 'url'
-import { transpile } from './typescriptTranspiler.js';
-import { parse } from './parser/dsl.js';
+import { transpile } from './typescriptTranspiler.js'
+import { parse } from './parser/dsl.js'
 
 program
-    .name('pineapple')
-    .version('0.6.3')
-    .option('-i, --include <files...>', 'Comma separated globs of files.')
-    .option('-a, --accept-all', 'Accept all snapshots.')
-    .option('-u, --update-all', 'Update all snapshots.')
-    .option('-t, --typescript', 'Enables typescript (slower).')
+  .name('pineapple')
+  .version('0.6.4')
+  .option('-i, --include <files...>', 'Comma separated globs of files.')
+  .option('-a, --accept-all', 'Accept all snapshots.')
+  .option('-u, --update-all', 'Update all snapshots.')
+  .option('-t, --typescript', 'Enables typescript (slower).')
 
 program.parse()
 
-const options = program.opts();
+const options = program.opts()
 
-if(!options.include || !options.include.length) throw new Error('Please select files to include.')
+if (!options.include || !options.include.length) throw new Error('Please select files to include.')
 
 // hack for now until I make the code better
-process.env.ACCEPT_ALL = options.acceptAll || '';
-process.env.UPDATE_ALL = options.updateAll || '';
+process.env.ACCEPT_ALL = options.acceptAll || ''
+process.env.UPDATE_ALL = options.updateAll || ''
 
 async function main () {
-    const tmp = tempy.file({ extension: 'mjs' })
-    const project = new Project({
-        
-    })
-    
-    const regex = /\,\s?(?![^\{}]*\})/
-      
-    const files = options.include.flatMap(i => i.split(regex)).flatMap(i => {
-        return project.addSourceFilesAtPaths(i)
-    })
+  const tmp = tempy.file({ extension: 'mjs' })
+  const project = new Project({
 
-    // get variable declarations that are arrow functions / functions
+  })
 
-   const functions = files.flatMap(file => {
-        const fileText = file.getFullText().split('\n')
-        return getFunctions(file, fileText, url.pathToFileURL(file.getFilePath()).href)
-   });
+  const regex = /,\s?(?![^{}]*\})/
 
-    const testFile = project.createSourceFile(tmp, undefined, { 
-        overwrite: true,
-    })
+  const files = options.include.flatMap(i => i.split(regex)).flatMap(i => {
+    return project.addSourceFilesAtPaths(i)
+  })
 
-    const imports = Object.entries(map(i => {
-        return { namedImports: pluck('name', i), original: indexBy(i => i.name, i) }
-    }, groupBy(i => i.fileName, functions)))
-    
+  // get variable declarations that are arrow functions / functions
 
-    const specifier = import.meta.url.split(/\/|\\/)
-    specifier.pop()
-    specifier.push('run.js')
+  const functions = files.flatMap(file => {
+    const fileText = file.getFullText().split('\n')
+    return getFunctions(file, fileText, url.pathToFileURL(file.getFilePath()).href)
+  })
 
-    testFile.addImportDeclaration({
-        moduleSpecifier: specifier.join('/'),
-        namedImports: ['run', 'addMethod', 'execute', 'hof'],
-        isTypeOnly: false
-    })
+  const testFile = project.createSourceFile(tmp, undefined, {
+    overwrite: true
+  })
 
-    let counter = 0
+  const imports = Object.entries(map(i => {
+    return { namedImports: pluck('name', i), original: indexBy(i => i.name, i) }
+  }, groupBy(i => i.fileName, functions)))
 
-    // add imports
-    await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
-        if (options.typescript) moduleSpecifier = await transpile(moduleSpecifier)
-        testFile.addStatements(`
+  const specifier = import.meta.url.split(/\/|\\/)
+  specifier.pop()
+  specifier.push('run.js')
+
+  testFile.addImportDeclaration({
+    moduleSpecifier: specifier.join('/'),
+    namedImports: ['run', 'addMethod', 'execute', 'hof'],
+    isTypeOnly: false
+  })
+
+  let counter = 0
+
+  // add imports
+  await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
+    if (options.typescript) moduleSpecifier = await transpile(moduleSpecifier)
+    testFile.addStatements(`
             import * as $$${index} from '${moduleSpecifier}';
             const { ${namedImports.map(i => {
                 original[i].alias = `$${counter++}`
                 return `${i}: ${original[i].alias}`
             }).join(', ')} } = { ...$$${index}.default, ...$$${index} };
         `)
-    }))
+  }))
 
- 
-    // add test functions
-    const testFunc = testFile.addFunction({
-        name: 'test',
-        parameters: [],
-        isAsync: true
-    })
+  // add test functions
+  const testFunc = testFile.addFunction({
+    name: 'test',
+    parameters: [],
+    isAsync: true
+  })
 
-    const { addedMethods, tests, beforeAll, afterAll } = functions.map(func => {
-        const addedMethods = func.tags.filter(i => i.type === 'pineapple_import').map(i => {
-            return `addMethod(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`
-        }).join('')
+  const { addedMethods, tests, beforeAll, afterAll } = functions.map(func => {
+    const addedMethods = func.tags.filter(i => i.type === 'pineapple_import').map(i => {
+      return `addMethod(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`
+    }).join('')
 
-        const beforeAll = func.tags.filter(i => i.type === 'beforeAll').map(i => {
-            return `${func.alias}()\n`
-        }).join('')
+    const beforeAll = func.tags.filter(i => i.type === 'beforeAll').map(i => {
+      return `${func.alias}()\n`
+    }).join('')
 
-        const afterAll = func.tags.filter(i => i.type === 'afterAll').map(i => {
-            return `${func.alias}()\n`
-        }).join('')
+    const afterAll = func.tags.filter(i => i.type === 'afterAll').map(i => {
+      return `${func.alias}()\n`
+    }).join('')
 
-        // before / beforeEach / after / afterEach will get integrated in directly with the tests.
-        const before = func.tags.filter(i => i.type === 'before').map(tag => {
-            return `await execute(${JSON.stringify(tag.text)})`
-        }).join('\n')
+    // before / beforeEach / after / afterEach will get integrated in directly with the tests.
+    const before = func.tags.filter(i => i.type === 'before').map(tag => {
+      return `await execute(${JSON.stringify(tag.text)})`
+    }).join('\n')
 
-        const beforeEach = func.tags.filter(i => i.type === 'beforeEach').map(tag => {
-            return `await execute(${JSON.stringify(tag.text)})`
-        }).join('\n')
+    const beforeEach = func.tags.filter(i => i.type === 'beforeEach').map(tag => {
+      return `await execute(${JSON.stringify(tag.text)})`
+    }).join('\n')
 
-        const after = func.tags.filter(i => i.type === 'after').map(tag => {
-            return `await execute(${JSON.stringify(tag.text)})`
-        }).join('\n')
+    const after = func.tags.filter(i => i.type === 'after').map(tag => {
+      return `await execute(${JSON.stringify(tag.text)})`
+    }).join('\n')
 
-        const afterEach = func.tags.filter(i => i.type === 'afterEach').map(tag => {
-            return `await execute(${JSON.stringify(tag.text)})`
-        }).join('\n')
+    const afterEach = func.tags.filter(i => i.type === 'afterEach').map(tag => {
+      return `await execute(${JSON.stringify(tag.text)})`
+    }).join('\n')
 
+    const wrapHof = (alias, tag) => func.isClass ? `hof(${alias}, ${tag.type === 'test_static'})` : alias
 
-        const wrapHof = (alias, tag) => func.isClass ? `hof(${alias}, ${tag.type === 'test_static'})` : alias
-
-        const tests = `${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
+    const tests = `${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             ${beforeEach}
             sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)})
             ${afterEach}
         `).join('')}\n${after}`
 
+    return { addedMethods, tests, beforeAll, afterAll }
+  }).reduce((acc, i) => {
+    acc.addedMethods = [...acc.addedMethods, ...i.addedMethods]
+    acc.beforeAll = [...acc.beforeAll, ...i.beforeAll]
+    acc.afterAll = [...acc.afterAll, ...i.afterAll]
+    acc.tests = [...acc.tests, ...i.tests]
+    return acc
+  }, { addedMethods: [], tests: [], beforeAll: [], afterAll: [] })
 
-        return { addedMethods, tests, beforeAll, afterAll }
-    }).reduce((acc, i) => {
-        acc.addedMethods = [...acc.addedMethods, ...i.addedMethods]
-        acc.beforeAll = [...acc.beforeAll, ...i.beforeAll]
-        acc.afterAll = [...acc.afterAll, ...i.afterAll]
-        acc.tests = [...acc.tests, ...i.tests]
-        return acc
-    }, { addedMethods: [], tests: [], beforeAll: [], afterAll: [] })
-
-    testFunc.setBodyText(`let sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${tests.join('')}\n${afterAll.join('')};
+  testFunc.setBodyText(`let sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${tests.join('')}\n${afterAll.join('')};
     return sum`)
 
-    // add text to end of file
-    testFile.addStatements(`test().then(i => { process.exit(i) });`)
+  // add text to end of file
+  testFile.addStatements('test().then(i => { process.exit(i) });')
 
-    testFile.saveSync()
+  testFile.saveSync()
 
-    // run the file 
-    const { stdout, stderr } = await import(url.pathToFileURL(tmp))
+  // run the file
+  await import(url.pathToFileURL(tmp))
 }
 
 const cwd = url.pathToFileURL(process.cwd()).href
 
-
 const tagTypes = [
-    'test',
-    'test_static',
-    'pineapple_import',
-    'beforeAll',
-    'afterAll',
-    'before',
-    'after',
-    'beforeEach',
-    'afterEach'
+  'test',
+  'test_static',
+  'pineapple_import',
+  'beforeAll',
+  'afterAll',
+  'before',
+  'after',
+  'beforeEach',
+  'afterEach'
 ]
 
-function multiLine(fileText, start, type) {
-    let end = start + 1;
-                        
-    console.log(fileText[start], type)
-    let text = (fileText[start].split(`@${type} `)[1] || '').trim() 
-    let lastSuccess = text
+/**
+ * An algorithm to try to parse out multi-line tests.
+ * Terminates at either a new tag, or at the end of the comment chain.
+ * It will continue crawling down until it terminates, and a test case is parsed correctly,
+ * it use that instead of just the first line.
+ *
+ * This approach allows us to do multi-line without adding "\" to the end of the lines,
+ * which would be rather ugly.
+ * @param {string[]} fileText
+ * @param {number} start
+ * @param {string} type
+ */
+function multiLine (fileText, start, type) {
+  let end = start + 1
 
-    // while there isn't a * @ on the line
-    while (fileText[end] && !fileText[end].includes('* @')) {
-        if(fileText[end].includes('*/')) break; 
-        const addition = fileText[end].substring(fileText[end].indexOf('*') + 1).trim()
-        text += ' ' + addition
-        try {
-            parse(text) // attempt a parse
-            lastSuccess = text
-        } catch(err) {}
-        end++;
-    }
+  let text = (fileText[start].split(`@${type} `)[1] || '').trim()
+  let lastSuccess = text
 
-    return lastSuccess.trim()
+  // while there isn't a "* @" on the line or "*/"
+  while (fileText[end] && !fileText[end].includes('* @') && !fileText[end].includes('*/')) {
+    const addition = fileText[end]
+      .substring(fileText[end].indexOf('*') + 1)
+      .trim()
+
+    text += ' ' + addition
+
+    try {
+      // attempt a parse, if it succeeds, flag it as successful & use that.
+      parse(text)
+      lastSuccess = text
+    } catch (err) {}
+
+    end++
+  }
+
+  return lastSuccess.trim()
 }
 
-function getFunctions(file, fileText, fileName) {
+/**
+ * Gets each of the functions from the file & figures out if they have associated pineapple
+ * annotations.
+ */
+function getFunctions (file, fileText, fileName) {
+  // Get classes & variable declarations for test cases.
+  const dec = [...file.getClasses(), ...file.getVariableDeclarations()].map(i => {
+    const text = i.getText()
 
+    // BUG: This is a bit imprecise because "=>" and "function" could be present in the variable declaration,
+    // If this situation comes up, where someone adds a JSDoc to a text string, we can resolve it.
+    if (!text.includes('=>') && !text.includes('function') && i.getKindName() !== 'ClassDeclaration') { return null }
 
-    const dec = [...file.getClasses(), ...file.getVariableDeclarations()].map(i => {
-        const text = i.getText();
+    const isClass = i.getKindName() === 'ClassDeclaration'
 
-        const tags = [];
-
-        if (!text.includes('=>') && !text.includes('function') && i.getKindName() !== 'ClassDeclaration') return null;
-        const isClass = i.getKindName() === 'ClassDeclaration'
-        let current = i.getStartLineNumber() - 2;
-
-        // check if previous line has a comment ender
-        if (fileText[current].includes('*/')) {
-            // crawl up until you see comment begin
-            while (current > 0 && !fileText[current].includes('/*')) {
-                current--;
-                for (const type of tagTypes) {
-                    if (fileText[current].includes(`@${type} `)) tags.push({ 
-                        type, 
-                        text: multiLine(fileText, current, type)
-                    });
-                }
-            }
-        }
-
-        tags.reverse();
-        return {
-            tags,
-            isClass,
-            name: i.getName(),
-            exported: i.isExported(),
-            fileName,
-            relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
-        };
-    }).filter(i => i);
-
-    
-
-   const exports = file.getStatements().filter(i => {
-        // expression statement
-        return (i.getKindName() === 'ExpressionStatement' && (i.getText().trim().includes('module.exports') || i.getText().trim().startsWith('exports.'))) || (i.getKindName() === 'ExportDeclaration')
-   }).map(i => i.getText().trim()).reduce((exports, statement) => {
-    const [ex, right] = statement.replace(';', '').split(/=|export /).map(i=>i.trim())
-    
-    if (ex === 'module.exports') {
-        if (right.includes('{')) {
-            right.substring(1, right.length - 1).trim().split(',').forEach(i => {
-                if(i.includes(':')) {
-                    const [key, value] = i.split(':').map(i => i.trim())
-                    if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) exports[key] = value
-                }
-                else exports[i.trim()] = i.trim()
-            })
-        }
-        else {
-            // support module.exports = func at some point
-        }
+    return {
+      tags: getTags(fileText, i.getStartLineNumber() - 2),
+      isClass,
+      name: i.getName(),
+      exported: i.isExported(),
+      fileName,
+      relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
     }
+  }).filter(i => i)
 
-    if (!ex) {
-        if (right.includes('{')) {
-            right.substring(1, right.length - 1).trim().split(',').forEach(i => {
-                if(i.includes(':')) {
-                    const [key, value] = i.split(':').map(i => i.trim())
-                    if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) exports[key] = value
-                }
-                else exports[i] = i
-            })
-        }
-    }
+  const exports = getFileExports(file)
 
-    if (ex.startsWith('exports.')) {
-        const key = ex.split('.')[1]
-        if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) exports[key] = right
-    }
-
-    return exports
-   }, {})
-
-
-    const functions = [...dec, ...file.getFunctions().map(i => [i.getName(), i.getJsDocs().flatMap(i => i.getTags()), i.getExportKeyword()]
-    ).map(item => {
-        const tags = item[1].filter(i => tagTypes.includes(i.getTagName()))
-            .map(tag => {
-                const tagName = tag.getTagName()
-                return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName) }
-            });
+  const functions = [
+    ...dec,
+    // Attempt to get function declarations & get the tags.
+    ...file
+      .getFunctions()
+      .map(i => [i.getName(), i.getJsDocs().flatMap(i => i.getTags()), i.getExportKeyword()])
+      .map(item => {
+        const tags = item[1].filter(i => tagTypes.includes(i.getTagName())).map(tag => {
+          const tagName = tag.getTagName()
+          return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName) }
+        })
 
         return {
-            name: item[0],
-            tags,
-            exported: Boolean(item[2]),
-            fileName,
-            relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
-        };
-    })].filter(i => {
-        if (!i.tags.length)
-            return false;
-        
-            if (!i.exported) {
-                if(exports[i.name]) {
-                    i.originalName = i.name
-                    i.name = exports[i.name]
-                    return true
-                }
-                else console.log(logSymbols.warning, `Function "${i.name}" is not exported from ${i.fileName}, skipping its tests.`);
-            }
-        return i.exported;
-    });
+          name: item[0],
+          tags,
+          exported: Boolean(item[2]),
+          fileName,
+          relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
+        }
+      })
+  ].filter(exportedOnly(exports))
 
-    return functions;
+  return functions
 }
 
 main()
+
+/**
+ * Filters out any functions without tags or that are not exported.
+ */
+function exportedOnly (exports) {
+  return i => {
+    if (!i.tags.length) { return false }
+
+    if (!i.exported) {
+      if (exports[i.name]) {
+        i.originalName = i.name
+        i.name = exports[i.name]
+        return true
+      } else { console.log(logSymbols.warning, `Function / Class "${i.name}" is not exported from ${i.fileName}, skipping its tests.`) }
+    }
+    return i.exported
+  }
+}
+
+/**
+ * Gets all of the exports of a file, currently only supports
+ * non-defaults.
+ * You may use "exports.X = ...",
+ * "module.exports = { X: ... }"
+ * "export X"
+ * "export function X"
+ */
+function getFileExports (file) {
+  return file.getStatements().filter(i => {
+    // expression statement
+    return (i.getKindName() === 'ExpressionStatement' && (i.getText().trim().includes('module.exports') || i.getText().trim().startsWith('exports.'))) || (i.getKindName() === 'ExportDeclaration')
+  }).map(i => i.getText().trim()).reduce((exports, statement) => {
+    const [ex, right] = statement.replace(';', '').split(/=|export /).map(i => i.trim())
+
+    if (ex === 'module.exports') {
+      if (right.includes('{')) {
+        right.substring(1, right.length - 1).trim().split(',').forEach(i => {
+          if (i.includes(':')) {
+            const [key, value] = i.split(':').map(i => i.trim())
+            if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) { exports[key] = value }
+          } else { exports[i.trim()] = i.trim() }
+        })
+      } else {
+        // support module.exports = func at some point
+      }
+    }
+
+    if (!ex) {
+      if (right.includes('{')) {
+        right.substring(1, right.length - 1).trim().split(',').forEach(i => {
+          if (i.includes(':')) {
+            const [key, value] = i.split(':').map(i => i.trim())
+            if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) { exports[key] = value }
+          } else { exports[i] = i }
+        })
+      }
+    }
+
+    if (ex.startsWith('exports.')) {
+      const key = ex.split('.')[1]
+      if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) { exports[key] = right }
+    }
+
+    return exports
+  }, {})
+}
+
+/**
+ * Tries to parse tags from a multi-line jsdoc comment block.
+ * You need to specify where the end of the comment block is so that it can crawl up.
+ *
+ * @param {string[]} fileText
+ * @param {number} end
+ */
+function getTags (fileText, end) {
+  const tags = []
+  // check if previous line has a comment ender
+  if (fileText[end].includes('*/')) {
+    // crawl up until you see comment begin
+    while (end > 0 && !fileText[end].includes('/*')) {
+      end--
+      for (const type of tagTypes) {
+        if (fileText[end].includes(`@${type} `)) {
+          tags.unshift({
+            type,
+            text: multiLine(fileText, end, type)
+          })
+        }
+      }
+    }
+  }
+  return tags
+}
