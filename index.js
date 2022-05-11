@@ -337,7 +337,7 @@ function getTags (fileText, end, tagTypes = TAG_TYPES) {
     while (end > 0 && !fileText[end].includes('/*')) {
       end--
       for (const type of tagTypes) {
-        if (fileText[end].includes(`@${type}`)) {
+        if (new RegExp(`@${type}($| )`).test(fileText[end])) {
           tags.unshift({
             type,
             text: multiLine(fileText, end, type)
