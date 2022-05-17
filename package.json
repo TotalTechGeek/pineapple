@@ -7,7 +7,7 @@
     "prepublish": "npm run build",
     "build": "npm run generate:parser",
     "generate:parser": "peggy --allowed-start-rules Document,Expression --cache --format es -o parser/dsl.js parser/grammar.pegjs && cd parser && exitzero standard --fix *.js",
-    "test": "node index.js -i \"test/*{.js,.mjs},*.js\""
+    "test": "c8 node index.js -i \"test/*,*.js\" -t"
   },
   "repository": {
     "url": "https://github.com/TotalTechGeek/pineapple",

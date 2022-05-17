@@ -1,81 +1,85 @@
 {
-  "fib(1) [dRX81e0Zt9zxfAdy4cKtrrKMfyO/nvL9WF+XRAOtEB0=]": {
+  "fib(1) [7515fcd5ed19b7dcf17c0772e1c2adaeb28c7f23bf9ef2fd585f974403ad101d]": {
     "value": 1,
     "async": false
   },
-  "fib(3) [KTjgP0vq5dR61BJFF+PbmmL0idLvto8mYF5cAbndz5k=]": {
+  "fib(3) [2938e03f4beae5d47ad4124517e3db9a62f489d2efb68f26605e5c01b9ddcf99]": {
     "value": 2,
     "async": false
   },
-  "fib(10) [RDou6nU/Mgg9Olsl1Kd1FGLxi1Ij/V+3bw0spgCqCnY=]": {
+  "fib(10) [443a2eea753f32083d3a5b25d4a7751462f18b5223fd5fb76f0d2ca600aa0a76]": {
     "value": 55,
     "async": false
   },
-  "add(1, 2) [O6M1izKkUUPb7fRhfnhMZ8VxO25LxM0bS6rw/tGm5YA=]": {
+  "add(1, 2) [3ba3358b32a45143dbedf4617e784c67c5713b6e4bc4cd1b4baaf0fed1a6e580]": {
     "value": 3,
     "async": false
   },
-  "add(-1, 1) [hnYzkbZiJjMD0YnEHZer8Pwyyf32Pd3dus2/O70SBZk=]": {
+  "add(-1, 1) [86763391b662263303d189c41d97abf0fc32c9fdf63dddddbacdbf3bbd120599]": {
     "value": 0,
     "async": false
   },
-  "mul(3, 5) [3uLRCxaVjev70tv9IFOlLrFQMM2wYWl0A1q5WwoopjE=]": {
+  "mul(3, 5) [dee2d10b16958debfbd2dbfd2053a52eb15030cdb0616974035ab95b0a28a631]": {
     "value": 15,
     "async": false
   },
-  "mul(10, -1) [Mn7h73FNc64stuxBT2fbJab+1qIev4jfhtT/WzbXxwA=]": {
+  "mul(10, -1) [327ee1ef714d73ae2cb6ec414f67db25a6fed6a21ebf88df86d4ff5b36d7c700]": {
     "value": -10,
     "async": false
   },
-  "notIncludes('Kevin', false ~> 'Kevin') [rmeKpiXF+hODMuyvSd1OCZQV2DV3HJjfh92j6tYmmSc=]": {
+  "addAsync(5n, 3n) [5fbebec3781c7c8e1054510b5b44a0bf638a617baba5b6eeddcbbee648b621f3]": {
+    "value": 8n,
+    "async": true
+  },
+  "notIncludes('Kevin', false ~> 'Kevin') [ae678aa625c5fa138332ecaf49dd4e099415d835771c98df87dda3ead6269927]": {
     "value": "The password provided contains the prohibited text \"Kevin\".",
     "async": false
   },
-  "notIncludes('Kevin', true ~> 'Kevin') [JG51qDI8rZYoH+7ZuoEWdeOPZyhe9QrumnmwGy7KeUw=]": {
+  "notIncludes('Kevin', true ~> 'Kevin') [246e75a8323cad96281feed9ba811675e38f67285ef50aee9a79b01b2eca794c]": {
     "value": "The password provided contains prohibited text.",
     "async": false
   },
-  "notIncludes('Kevin', 'This is a message.' ~> 'Kevin') [HCDltpuQfWEluy8umXRQtLkRKLf9b9DrsQUDA4nnqcE=]": {
+  "notIncludes('Kevin', 'This is a message.' ~> 'Kevin') [1c20e5b69b907d6125bb2f2e997450b4b91128b7fd6fd0ebb105030389e7a9c1]": {
     "value": "This is a message.",
     "async": false
   },
-  "notIncludes(['password01', 'yeet'] ~> 'password01') [1zj/FuLT1osi3Clt8B0vdS7cQLoimgElEhCjpZcQmEk=]": {
+  "notIncludes(['password01', 'yeet'] ~> 'password01') [d738ff16e2d3d68b22dc296df01d2f752edc40ba229a01251210a3a597109849]": {
     "value": "The password provided contains the prohibited text \"password01\".",
     "async": false
   },
-  "notIncludes(['password01'] ~> 'yeet') [2tohYVQH+Wyxd1GpVk8Uyec2j+VeDDogXmtQqI0qtT8=]": {
+  "notIncludes(['password01'] ~> 'yeet') [dada21615407f96cb17751a9564f14c9e7368fe55e0c3a205e6b50a88d2ab53f]": {
     "value": undefined,
     "async": false
   },
-  "commonRule('Hello') [j8RVo05YXu+kmTVYgNlWyYqO6POFWJrmZIA3gEgfDLM=]": {
+  "commonRule('Hello') [8fc455a34e585eefa499355880d956c98a8ee8f385589ae664803780481f0cb3]": {
     "value": "Must complete 1 of the following:\n- The password provided does not contain enough \"digit\" characters. Needs 1 more.\n- The password provided does not contain enough \"special\" characters. Needs 1 more.",
     "async": false
   },
-  "commonRule('Hello World') [PE5nhmVQVHKmUKSza5T3OwDKVaydDYEzrJ7auelnQ6A=]": {
+  "commonRule('Hello World') [3c4e678665505472a650a4b36b94f73b00ca55ac9d0d8133ac9edab9e96743a0]": {
     "value": "Must complete 1 of the following:\n- The password provided does not contain enough \"digit\" characters. Needs 1 more.\n- The password provided does not contain enough \"special\" characters. Needs 1 more.\n\nYou may not have spaces.",
     "async": false
   },
-  "commonRule('HelloW0rld!') [nN3hs5t8gyRK4HCWHW3CPDkxHwN9b3SyR/aFuRqxw4w=]": {
+  "commonRule('HelloW0rld!') [9cdde1b39b7c83244ae070961d6dc23c39311f037d6f74b247f685b91ab1c38c]": {
     "value": "",
     "async": false
   },
-  "notIncludesFunction(['password01'], 'You failed! You used $0.' ~> 'Jessepassword01') [3f/drvtRC5YDxlcK2u7ArglWhgahlNJNSxCLp53GVJw=]": {
+  "notIncludesFunction(['password01'], 'You failed! You used $0.' ~> 'Jessepassword01') [ddffddaefb510b9603c6570adaeec0ae09568606a194d24d4b108ba79dc6549c]": {
     "value": "You failed! You used password01.",
     "async": false
   },
-  "jsonLogicTest('Jesse', 'Jesseabcd1234') [JRjfh6cNMnC6oVYkYiqdd5cBFXeysbfopg4h64yKq00=]": {
+  "jsonLogicTest('Jesse', 'Jesseabcd1234') [2518df87a70d3270baa15624622a9d7797011577b2b1b7e8a60e21eb8c8aab4d]": {
     "value": "The text: \"abcd1234\" is not allowed.\n\nYour password may not include your username.",
     "async": false
   },
-  "jsonLogicTest('Jesse', 'Jesse2') [O5+Qcy9/0zX5F4TfswAktycJXYvmYlGnfoCD6y6LuWA=]": {
+  "jsonLogicTest('Jesse', 'Jesse2') [3b9f90732f7fd335f91784dfb30024b727095d8be66251a77e8083eb2e8bb960]": {
     "value": "Your password may not include your username.",
     "async": false
   },
-  "jsonLogicTest('TotalTechGeek', 'password') [CvWjXwdJPNfsroo+ciNIj6i4xmQ4OPaLFEIdzJdd8pQ=]": {
+  "jsonLogicTest('TotalTechGeek', 'password') [0af5a35f07493cd7ecae8a3e7223488fa8b8c6643838f68b14421dcc975df294]": {
     "value": "",
     "async": false
   },
-  "createRental('Morty', 32) [hb13UVe42ZJMndFwnanM7QyHupDfFhptqTkaHUxQgzc=]": {
+  "createRental('Morty', 32) [85bd775157b8d9924c9dd1709da9cced0c87ba90df161a6da9391a1d4c508337]": {
     "value": {
       "type": "boat",
       "buyer": "Morty",
@@ -83,8 +87,28 @@
     },
     "async": true
   },
-  "addAsync(5n, 3n) [X76+w3gcfI4QVFELW0Sgv2OKYXurpbbu3cu+5ki2IfM=]": {
-    "value": 8n,
-    "async": true
+  "hash('Hello World') [3c7656b25a3b5d6f5ed3b7ebc2632cc8300509e0c042f9434436a748f2126588]": {
+    "value": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
+    "async": false
+  },
+  "hash('Kevin') [867a5a722a0ce7fd834bb48d08309f164f87b29da2928a11f95d890259b24e12]": {
+    "value": "0e4dd66217fc8d2e298b78c8cd9392870dcd065d0ff675d0edff5bcd227837e9",
+    "async": false
+  },
+  "serialize('Hello, World!') [7e11a42dd66972715f8ad98680a7dbbfd8b20b8f6d38d417e6681e1b02c6d990]": {
+    "value": "\"Hello, World!\"",
+    "async": false
+  },
+  "serialize([1, 2, 3]) [f0ffdb66d8cbcbeb8d1366d39bc84df922979ff882f1409a76744d1dc02c1ecd]": {
+    "value": "[\n  1,\n  2,\n  3\n]",
+    "async": false
+  },
+  "serialize({ name: 'Rick', age: 1000 }) [c564b6c8eaaad787dddff8ce731fcb55059290f369e9fe2441bc537960c0cd42]": {
+    "value": "{\n  \"name\": \"Rick\",\n  \"age\": 1000\n}",
+    "async": false
+  },
+  "serialize(date('2020-01-01')) [be85cb95ea0182c41b0e2e8184de927181c85f5b922254feea45b5f4eb2b0a92]": {
+    "value": "date(\"2020-01-01T00:00:00.000Z\")",
+    "async": false
   }
 }
