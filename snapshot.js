@@ -35,7 +35,7 @@ export function snapshot (file = './pineapple-snapshot') {
 export function serialize (item, indent = 0) {
   const indentStr = str => ' '.repeat(indent) + str
   if (typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean') return indentStr(JSON.stringify(item))
-  // if (typeof item === 'bigint') return indentStr(`bigint(${JSON.stringify(item.toString())})`)
+  if (typeof item === 'bigint') return indentStr(`${item.toString()}n`)
   if (item === undefined) return indentStr('undefined')
   if (item === null) return indentStr('null')
   if (item === Infinity) return 'Infinity'

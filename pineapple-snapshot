@@ -83,8 +83,8 @@
     },
     "async": true
   },
-  "dateTest(undefined) [KOI78HOmrxrY5k2Fwm/3VfYztCqFFgLKFha6afyBOHM=]": {
-    "value": date("2020-01-01T00:00:00.000Z"),
+  "addAsync(5n, 3n) [X76+w3gcfI4QVFELW0Sgv2OKYXurpbbu3cu+5ki2IfM=]": {
+    "value": 8n,
     "async": true
   }
 }

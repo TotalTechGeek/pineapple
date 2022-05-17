@@ -48,6 +48,7 @@ export const fib = n => n <= 2 ? 1 : fib(n - 1) + fib(n - 2)
  * @test 1, 3 resolves @ as number
  * @test 1, 5 resolves @ as string
  * @test 1, 5 resolves 7
+ * @test 5n, 3n
  * @param {number} a
  * @param {number} b
  * @returns

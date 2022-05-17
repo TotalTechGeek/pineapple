@@ -6,6 +6,7 @@ import Ajv from 'ajv'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import { SpecialHoF } from './symbols.js'
+import { serialize } from './snapshot.js'
 
 const engine = new AsyncLogicEngine()
 const ajv = new Ajv()
@@ -29,6 +30,7 @@ engine.addMethod('===', ([a, b]) => equals(a, b), {
   sync: true,
   deterministic: true
 })
+engine.addMethod('bigint', i => BigInt(i))
 engine.addMethod('date', i => new Date(i))
 engine.addMethod('as', {
   asyncMethod: async ([item, schema], context, above, engine) => {
@@ -80,10 +82,7 @@ function generateErrorText (error) {
  * @param obj - The object to stringify
  */
 function stringify (obj) {
-  return JSON.stringify(obj, (k, v) => {
-    if (typeof v === 'undefined') return '~~~undefined~~~'
-    return v
-  }, 2).replace(/"~~~undefined~~~"/g, 'undefined')
+  return serialize(obj)
 }
 
 /**
