@@ -132,25 +132,39 @@ export function includes (requiredText) {
  * @test 'Kevin', false ~> 'Kevin'
  * @test 'Kevin', true ~> 'Kevin'
  * @test 'Kevin', 'This is a message.' ~> 'Kevin'
+ * @test ['password01', 'yeet'] ~> 'password01'
+ * @test ['password01'] ~> 'yeet'
  *
  * Checks if the password includes forbidden text.
  * @param {string | string[]} requiredText
- * @param {boolean | string} conceal Allows you to conceal the text passed in that's forbidden, or replace the error with a specific string.
+ * @param {boolean | string | ((text: string) => string)} substitute Allows you to conceal the text passed in that's forbidden, or replace the error with a specific string.
  * @returns A string if there is an error, undefined otherwise.
  */
-export function notIncludes (requiredText, conceal = false) {
+export function notIncludes (requiredText, substitute = false) {
   if (typeof requiredText === 'string') requiredText = [requiredText]
-
+  const regex = new RegExp(`(${requiredText
+    // Escapes the characters in the string so they aren't part of the RegExp
+    .map(i => i.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'))
+    .join('|')})`)
   return str => {
-    for (const text of requiredText) {
-      if (!str.includes(text)) continue
-      if (conceal) {
-        if (typeof conceal === 'string') return conceal
-        return 'The password provided contains prohibited text.'
-      }
-      return `The password provided contains the prohibited text "${text}".`
-    }
+    const result = regex.exec(str)
+    if (!result) return undefined
+    const text = result[0]
+    return substitute
+      ? substituteError(substitute, text)
+      : `The password provided contains the prohibited text "${text}".`
   }
+}
+
+/**
+ * Substitutes an error with a replacement.
+ * @param {string|boolean|((text: string) => string)} substitute
+ * @param {string} text
+ */
+function substituteError (substitute, text) {
+  if (typeof substitute === 'string') return substitute
+  if (typeof substitute === 'function') return substitute(text)
+  return 'The password provided contains prohibited text.'
 }
 
 /**
@@ -176,4 +190,37 @@ export function some (...rules) {
  */
 export function not (rule, error) {
   return str => (rule(str) ? '' : error)
+}
+
+/**
+ * Parses the string template to make it simple to create templates.
+ * "$" is the magic symbol that lets you reference the argument.
+ * Only works with template functions with less than 10 arguments,
+ * and doesn't let you traverse (input to the function should be strings).
+ *
+ * @test 'Hello, $0' ~> 'World' returns 'Hello, World'
+ * @test '$0, $1' ~> 'Hello', 'World' returns 'Hello, World'
+ * @test 'Hey $0' ~> 'Steve' returns 'Hey Steve'
+ *
+ * @param {string} stringTemplate
+ * @returns {(...args: string[]) => string}
+ */
+export function template (stringTemplate) {
+  // Simple optimization for the single argument case.
+  if (!/\$[1-9]/.test(stringTemplate)) {
+    /** @param {string} str */
+    return str => stringTemplate.replace(/\$0/g, str)
+  }
+
+  /**
+   * Replaces parts of the string with the arguments.
+   * @param {string[]} args
+   */
+  return (...args) => {
+    let template = stringTemplate
+    for (let i = 0; i < args.length; i++) {
+      template = template.replace(new RegExp(`\\$${i}`, 'g'), args[i])
+    }
+    return template
+  }
 }

@@ -1,5 +1,6 @@
 
-import { password, hasDigit, hasLowerCase, hasSpecial, hasUpperCase, some, notIncludes, not, has } from './password_module.js'
+import { password, template, hasDigit, hasLowerCase, hasSpecial, hasUpperCase, some, notIncludes, not, has } from './password_module.js'
+import { asLogicSync } from 'json-logic-engine'
 
 /**
  * @test 'Hello'
@@ -35,4 +36,49 @@ export function someWithoutNumber (pass) {
       hasUpperCase(1)
     )
   )(pass)
+}
+
+/**
+ *
+ * @test ['password01'], 'You failed! You used $0.' ~> 'Jessepassword01'
+ * @test ['password01'], 'You failed! You used $0.' ~> 'Jesse' returns undefined
+ * @param {string | string[]} items
+ * @param {string} stringTemplate
+ */
+export function notIncludesFunction (items, stringTemplate) {
+  return notIncludes(items, template(stringTemplate))
+}
+
+const policy = {
+  password: [{
+    notIncludes: [
+      ['abcd1234', 'password1'],
+      { template: 'The text: "$0" is not allowed.' }
+    ]
+  }, {
+    notIncludes: [
+      { var: 'username' },
+      'Your password may not include your username.'
+    ]
+  }]
+}
+
+const policyParser = asLogicSync({
+  password,
+  template,
+  notIncludes
+}, ['var'])
+
+const check = policyParser(policy)
+
+/**
+ * @test 'Jesse', 'Jesseabcd1234'
+ * @test 'Jesse', 'Jesse2'
+ * @test 'TotalTechGeek', 'password'
+ * @param {string} password
+ */
+export function jsonLogicTest (username, password) {
+  return check({
+    username
+  })(password)
 }

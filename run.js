@@ -33,6 +33,8 @@ export async function execute (input) {
  * @param {(...args: any[]) => any} func
  */
 export async function run (input, id, func) {
+  const [idName, idHash] = id.split('.')
+
   /**
      * @param {string} input
      * @param {string} id
@@ -43,7 +45,6 @@ export async function run (input, id, func) {
     const script = parse(input)
     const h = hash(input)
     let result = [func]
-    let count = 0
     let lastSpecial = false
     for (const step of script) {
       // Override to break the special "hof" class thing.
@@ -52,10 +53,9 @@ export async function run (input, id, func) {
       }
       const [current] = result
       if (typeof result[0] !== 'function') return [result[0], false, 'Does not return a function.']
-      result = await engine.run(step, { func: current, id: `${id}.${count}`, snap, hash: h, rule: input })
+      result = await engine.run(step, { func: current, id: (`${idName}(${input}) [${idHash}]`), snap, hash: h, rule: input })
       const [data, success, message] = result
       if (!success) return [data, false, message]
-      count++
       // Special Override for the Class-Based HoF thing.
       if (current[SpecialHoF]) {
         if (typeof result[0] !== 'function') result[0] = current
@@ -71,7 +71,7 @@ export async function run (input, id, func) {
     const [, success, message] = await internalRun(input, id, func)
 
     if (!success) {
-      console.log(logSymbols.error, `Failed test (${id.split('.')[0]}):`, format(input))
+      console.log(logSymbols.error, `Failed test (${idName}):`, format(input))
       if (message) {
         console.log(message)
         console.log()
@@ -81,7 +81,7 @@ export async function run (input, id, func) {
   } catch (err) {
     if (err.expected) {
       const { message } = err
-      console.log(logSymbols.error, `Could not parse on (${id.split('.')[0]}): ${input}`)
+      console.log(logSymbols.error, `Could not parse on (${idName}): ${input}`)
       console.log(chalk.red(message))
       console.log()
     } else console.log(err)
@@ -89,7 +89,7 @@ export async function run (input, id, func) {
     return 1
   }
 
-  console.log(logSymbols.success, `Passed test (${id.split('.')[0]}):`, format(input))
+  console.log(logSymbols.success, `Passed test (${idName}):`, format(input))
   return 0
 }
 

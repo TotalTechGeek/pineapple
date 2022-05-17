@@ -12,7 +12,7 @@ import { parse } from './parser/dsl.js'
 
 program
   .name('pineapple')
-  .version('0.6.6')
+  .version('0.7.0')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')

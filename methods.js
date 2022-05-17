@@ -1,4 +1,4 @@
-
+// @ts-check
 import { AsyncLogicEngine, Compiler } from 'json-logic-engine'
 import { splitEvery, equals, omit } from 'ramda'
 import { diff } from 'jest-diff'
@@ -6,10 +6,18 @@ import Ajv from 'ajv'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import { SpecialHoF } from './symbols.js'
+import { serialize } from './snapshot.js'
 
 const engine = new AsyncLogicEngine()
 const ajv = new Ajv()
 
+/**
+ * It takes the output of the diff function and if it contains the string "Comparing two different
+ * types", it replaces the output with a more detailed message
+ * @param expected - The expected value.
+ * @param received - The value that was actually returned from the test.
+ * @returns The function diffTouchup is being returned.
+ */
 function diffTouchup (expected, received) {
   const result = diff(expected, received)
   if (result.includes('Comparing two different types')) {
@@ -22,7 +30,8 @@ engine.addMethod('===', ([a, b]) => equals(a, b), {
   sync: true,
   deterministic: true
 })
-
+engine.addMethod('bigint', i => BigInt(i))
+engine.addMethod('date', i => new Date(i))
 engine.addMethod('as', {
   asyncMethod: async ([item, schema], context, above, engine) => {
     if (schema === 'function') return typeof item === 'function'
@@ -39,20 +48,19 @@ engine.addMethod('combine', (data) => Object.assign({}, ...data), {
 engine.addMethod('list', {
   method: i => i ? [].concat(i) : [],
   deterministic: true,
-  traverse: true,
-  sync: true
-})
+  traverse: true
+}, { sync: true })
 
 engine.addMethod('obj', {
   method: (items) => {
     return items ? splitEvery(2, items).reduce((accumulator, [variable, value]) => ({ ...accumulator, [variable]: value }), {}) : {}
   },
   traverse: true,
-  // deterministic: true,
+  // @ts-ignore
   compile: (data, buildState) => {
     if (!data) return '({})'
     data = [].concat(data)
-    if (!data.length % 2) { return false }
+    if (!(data.length % 2)) { return false }
     const items = splitEvery(2, data).map(([variable, item]) => {
       return `[${Compiler.buildString(variable, buildState)}]: ${Compiler.buildString(item, buildState)}`
     })
@@ -69,36 +77,37 @@ function generateErrorText (error) {
   return chalk.red(JSON.stringify(error))
 }
 
+/**
+ * It converts an object to a string, replacing undefined values with the string 'undefined'
+ * @param obj - The object to stringify
+ */
 function stringify (obj) {
-  return JSON.stringify(obj, (k, v) => {
-    if (typeof v === 'undefined') return '~~~undefined~~~'
-    return v
-  }, 2).replace(/"~~~undefined~~~"/g, 'undefined')
+  return serialize(obj)
 }
 
 /**
- * @param {*} item
- * @param {string} rule
- * @param {string} id
+ * It asks the user if they want to accept the snapshot
+ * @param {{ item: any, rule: string, id: string }} data
+ * @returns A function that returns a boolean.
  */
 async function askSnapshot ({ item, rule, id }) {
   if (process.env.CI) return false
   if (process.env.ACCEPT_ALL) return true
-  console.log(`On test (${id.split('.')[0]}):`, rule)
+  console.log(`On test (${id.split('(')[0]}):`, rule)
   console.log(chalk.green(stringify(omit(['hash'], item))))
   const { result } = await inquirer.prompt([{ name: 'result', message: 'Accept this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
   return result === 'Yes'
 }
 
 /**
- * @param {*} item
- * @param {string} rule
- * @param {string} id
+ * It asks the user if they want to update the snapshot
+ * @param {{ item: any, rule: string, id: string, value: any }} data
+ * @returns A function that returns a boolean.
  */
 async function askSnapshotUpdate ({ item, value, rule, id }) {
   if (process.env.CI) return false
   if (process.env.UPDATE_ALL) return true
-  console.log(`On test (${id.split('.')[0]}):`, rule)
+  console.log(`On test (${id.split('(')[0]}):`, rule)
   console.log(diff(omit(['hash'], value), omit(['hash'], item)))
   const { result } = await inquirer.prompt([{ name: 'result', message: 'Do you wish to update to this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
   return result === 'Yes'
@@ -122,11 +131,13 @@ engine.addMethod('snapshot', async ([inputs], context) => {
     }
   }
 
+  // @ts-ignore
   result.async = promise
-  result.hash = context.hash
+  // result.hash = context.hash
 
   const { exists, value } = await context.snap.find(context.id)
 
+  // @ts-ignore
   if ((!exists || !equals(value.hash, result.hash)) && await askSnapshot({ item: result, rule: context.rule, id: context.id })) {
     await context.snap.set(context.id, result)
     return [omit(['hash'], result), true]

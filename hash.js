@@ -6,5 +6,5 @@ import crypto from 'crypto'
  * @param {string} str
  */
 export function hash (str) {
-  return crypto.createHash('sha256').update(str).digest('hex')
+  return crypto.createHash('sha256').update(str).digest('base64')
 }
