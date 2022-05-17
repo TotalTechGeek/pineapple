@@ -218,7 +218,6 @@ EnglishChecks =
 NonArithmeticExpression
   = Object
   / Array
-  
   / EnglishChecks
   / Boolean
   / Numeric
@@ -370,7 +369,7 @@ Boolean
   
 Infinity = 'Infinity' { return Infinity }
 Null = 'null' { return null }
-Undefined = 'undefined' { return undefined }
+Undefined = 'undefined' / 'void' { return undefined }
 
 Numeric
   = _ [0-9]* "." [0-9]+ ([eE][-]?[0-9]+)? { return Number(text()) }

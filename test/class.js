@@ -94,7 +94,7 @@ export class Adder {
  */
  export class Math {
     static previousResult = 0;
-    
+
     static add(a, b) {
         return this.previousResult = a + b
     }
@@ -138,3 +138,29 @@ export class Person {
     }
 }
 
+/**
+ * @test 0 
+ * ~> $.enqueue(1)
+ * ~> $.enqueue(2)
+ * ~> $.enqueue(3)
+ * ~> $.peek() returns @ === 1 and $.items === [1,2,3] 
+ * ~> $.dequeue() returns $.items === [2,3]
+ * ~> $.enqueue(1) returns $.items === [2,3,1]
+ */
+export class Queue {
+    constructor() {
+        this.items = []
+    }
+
+    enqueue(item) {
+        this.items.push(item)
+    }
+
+    dequeue() {
+        return this.items.shift()
+    }
+
+    peek() {
+        return this.items[0]
+    }
+}
