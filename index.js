@@ -21,7 +21,7 @@ program
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
   .option('-t, --typescript', 'Enables typescript (slower).')
-  .option('--only <lines...>', 'Allows you to specify which tests you would like to run')
+  .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .addOption(formatOption)
 
 program.parse()
