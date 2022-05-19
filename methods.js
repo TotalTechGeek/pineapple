@@ -1,30 +1,15 @@
 // @ts-check
 import { AsyncLogicEngine, Compiler } from 'json-logic-engine'
-import { splitEvery, equals, omit } from 'ramda'
-import { diff } from 'jest-diff'
+import { splitEvery, equals } from 'ramda'
 import Ajv from 'ajv'
-import inquirer from 'inquirer'
 import chalk from 'chalk'
 import { SpecialHoF } from './symbols.js'
+import { askSnapshotUpdate, askSnapshot } from './inputs.js'
+import { diff } from './utils.js'
 import { serialize } from './snapshot.js'
 
 const engine = new AsyncLogicEngine()
 const ajv = new Ajv()
-
-/**
- * It takes the output of the diff function and if it contains the string "Comparing two different
- * types", it replaces the output with a more detailed message
- * @param expected - The expected value.
- * @param received - The value that was actually returned from the test.
- * @returns The function diffTouchup is being returned.
- */
-function diffTouchup (expected, received) {
-  const result = diff(expected, received)
-  if (result.includes('Comparing two different types')) {
-    return `${result}\n  ${chalk.green(`- Expected: ${stringify(expected).replace(/\n/g, '\n  ')}`)}\n${chalk.red(`  - Received: ${stringify(received).replace(/\n/g, '\n  ')}`)}`
-  }
-  return result
-}
 
 engine.addMethod('===', ([a, b]) => equals(a, b), {
   sync: true,
@@ -77,42 +62,6 @@ function generateErrorText (error) {
   return chalk.red(JSON.stringify(error))
 }
 
-/**
- * It converts an object to a string, replacing undefined values with the string 'undefined'
- * @param obj - The object to stringify
- */
-function stringify (obj) {
-  return serialize(obj)
-}
-
-/**
- * It asks the user if they want to accept the snapshot
- * @param {{ item: any, rule: string, id: string }} data
- * @returns A function that returns a boolean.
- */
-async function askSnapshot ({ item, rule, id }) {
-  if (process.env.CI) return false
-  if (process.env.ACCEPT_ALL) return true
-  console.log(`On test (${id.split('(')[0]}):`, rule)
-  console.log(chalk.green(stringify(omit(['hash'], item))))
-  const { result } = await inquirer.prompt([{ name: 'result', message: 'Accept this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
-  return result === 'Yes'
-}
-
-/**
- * It asks the user if they want to update the snapshot
- * @param {{ item: any, rule: string, id: string, value: any }} data
- * @returns A function that returns a boolean.
- */
-async function askSnapshotUpdate ({ item, value, rule, id }) {
-  if (process.env.CI) return false
-  if (process.env.UPDATE_ALL) return true
-  console.log(`On test (${id.split('(')[0]}):`, rule)
-  console.log(diff(omit(['hash'], value), omit(['hash'], item)))
-  const { result } = await inquirer.prompt([{ name: 'result', message: 'Do you wish to update to this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
-  return result === 'Yes'
-}
-
 engine.addMethod('snapshot', async ([inputs], context) => {
   let result = null
   let promise = false
@@ -133,29 +82,28 @@ engine.addMethod('snapshot', async ([inputs], context) => {
 
   // @ts-ignore
   result.async = promise
-  // result.hash = context.hash
-
   const { exists, value } = await context.snap.find(context.id)
 
   // @ts-ignore
-  if ((!exists || !equals(value.hash, result.hash)) && await askSnapshot({ item: result, rule: context.rule, id: context.id })) {
+  if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id, file: context.file })) {
     await context.snap.set(context.id, result)
-    return [omit(['hash'], result), true]
+    return [result, true]
   }
 
   if (equals(value, result)) {
-    return [omit(['hash'], result), true]
+    return [result, true]
   }
 
   if (exists) {
     // We have a snapshot, but it's different, so we need to ask the user if they want to update the snapshot
-    if (await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id })) {
+    if (await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id, file: context.file })) {
       await context.snap.set(context.id, result)
-      return [omit(['hash'], result), true]
+      return [result, true]
     }
+    return [result, false, diff(value, result)]
   }
 
-  return [omit(['hash'], result), false, diff(omit(['hash'], value), omit(['hash'], result))]
+  return [result, false, 'There is no snapshot for this test.']
 }, {
   useContext: true
 })
@@ -165,13 +113,13 @@ engine.addMethod('to', async ([inputs, output], context) => {
     const result = getDataSpecial(context.func.apply(null, inputs))
     if (!equals(result, output)) {
       if (result && result.then) {
-        return [await result, false, `Expected ${JSON.stringify(output)} but got Promise<${JSON.stringify(await result)}>`]
+        return [await result, false, `Expected ${chalk.green(`${serialize(output)} `)}\n\nReceived ${chalk.red(`Promise<${serialize(await result)}>`)}`]
       }
-      return [result, false, diffTouchup(output, result)]
+      return [result, false, diff(output, result)]
     }
     return [result, true]
   } catch (err) {
-    return [err, false, `Expected ${JSON.stringify(output)} but function threw ${generateErrorText(err)}`]
+    return [err, false, `Expected ${chalk.green(serialize(output))} but function threw ${chalk.red(generateErrorText(err))}`]
   }
 }, {
   useContext: true
@@ -205,10 +153,18 @@ engine.addMethod('toParse', {
 engine.addMethod('resolves', async ([inputs, output], context) => {
   try {
     const result = getDataSpecial(context.func.apply(null, inputs))
-    if (!result || !result.then) return [result, false, 'Was not a promise.']
-    return [await result, equals(await result, output)]
+
+    if (!result || !result.then) {
+      return [await result, false, `Expected ${chalk.green(`Promise<${serialize(output)}>`)}\n\nReceived ${chalk.red(`${serialize(await result)}`)}`]
+    }
+
+    if (!equals(await result, output)) {
+      return [result, false, diff(output, await result)]
+    }
+
+    return [await result, true]
   } catch (err) {
-    return [err, false, `Expected ${JSON.stringify(output)} but function rejected with ${generateErrorText(err)}`]
+    return [err, false, `Expected ${serialize(output)} but function rejected with ${generateErrorText(err)}`]
   }
 }, {
   useContext: true
@@ -249,18 +205,16 @@ engine.addMethod('throws', async ([inputs, output], context) => {
 
     if (result && result.then) {
       try {
-        return [await result, false, `Expected to throw but got Promise<${JSON.stringify(await result)}>`]
+        return [await result, false, `Expected to throw but got ${chalk.red(`Promise<${serialize(await result)}>`)}`]
       } catch (err2) {
-        return [err2, false, `Expected to throw but got rejected Promise instead. (${err2 && (err2.message || err2.constructor.name || err2)})`]
+        return [err2, false, `Expected to throw but got rejected Promise instead. (${chalk.red(err2 && (err2.message || err2.constructor.name || err2))})`]
       }
     }
     return [result, false, 'Did not throw.']
   } catch (err) {
     const errorName = err.constructor.name
     const errorMessage = err.message
-
     if (output && !equals(errorName, output) && !equals(errorMessage, output)) { return [err, false, `Error name or message did not match. Expected '${output}' but got class '${errorName}' or message '${errorMessage}'`] }
-
     return [err, true]
   }
 })

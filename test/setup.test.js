@@ -12,7 +12,7 @@ export function isPrime (n) {
 }
 
 /**
- * @test undefined returns isPrime(@)
+ * @test void returns isPrime(@)
  */
 export function generatePrime () {
   return 17

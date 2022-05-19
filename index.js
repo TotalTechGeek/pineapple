@@ -1,14 +1,18 @@
 #!/usr/bin/env node
+// @ts-check
 import { Project } from 'ts-morph'
-import logSymbols from 'log-symbols'
 import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
 
-import { program } from 'commander'
+import { program, Option } from 'commander'
 import { hash } from './hash.js'
 import url from 'url'
 import { transpile } from './typescriptTranspiler.js'
 import { parse } from './parser/dsl.js'
+import { skippingTest } from './outputs.js'
+import chalk from 'chalk'
+
+const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
 program
   .name('pineapple')
@@ -17,6 +21,8 @@ program
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
   .option('-t, --typescript', 'Enables typescript (slower).')
+  .option('--only <lines...>', 'Allows you to specify which tests you would like to run')
+  .addOption(formatOption)
 
 program.parse()
 
@@ -27,6 +33,13 @@ if (!options.include || !options.include.length) throw new Error('Please select 
 // hack for now until I make the code better
 process.env.ACCEPT_ALL = options.acceptAll || ''
 process.env.UPDATE_ALL = options.updateAll || ''
+
+if (options.format === 'json') process.env.OUTPUT_FORMAT = 'JSON'
+process.env.OUTPUT_FORMAT = process.env.OUTPUT_FORMAT || 'CONSOLE'
+if (process.env.OUTPUT_FORMAT === 'JSON') {
+  chalk.level = 0
+  process.env.FORCE_COLOR = '0'
+}
 
 async function main () {
   const tmp = tempy.file({ extension: 'mjs' })
@@ -120,7 +133,7 @@ async function main () {
 
     const tests = `${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             ${beforeEach}
-            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)})
+            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)}, "${func.fileName}:${tag.lineNo}")
             ${afterEach}
         `).join('')}\n${after}`
 
@@ -142,7 +155,7 @@ async function main () {
   testFile.saveSync()
 
   // run the file
-  await import(url.pathToFileURL(tmp))
+  await import(url.pathToFileURL(tmp).href)
 }
 
 const cwd = url.pathToFileURL(process.cwd()).href
@@ -202,6 +215,16 @@ function multiLine (fileText, start, type) {
  * annotations.
  */
 function getFunctions (file, fileText, fileName) {
+  let onlyLines = null
+  if (options.only && options.only.length) {
+    onlyLines = options.only.map(i => {
+      const index = i.lastIndexOf(':')
+      const fileRequested = i.substring(0, index)
+      return fileName === fileRequested ? +i.substring(index + 1) : null
+    }).filter(i => i)
+    if (!onlyLines.length) return []
+  }
+
   // Get classes & variable declarations for test cases.
   const dec = [...file.getClasses(), ...file.getVariableDeclarations()].map(i => {
     const text = i.getText()
@@ -218,7 +241,7 @@ function getFunctions (file, fileText, fileName) {
     const isClass = i.getKindName() === 'ClassDeclaration'
 
     return {
-      tags: getTags(fileText, i.getStartLineNumber() - 2),
+      tags: getTags(fileText, i.getStartLineNumber() - 2, onlyLines),
       isClass,
       name: i.getName(),
       exported: i.isExported(),
@@ -238,8 +261,9 @@ function getFunctions (file, fileText, fileName) {
       .map(item => {
         const tags = item[1].filter(i => TAG_TYPES.includes(i.getTagName())).map(tag => {
           const tagName = tag.getTagName()
-          return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName) }
-        })
+          if (onlyLines && !onlyLines.includes(tag.getStartLineNumber())) return null
+          return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName), lineNo: tag.getStartLineNumber() }
+        }).filter(i => i)
 
         return {
           name: item[0],
@@ -268,7 +292,7 @@ function exportedOnly (exports) {
         i.originalName = i.name
         i.name = exports[i.name]
         return true
-      } else console.log(logSymbols.warning, `Function / Class "${i.name}" is not exported from ${i.fileName}, skipping its tests.`)
+      } else skippingTest(i.name, i.fileName)
     }
     return i.exported
   }
@@ -329,18 +353,20 @@ function getFileExports (file) {
  * @param {string[]} fileText
  * @param {number} end
  */
-function getTags (fileText, end, tagTypes = TAG_TYPES) {
+function getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) {
   const tags = []
   // check if previous line has a comment ender
   if (fileText[end].includes('*/')) {
     // crawl up until you see comment begin
     while (end > 0 && !fileText[end].includes('/*')) {
       end--
+      if (onlyLines && !onlyLines.includes(end + 1)) continue
       for (const type of tagTypes) {
         if (new RegExp(`@${type}($| )`).test(fileText[end])) {
           tags.unshift({
             type,
-            text: multiLine(fileText, end, type)
+            text: multiLine(fileText, end, type),
+            lineNo: end + 1
           })
         }
       }
