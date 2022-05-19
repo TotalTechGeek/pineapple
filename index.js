@@ -16,12 +16,12 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.7.1')
+  .version('0.8.0')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
   .option('-t, --typescript', 'Enables typescript (slower).')
-  .option('--only <lines...>', 'Allows you to specify which tests you would like to run')
+  .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .addOption(formatOption)
 
 program.parse()

@@ -21,24 +21,23 @@ export function add(a, b) {
 }
 ```
 
-Pineapple allows you to embed a few example test-cases in your JSDocs, making it easier to focus on your code and less on defining `it` & `expect` chains. 
+Pineapple allows you to embed a few example test-cases in your JSDocs, making it easier to focus on your code and less on defining `it` & `expect` chains.
 
 When you omit conditions from your test cases, Pineapple will automatically capture the result of your test & snapshot it, making it easier to preserve expected behavior in your applications, and even easier for users to find examples on how to call your code.
 
 <img alt="An example of the snapshot functionality where the code is modified and the snapshot fails due to a renamed attribute" src="../img/snapshot.gif" width="60%" />
-
 
 ## To Install
 
 ```
 npm i pineapple --save-dev
 ```
-or 
+
+or
+
 ```
 yarn add pineapple --dev
 ```
-
-
 
 Alternatively, you may install the runner globally (add a `-g` flag).
 
@@ -52,12 +51,16 @@ Options:
   -i, --include <files...>  Comma separated globs of files.
   -a, --accept-all          Accept all snapshots.
   -u, --update-all          Update all snapshots.
-  -t, --typescript          Enables typescript
+  -t, --typescript          Enables typescript (slower).
+  --only <lines...>         Allows you to specify which tests you would like to
+                            run.
+  -f, --format <format>     The output format (choices: "json", "console",
+                            default: "console")
   -h, --help                display help for command
 ```
 
-
 #### Example
+
 ```
 pineapple -i src/**/*.js
 ```
