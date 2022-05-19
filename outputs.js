@@ -71,7 +71,7 @@ export function parseFailure (name, input, message, file) {
   }
 
   if (process.env.OUTPUT_FORMAT === 'JSON') {
-    return console.log(JSON.stringify({ type: 'ParseFailure', name, input, message, file }))
+    return console.log(JSON.stringify({ type: 'Parse Failure', name, input, message, file }))
   }
 }
 
@@ -85,6 +85,6 @@ export function testRuntimeFailure (err) {
   }
 
   if (process.env.OUTPUT_FORMAT === 'JSON') {
-    return console.log(JSON.stringify({ type: 'RuntimeFailure', message: err.message, name: err.name || (err.constructor || {}).name || 'Unidentified Error' }))
+    return console.log(JSON.stringify({ type: 'Runtime Failure', message: err.message, name: err.name || (err.constructor || {}).name || 'Unidentified Error' }))
   }
 }

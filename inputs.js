@@ -14,7 +14,7 @@ export async function askSnapshot ({ item, rule, id, file }) {
   if (process.env.OUTPUT_FORMAT === 'JSON') {
     console.log(JSON.stringify({
       type: 'Request Snapshot',
-      item,
+      item: serialize(item),
       input: rule,
       id,
       file
@@ -38,8 +38,8 @@ export async function askSnapshotUpdate ({ item, value, rule, id, file }) {
   if (process.env.OUTPUT_FORMAT === 'JSON') {
     console.log(JSON.stringify({
       type: 'Request Snapshot Update',
-      new: item,
-      old: value,
+      new: serialize(item),
+      old: serialize(value),
       input: rule,
       id,
       file
