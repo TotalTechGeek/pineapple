@@ -6,6 +6,7 @@ import logSymbols from 'log-symbols'
 import { hash } from './hash.js'
 import chalk from 'chalk'
 import { SpecialHoF } from './symbols.js'
+import { failure, parseFailure, success, testRuntimeFailure } from './outputs.js'
 const snap = snapshot()
 
 /**
@@ -31,8 +32,9 @@ export async function execute (input) {
  * @param {string} input
  * @param {string} id
  * @param {(...args: any[]) => any} func
+ * @param {string} fileName
  */
-export async function run (input, id, func) {
+export async function run (input, id, func, fileName) {
   const [idName, idHash] = id.split('.')
 
   /**
@@ -65,31 +67,23 @@ export async function run (input, id, func) {
     return result
   }
 
-  const format = text => text.includes('\n') ? `\n${text}\n` : text
-
   try {
     const [, success, message] = await internalRun(input, id, func)
 
     if (!success) {
-      console.log(logSymbols.error, `Failed test (${idName}):`, format(input))
-      if (message) {
-        console.log(message)
-        console.log()
-      }
+      failure(idName, input, message, fileName)
       return 1
     }
   } catch (err) {
     if (err.expected) {
       const { message } = err
-      console.log(logSymbols.error, `Could not parse on (${idName}): ${input}`)
-      console.log(chalk.red(message))
-      console.log()
-    } else console.log(err)
+      parseFailure(idName, input, message, fileName)
+    } else testRuntimeFailure(err)
 
     return 1
   }
 
-  console.log(logSymbols.success, `Passed test (${idName}):`, format(input))
+  success(idName, input, fileName)
   return 0
 }
 

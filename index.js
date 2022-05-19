@@ -1,14 +1,18 @@
 #!/usr/bin/env node
+// @ts-check
 import { Project } from 'ts-morph'
-import logSymbols from 'log-symbols'
 import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
 
 import { program } from 'commander'
 import { hash } from './hash.js'
 import url from 'url'
+import { colorUsed } from './enforceColor.js'
 import { transpile } from './typescriptTranspiler.js'
 import { parse } from './parser/dsl.js'
+import { skippingTest } from './outputs.js'
+
+process.env.FORCE_COLOR = '0'
 
 program
   .name('pineapple')
@@ -27,6 +31,8 @@ if (!options.include || !options.include.length) throw new Error('Please select 
 // hack for now until I make the code better
 process.env.ACCEPT_ALL = options.acceptAll || ''
 process.env.UPDATE_ALL = options.updateAll || ''
+process.env.OUTPUT_FORMAT = process.env.OUTPUT_FORMAT || 'CONSOLE'
+process.env.COLOR_USED = colorUsed.toString()
 
 async function main () {
   const tmp = tempy.file({ extension: 'mjs' })
@@ -120,7 +126,7 @@ async function main () {
 
     const tests = `${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             ${beforeEach}
-            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)})
+            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)}, "${func.fileName}")
             ${afterEach}
         `).join('')}\n${after}`
 
@@ -142,7 +148,7 @@ async function main () {
   testFile.saveSync()
 
   // run the file
-  await import(url.pathToFileURL(tmp))
+  await import(url.pathToFileURL(tmp).href)
 }
 
 const cwd = url.pathToFileURL(process.cwd()).href
@@ -268,7 +274,7 @@ function exportedOnly (exports) {
         i.originalName = i.name
         i.name = exports[i.name]
         return true
-      } else console.log(logSymbols.warning, `Function / Class "${i.name}" is not exported from ${i.fileName}, skipping its tests.`)
+      } else skippingTest(i.name, i.fileName)
     }
     return i.exported
   }
