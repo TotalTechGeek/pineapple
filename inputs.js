@@ -11,6 +11,15 @@ import { diff } from './utils.js'
 export async function askSnapshot ({ item, rule, id }) {
   if (process.env.CI) return false
   if (process.env.ACCEPT_ALL) return true
+  if (process.env.OUTPUT_FORMAT === 'JSON') {
+    console.log(JSON.stringify({
+      type: 'Request Snapshot',
+      item,
+      input: rule,
+      id
+    }))
+    return false
+  }
   console.log(`On test (${id.split('(')[0]}):`, rule)
   console.log(chalk.green(serialize(item)))
   const { result } = await inquirer.prompt([{ name: 'result', message: 'Accept this snapshot?', type: 'list', choices: ['Yes', 'No'] }])
@@ -25,6 +34,16 @@ export async function askSnapshot ({ item, rule, id }) {
 export async function askSnapshotUpdate ({ item, value, rule, id }) {
   if (process.env.CI) return false
   if (process.env.UPDATE_ALL) return true
+  if (process.env.OUTPUT_FORMAT === 'JSON') {
+    console.log(JSON.stringify({
+      type: 'Request Snapshot Update',
+      new: item,
+      old: value,
+      input: rule,
+      id
+    }))
+    return false
+  }
   console.log(`On test (${id.split('(')[0]}):`, rule)
   console.log(diff(value, item))
   const { result } = await inquirer.prompt([{ name: 'result', message: 'Do you wish to update to this snapshot?', type: 'list', choices: ['Yes', 'No'] }])

@@ -129,7 +129,7 @@ async function main () {
 
     const tests = `${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             ${beforeEach}
-            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)}, "${func.fileName}")
+            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)}, "${func.fileName}:${tag.lineNo}")
             ${afterEach}
         `).join('')}\n${after}`
 
@@ -247,7 +247,7 @@ function getFunctions (file, fileText, fileName) {
       .map(item => {
         const tags = item[1].filter(i => TAG_TYPES.includes(i.getTagName())).map(tag => {
           const tagName = tag.getTagName()
-          return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName) }
+          return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName), lineNo: tag.getStartLineNumber() }
         })
 
         return {
@@ -349,7 +349,8 @@ function getTags (fileText, end, tagTypes = TAG_TYPES) {
         if (new RegExp(`@${type}($| )`).test(fileText[end])) {
           tags.unshift({
             type,
-            text: multiLine(fileText, end, type)
+            text: multiLine(fileText, end, type),
+            lineNo: end + 1
           })
         }
       }

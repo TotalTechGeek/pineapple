@@ -44,6 +44,7 @@ export function success (name, input, file) {
 export function failure (name, input, message, file) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
     console.log(logSymbols.error, `Failed test (${name}):`, format(input))
+    console.log('>>', file)
     if (message) {
       console.log(message)
       console.log()
