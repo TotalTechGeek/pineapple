@@ -4,15 +4,15 @@ import { Project } from 'ts-morph'
 import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
 
-import { program } from 'commander'
+import { program, Option } from 'commander'
 import { hash } from './hash.js'
 import url from 'url'
-import { colorUsed } from './enforceColor.js'
 import { transpile } from './typescriptTranspiler.js'
 import { parse } from './parser/dsl.js'
 import { skippingTest } from './outputs.js'
+import chalk from 'chalk'
 
-process.env.FORCE_COLOR = '0'
+const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
 program
   .name('pineapple')
@@ -21,6 +21,7 @@ program
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
   .option('-t, --typescript', 'Enables typescript (slower).')
+  .addOption(formatOption)
 
 program.parse()
 
@@ -31,8 +32,10 @@ if (!options.include || !options.include.length) throw new Error('Please select 
 // hack for now until I make the code better
 process.env.ACCEPT_ALL = options.acceptAll || ''
 process.env.UPDATE_ALL = options.updateAll || ''
+
+if (options.format === 'json') process.env.OUTPUT_FORMAT = 'JSON'
 process.env.OUTPUT_FORMAT = process.env.OUTPUT_FORMAT || 'CONSOLE'
-process.env.COLOR_USED = colorUsed.toString()
+if (process.env.OUTPUT_FORMAT === 'JSON') chalk.level = 0
 
 async function main () {
   const tmp = tempy.file({ extension: 'mjs' })
