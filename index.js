@@ -21,6 +21,7 @@ program
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
   .option('-t, --typescript', 'Enables typescript (slower).')
+  .option('--only <lines...>', 'Allows you to specify which tests you would like to run')
   .addOption(formatOption)
 
 program.parse()
@@ -211,6 +212,16 @@ function multiLine (fileText, start, type) {
  * annotations.
  */
 function getFunctions (file, fileText, fileName) {
+  let onlyLines = null
+  if (options.only && options.only.length) {
+    onlyLines = options.only.map(i => {
+      const index = i.lastIndexOf(':')
+      const fileRequested = i.substring(0, index)
+      return fileName === fileRequested ? +i.substring(index + 1) : null
+    }).filter(i => i)
+    if (!onlyLines.length) return []
+  }
+
   // Get classes & variable declarations for test cases.
   const dec = [...file.getClasses(), ...file.getVariableDeclarations()].map(i => {
     const text = i.getText()
@@ -227,7 +238,7 @@ function getFunctions (file, fileText, fileName) {
     const isClass = i.getKindName() === 'ClassDeclaration'
 
     return {
-      tags: getTags(fileText, i.getStartLineNumber() - 2),
+      tags: getTags(fileText, i.getStartLineNumber() - 2, onlyLines),
       isClass,
       name: i.getName(),
       exported: i.isExported(),
@@ -247,8 +258,9 @@ function getFunctions (file, fileText, fileName) {
       .map(item => {
         const tags = item[1].filter(i => TAG_TYPES.includes(i.getTagName())).map(tag => {
           const tagName = tag.getTagName()
+          if (onlyLines && !onlyLines.includes(tag.getStartLineNumber())) return null
           return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName), lineNo: tag.getStartLineNumber() }
-        })
+        }).filter(i => i)
 
         return {
           name: item[0],
@@ -338,13 +350,14 @@ function getFileExports (file) {
  * @param {string[]} fileText
  * @param {number} end
  */
-function getTags (fileText, end, tagTypes = TAG_TYPES) {
+function getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) {
   const tags = []
   // check if previous line has a comment ender
   if (fileText[end].includes('*/')) {
     // crawl up until you see comment begin
     while (end > 0 && !fileText[end].includes('/*')) {
       end--
+      if (onlyLines && !onlyLines.includes(end + 1)) continue
       for (const type of tagTypes) {
         if (new RegExp(`@${type}($| )`).test(fileText[end])) {
           tags.unshift({
