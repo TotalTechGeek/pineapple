@@ -82,12 +82,10 @@ engine.addMethod('snapshot', async ([inputs], context) => {
 
   // @ts-ignore
   result.async = promise
-  // result.hash = context.hash
-
   const { exists, value } = await context.snap.find(context.id)
 
   // @ts-ignore
-  if ((!exists || !equals(value.hash, result.hash)) && await askSnapshot({ item: result, rule: context.rule, id: context.id })) {
+  if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id })) {
     await context.snap.set(context.id, result)
     return [result, true]
   }
@@ -102,9 +100,10 @@ engine.addMethod('snapshot', async ([inputs], context) => {
       await context.snap.set(context.id, result)
       return [result, true]
     }
+    return [result, false, diff(value, result)]
   }
 
-  return [result, false, diff(value, result)]
+  return [result, false, 'There is no snapshot for this test.']
 }, {
   useContext: true
 })
