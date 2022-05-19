@@ -5,10 +5,10 @@ import { diff } from './utils.js'
 
 /**
  * It asks the user if they want to accept the snapshot
- * @param {{ item: any, rule: string, id: string }} data
+ * @param {{ item: any, rule: string, id: string, file: string }} data
  * @returns A function that returns a boolean.
  */
-export async function askSnapshot ({ item, rule, id }) {
+export async function askSnapshot ({ item, rule, id, file }) {
   if (process.env.CI) return false
   if (process.env.ACCEPT_ALL) return true
   if (process.env.OUTPUT_FORMAT === 'JSON') {
@@ -16,7 +16,8 @@ export async function askSnapshot ({ item, rule, id }) {
       type: 'Request Snapshot',
       item,
       input: rule,
-      id
+      id,
+      file
     }))
     return false
   }
@@ -28,10 +29,10 @@ export async function askSnapshot ({ item, rule, id }) {
 
 /**
  * It asks the user if they want to update the snapshot
- * @param {{ item: any, rule: string, id: string, value: any }} data
+ * @param {{ item: any, rule: string, id: string, value: any, file: string }} data
  * @returns A function that returns a boolean.
  */
-export async function askSnapshotUpdate ({ item, value, rule, id }) {
+export async function askSnapshotUpdate ({ item, value, rule, id, file }) {
   if (process.env.CI) return false
   if (process.env.UPDATE_ALL) return true
   if (process.env.OUTPUT_FORMAT === 'JSON') {
@@ -40,7 +41,8 @@ export async function askSnapshotUpdate ({ item, value, rule, id }) {
       new: item,
       old: value,
       input: rule,
-      id
+      id,
+      file
     }))
     return false
   }

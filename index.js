@@ -36,7 +36,10 @@ process.env.UPDATE_ALL = options.updateAll || ''
 
 if (options.format === 'json') process.env.OUTPUT_FORMAT = 'JSON'
 process.env.OUTPUT_FORMAT = process.env.OUTPUT_FORMAT || 'CONSOLE'
-if (process.env.OUTPUT_FORMAT === 'JSON') chalk.level = 0
+if (process.env.OUTPUT_FORMAT === 'JSON') {
+  chalk.level = 0
+  process.env.FORCE_COLOR = '0'
+}
 
 async function main () {
   const tmp = tempy.file({ extension: 'mjs' })

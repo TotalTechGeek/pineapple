@@ -2,9 +2,7 @@
 import engine from './methods.js'
 import { parse } from './parser/dsl.js'
 import { snapshot } from './snapshot.js'
-import logSymbols from 'log-symbols'
 import { hash } from './hash.js'
-import chalk from 'chalk'
 import { SpecialHoF } from './symbols.js'
 import { failure, parseFailure, success, testRuntimeFailure } from './outputs.js'
 const snap = snapshot()
@@ -32,9 +30,9 @@ export async function execute (input) {
  * @param {string} input
  * @param {string} id
  * @param {(...args: any[]) => any} func
- * @param {string} fileName
+ * @param {string} file
  */
-export async function run (input, id, func, fileName) {
+export async function run (input, id, func, file) {
   const [idName, idHash] = id.split('.')
 
   /**
@@ -55,7 +53,7 @@ export async function run (input, id, func, fileName) {
       }
       const [current] = result
       if (typeof result[0] !== 'function') return [result[0], false, 'Does not return a function.']
-      result = await engine.run(step, { func: current, id: (`${idName}(${input}) [${idHash}]`), snap, hash: h, rule: input })
+      result = await engine.run(step, { func: current, id: (`${idName}(${input}) [${idHash}]`), snap, hash: h, rule: input, file })
       const [data, success, message] = result
       if (!success) return [data, false, message]
       // Special Override for the Class-Based HoF thing.
@@ -71,19 +69,19 @@ export async function run (input, id, func, fileName) {
     const [, success, message] = await internalRun(input, id, func)
 
     if (!success) {
-      failure(idName, input, message, fileName)
+      failure(idName, input, message, file)
       return 1
     }
   } catch (err) {
     if (err.expected) {
       const { message } = err
-      parseFailure(idName, input, message, fileName)
+      parseFailure(idName, input, message, file)
     } else testRuntimeFailure(err)
 
     return 1
   }
 
-  success(idName, input, fileName)
+  success(idName, input, file)
   return 0
 }
 

@@ -85,7 +85,7 @@ engine.addMethod('snapshot', async ([inputs], context) => {
   const { exists, value } = await context.snap.find(context.id)
 
   // @ts-ignore
-  if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id })) {
+  if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id, file: context.file })) {
     await context.snap.set(context.id, result)
     return [result, true]
   }
@@ -96,7 +96,7 @@ engine.addMethod('snapshot', async ([inputs], context) => {
 
   if (exists) {
     // We have a snapshot, but it's different, so we need to ask the user if they want to update the snapshot
-    if (await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id })) {
+    if (await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id, file: context.file })) {
       await context.snap.set(context.id, result)
       return [result, true]
     }
