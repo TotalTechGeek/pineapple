@@ -201,26 +201,12 @@ export function not (rule, error) {
  * @test 'Hello, $0' ~> 'World' returns 'Hello, World'
  * @test '$0, $1' ~> 'Hello', 'World' returns 'Hello, World'
  * @test 'Hey $0' ~> 'Steve' returns 'Hey Steve'
+ * @test "Attempt: $0" ~> #string returns cat("Attempt: ", args.0)
+ * @test "Attempt: $0 $1" ~> #string, #string returns cat('Attempt: ', args.0, ' ', args.1)
  *
  * @param {string} stringTemplate
  * @returns {(...args: string[]) => string}
  */
 export function template (stringTemplate) {
-  // Simple optimization for the single argument case.
-  if (!/\$[1-9]/.test(stringTemplate)) {
-    /** @param {string} str */
-    return str => stringTemplate.replace(/\$0/g, str)
-  }
-
-  /**
-   * Replaces parts of the string with the arguments.
-   * @param {string[]} args
-   */
-  return (...args) => {
-    let template = stringTemplate
-    for (let i = 0; i < args.length; i++) {
-      template = template.replace(new RegExp(`\\$${i}`, 'g'), args[i])
-    }
-    return template
-  }
+  return (...args) => stringTemplate.replace(/\$[0-9]/g, match => args[+match[1]])
 }

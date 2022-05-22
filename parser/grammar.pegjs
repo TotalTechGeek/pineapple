@@ -135,7 +135,7 @@ TestExpressionLayered = a:TestExpression "~>" b:TestExpressionLayered {
 
 TestExpression = 
      ops:Operands _req ("resolves to" / "resolves") _req result:Expression _ { 
-      if (traverse(result, i => i && typeof i.var !== 'undefined')) {
+      if (traverse(result, i => i && typeof i.var !== 'undefined' && i.var.startsWith('data'))) {
         return {
           resolvesParse: [ops, result]
         }
@@ -143,7 +143,7 @@ TestExpression =
       return { resolves: [ops, result] } 
   }
   /  ops:Operands _req ("to" / "is" / "returns") _req result:Expression _ { 
-      if (traverse(result, i => i && typeof i.var !== 'undefined')) {
+      if (traverse(result, i => i && typeof i.var !== 'undefined' && i.var.startsWith('data'))) {
         return {
           toParse: [ops, result]
         }
@@ -223,6 +223,7 @@ NonArithmeticExpression
   / Numeric
   / VarIdentifier
   / ContextIdentifier
+  / ArgsIdentifier
   / String
   / FunctionCall
   / Infinity
@@ -275,6 +276,12 @@ ArithmeticExpression0
 FunctionCall
   = _ id:Identifier _ '(' _ args:FunctionArgs _ ').' getId:Identifier {
     return { get: [{ [id]: args.length <= 1 ? args[0] : args }, getId] }
+  }
+  / _ '#' id:Identifier _ '(' _ args:FunctionArgs _ ')' {
+    return { ['#' + id]: args.length <= 1 ? args[0] : args }
+  }
+  / _ '#' id:Identifier {
+    return { ['#' + id]: undefined }
   } 
   / _ id:Identifier _ '(' _ args:FunctionArgs _ ')' {
     return { [id]: args.length <= 1 ? args[0] : args }
@@ -343,6 +350,9 @@ VarIdentifier "@-identifier"
 ContextIdentifier "$-identifier"
   = '$.' id:MemberIdentifier { return { var: `context.${id}` } }
   / "$" { return { var: 'context' } }
+ArgsIdentifier "args-identifier"
+  = 'args.' id:MemberIdentifier { return { var: `args.${id}` } }
+  / "args" { return { var: 'args' } }
 MemberIdentifier "member-identifier"
   = Identifier
   / Integer { return text() }
