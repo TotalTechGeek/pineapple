@@ -173,7 +173,7 @@ Operator
 
 Operands
   = 
-    _ "$." call:FunctionCall { const key = Object.keys(call)[0]; const result = [key, ...[].concat(call[key])]; result.special = true; return [result] }
+    _ "$." call:FunctionCall { const key = Object.keys(call)[0]; const result = [key, ...[].concat(call[key])]; result.special = true; return result }
   / _ exp:Expression _ "," _ tail:Operands { return [exp, ...tail] }
   / _ exp:Expression { return [ exp ]; }
   

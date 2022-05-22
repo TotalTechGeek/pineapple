@@ -164,7 +164,7 @@ export async function run (input, id, func, file) {
 export function hof (ClassToUse, staticClass = false) {
   return (...args) => {
     const instance = staticClass ? ClassToUse : new ClassToUse(...args)
-    const f = ([method, ...args]) => {
+    const f = (method, ...args) => {
       if (!(method in instance && (instance.hasOwnProperty(method) || ClassToUse.prototype.hasOwnProperty(method)))) { throw new Error(`'${method}' is not a method of '${ClassToUse.name}'`) }
       f.result = instance[method](...args)
       return f
