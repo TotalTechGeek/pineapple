@@ -135,7 +135,7 @@ TestExpressionLayered = a:TestExpression "~>" b:TestExpressionLayered {
 
 TestExpression = 
      ops:Operands _req ("resolves to" / "resolves") _req result:Expression _ { 
-      if (traverse(result, i => i && typeof i.var !== 'undefined' && i.var.startsWith('data'))) {
+      if (traverse(result, i => i && typeof i.var !== 'undefined' && (i.var.startsWith('data') || i.var.startsWith('context')))) {
         return {
           resolvesParse: [ops, result]
         }
@@ -143,7 +143,7 @@ TestExpression =
       return { resolves: [ops, result] } 
   }
   /  ops:Operands _req ("to" / "is" / "returns") _req result:Expression _ { 
-      if (traverse(result, i => i && typeof i.var !== 'undefined' && i.var.startsWith('data'))) {
+      if (traverse(result, i => i && typeof i.var !== 'undefined' && (i.var.startsWith('data') || i.var.startsWith('context')))) {
         return {
           toParse: [ops, result]
         }
