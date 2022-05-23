@@ -26,3 +26,15 @@ export function drinkingAge ({ name, age }) {
 export function isSquare (num) {
   return Math.sqrt(num) % 1 === 0
 }
+
+/**
+ * A simple template function.
+ * @test 'Hello $0' ~> 'World' returns 'Hello World'
+ * @test '$0 $0' ~> 'Hi' returns 'Hi Hi'
+ * @test 'Hello $0' ~> #string returns cat('Hello ', args.0)
+ * @param {string} templateString
+ */
+export function template (templateString) {
+  /** @param {string} replace */
+  return replace => templateString.replace(/\$0/g, replace.replace(/\$/g, '$$$$'))
+}
