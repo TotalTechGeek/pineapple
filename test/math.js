@@ -1,5 +1,5 @@
 /**
- * @test #integer, #integer returns @ as number
+ * @test #number, #number returns @ as number
  * @test #integer, #string throws
  * @test #string, #integer throws
  * @param {number} a

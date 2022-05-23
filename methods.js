@@ -244,13 +244,15 @@ engine.addMethod('rejects', async ([inputs, output], context) => {
   }
 })
 
+export const createArbitrary = method => data => {
+  if (data === undefined) return method()
+  return method(...[].concat(data))
+}
+
 Object.keys(fc).filter(i => typeof fc[i] === 'function' && i[0] === i[0].toLowerCase()).forEach(addition => {
-  engine.addMethod('#' + addition, (data) => {
-    if (data === undefined) return fc[addition]()
-    return fc[addition](...[].concat(data))
-  }, {
-    sync: true
-  })
+  engine.addMethod('#' + addition, createArbitrary(fc[addition]), { sync: true })
 })
+
+engine.addMethod('#number', createArbitrary(fc.nat), { sync: true })
 
 export default engine

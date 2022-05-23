@@ -99,37 +99,48 @@ async function main () {
     isAsync: true
   })
 
+  const executeTag = tag => `await execute(${JSON.stringify(tag.text)})`
+
   const { addedMethods, tests, beforeAll, afterAll } = functions.map(func => {
-    const addedMethods = func.tags.filter(i => i.type === 'pineapple_import').map(i => {
-      return `addMethod(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`
-    }).join('') + '\n' + func.tags.filter(i => i.type === 'pineapple_define').map(() => {
-      return `addDefinitions(${func.alias})\n`
-    }).join('')
+    const addedMethods = func.tags
+      .filter(i => i.type === 'pineapple_import')
+      .map(i => `addMethod(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`)
+      .join('') + '\n' +
+      func.tags
+        .filter(i => i.type === 'pineapple_define')
+        .map(() => `addDefinitions(${func.alias})\n`)
+        .join('')
 
-    const beforeAll = func.tags.filter(i => i.type === 'beforeAll').map(i => {
-      return `${func.alias}()\n`
-    }).join('')
+    const beforeAll = func.tags
+      .filter(i => i.type === 'beforeAll')
+      .map(() => `${func.alias}()\n`)
+      .join('')
 
-    const afterAll = func.tags.filter(i => i.type === 'afterAll').map(i => {
-      return `${func.alias}()\n`
-    }).join('')
+    const afterAll = func.tags
+      .filter(i => i.type === 'afterAll')
+      .map(() => `${func.alias}()\n`)
+      .join('')
 
     // before / beforeEach / after / afterEach will get integrated in directly with the tests.
-    const before = func.tags.filter(i => i.type === 'before').map(tag => {
-      return `await execute(${JSON.stringify(tag.text)})`
-    }).join('\n')
+    const before = func.tags
+      .filter(i => i.type === 'before')
+      .map(executeTag)
+      .join('\n')
 
-    const beforeEach = func.tags.filter(i => i.type === 'beforeEach').map(tag => {
-      return `await execute(${JSON.stringify(tag.text)})`
-    }).join('\n')
+    const beforeEach = func.tags
+      .filter(i => i.type === 'beforeEach')
+      .map(executeTag)
+      .join('\n')
 
-    const after = func.tags.filter(i => i.type === 'after').map(tag => {
-      return `await execute(${JSON.stringify(tag.text)})`
-    }).join('\n')
+    const after = func.tags
+      .filter(i => i.type === 'after')
+      .map(executeTag)
+      .join('\n')
 
-    const afterEach = func.tags.filter(i => i.type === 'afterEach').map(tag => {
-      return `await execute(${JSON.stringify(tag.text)})`
-    }).join('\n')
+    const afterEach = func.tags
+      .filter(i => i.type === 'afterEach')
+      .map(executeTag)
+      .join('\n')
 
     const wrapHof = (alias, tag) => func.isClass ? `hof(${alias}, ${tag.type === 'test_static'})` : alias
 

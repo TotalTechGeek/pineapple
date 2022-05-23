@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-import engine from './methods.js'
+import engine, { createArbitrary } from './methods.js'
 import { parse } from './parser/dsl.js'
 import { serialize, snapshot } from './snapshot.js'
 import { hash } from './hash.js'
@@ -27,21 +27,16 @@ export function addDefinitions (fn) {
   const definitions = fn()
   Object.keys(definitions).forEach(key => {
     if (typeof definitions[key] === 'function') {
-      const method = definitions[key]
-      engine.addMethod('#' + key, (data) => {
-        if (data === undefined) return method()
-        return method(...[].concat(data))
-      }, { sync: true })
-    } else {
-      const arbitrary = definitions[key]
-      if (arbitrary instanceof fc.Arbitrary) {
-        engine.addMethod('#' + key, always(arbitrary), { sync: true })
-      } else {
-        const func = always(fc.constant(arbitrary))
-        func[ConstantFunc] = true
-        engine.addMethod('#' + key, func, { sync: true })
-      }
+      return engine.addMethod(`#${key}`, createArbitrary(definitions[key]), { sync: true })
     }
+
+    if (definitions[key] instanceof fc.Arbitrary) {
+      return engine.addMethod(`#${key}`, always(definitions[key]), { sync: true })
+    }
+
+    const func = always(fc.constant(definitions[key]))
+    func[ConstantFunc] = true
+    return engine.addMethod(`#${key}`, func, { sync: true })
   })
 }
 
