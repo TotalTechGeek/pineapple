@@ -16,7 +16,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.8.0')
+  .version('0.9.0')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
@@ -74,7 +74,7 @@ async function main () {
 
   testFile.addImportDeclaration({
     moduleSpecifier: specifier.join('/'),
-    namedImports: ['run', 'addMethod', 'execute', 'hof'],
+    namedImports: ['run', 'addMethod', 'addDefinitions', 'execute', 'hof'],
     isTypeOnly: false
   })
 
@@ -102,6 +102,8 @@ async function main () {
   const { addedMethods, tests, beforeAll, afterAll } = functions.map(func => {
     const addedMethods = func.tags.filter(i => i.type === 'pineapple_import').map(i => {
       return `addMethod(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`
+    }).join('') + '\n' + func.tags.filter(i => i.type === 'pineapple_define').map(() => {
+      return `addDefinitions(${func.alias})\n`
     }).join('')
 
     const beforeAll = func.tags.filter(i => i.type === 'beforeAll').map(i => {
@@ -164,6 +166,7 @@ const TAG_TYPES = [
   'test',
   'test_static',
   'pineapple_import',
+  'pineapple_define',
   'beforeAll',
   'afterAll',
   'before',

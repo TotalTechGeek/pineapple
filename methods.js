@@ -7,10 +7,12 @@ import { SpecialHoF } from './symbols.js'
 import { askSnapshotUpdate, askSnapshot } from './inputs.js'
 import { diff } from './utils.js'
 import { serialize } from './snapshot.js'
+import fc from 'fast-check'
 
 const engine = new AsyncLogicEngine()
 const ajv = new Ajv()
 
+engine.addMethod('**', ([a, b]) => a ** b, { sync: true })
 engine.addMethod('===', ([a, b]) => equals(a, b), {
   sync: true,
   deterministic: true
@@ -82,6 +84,10 @@ engine.addMethod('snapshot', async ([inputs], context) => {
 
   // @ts-ignore
   result.async = promise
+
+  // @ts-ignore
+  if (context.fuzzed) result.input = inputs
+
   const { exists, value } = await context.snap.find(context.id)
 
   // @ts-ignore
@@ -138,9 +144,10 @@ function getDataSpecialSnapshot (data) {
 engine.addMethod('toParse', {
   asyncMethod: async ([inputs, output], context, above, engine) => {
     try {
-      const result = getDataSpecial(context.func.apply(null, await engine.run(inputs, context)))
+      inputs = await engine.run(inputs, context)
+      const result = getDataSpecial(context.func.apply(null, inputs))
       if (result && result.then) return [result.catch(err => err), false, 'Function call returns a promise.']
-      return [result, Boolean(await engine.run(output, { data: result, context: context.func.instance }))]
+      return [result, Boolean(await engine.run(output, { data: result, context: context.func.instance, args: inputs }))]
     } catch (err) {
       return [err, false, `Could not execute condition as function threw ${generateErrorText(err)}`]
     }
@@ -173,9 +180,10 @@ engine.addMethod('resolves', async ([inputs, output], context) => {
 engine.addMethod('resolvesParse', {
   asyncMethod: async ([inputs, output], context, above, engine) => {
     try {
-      const result = getDataSpecial(context.func.apply(null, await engine.run(inputs, context)))
+      inputs = await engine.run(inputs, context)
+      const result = getDataSpecial(context.func.apply(null, inputs))
       if (!result || !result.then) return [result, false, 'Was not a promise.']
-      return [await result, Boolean(await engine.run(output, { data: await result, context: context.func.instance }))]
+      return [await result, Boolean(await engine.run(output, { data: await result, context: context.func.instance, args: inputs }))]
     } catch (err) {
       return [err, false, `Could not execute condition as function rejected with ${generateErrorText(err)}`]
     }
@@ -201,7 +209,7 @@ engine.addMethod('execute', {
 
 engine.addMethod('throws', async ([inputs, output], context) => {
   try {
-    const result = getDataSpecial(context.func.apply(null, await engine.run(inputs, context)))
+    const result = getDataSpecial(context.func.apply(null, inputs))
 
     if (result && result.then) {
       try {
@@ -222,7 +230,7 @@ engine.addMethod('throws', async ([inputs, output], context) => {
 engine.addMethod('rejects', async ([inputs, output], context) => {
   try {
     let result
-    try { result = getDataSpecial(context.func.apply(null, await engine.run(inputs, context))) } catch (err2) {
+    try { result = getDataSpecial(context.func.apply(null, inputs)) } catch (err2) {
       return [err2, false, 'Async call threw synchronously.']
     }
     if (!result || !result.then) return [result, false, 'Was not a promise.']
@@ -234,6 +242,15 @@ engine.addMethod('rejects', async ([inputs, output], context) => {
 
     return [err, true]
   }
+})
+
+Object.keys(fc).filter(i => typeof fc[i] === 'function' && i[0] === i[0].toLowerCase()).forEach(addition => {
+  engine.addMethod('#' + addition, (data) => {
+    if (data === undefined) return fc[addition]()
+    return fc[addition](...[].concat(data))
+  }, {
+    sync: true
+  })
 })
 
 export default engine

@@ -1,12 +1,7 @@
 /**
- * @test 1, 2
- * @test '4', 3 throws
- * @test 1, '0' throws
- * @test -1, 1
- * @test -1, 1 to 0
- * @test -1, 1 to -1
- * @test -1, -1 to -2
- * @test -1, '-1' to -2
+ * @test #integer, #integer returns @ as number
+ * @test #integer, #string throws
+ * @test #string, #integer throws
  * @param {number} a
  * @param {number} b
  */
@@ -46,8 +41,6 @@ export const fib = n => n <= 2 ? 1 : fib(n - 1) + fib(n - 2)
 
 /**
  * @test 1, 3 resolves @ as number
- * @test 1, 5 resolves @ as string
- * @test 1, 5 resolves 7
  * @test 5n, 3n
  * @param {number} a
  * @param {number} b
