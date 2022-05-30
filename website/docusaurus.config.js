@@ -46,7 +46,7 @@ const config = {
         title: 'Pineapple',
         logo: {
           alt: 'Pineapple Logo',
-          src: 'img/logo.png',
+          src: 'img/pineapple.svg',
         },
         items: [
           {
