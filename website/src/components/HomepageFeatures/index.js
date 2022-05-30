@@ -5,7 +5,7 @@ import styles from './styles.module.css';
 const FeatureList = [
   {
     title: 'Great for Coverage Testing',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('@site/static/img/feature-01.svg').default,
     description: (
       <>
         Pineapple makes it ergonomic to work within your code files &amp; generates source maps for the transpilation modes.
@@ -14,7 +14,7 @@ const FeatureList = [
   },
   {
     title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/feature-02.svg').default,
     description: (
       <>
         Pineapple tries to make it simple to get to the point with your tests, so that you can focus on writing code.
@@ -23,7 +23,7 @@ const FeatureList = [
   },
   {
     title: 'Empower your Users',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/feature-03.svg').default,
     description: (
       <>
         Providing Pineapple test cases can make it simpler for your users &amp; developers to find examples on how to call your APIs.

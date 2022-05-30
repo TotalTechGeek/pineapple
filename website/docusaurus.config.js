@@ -12,7 +12,7 @@ const config = {
   baseUrl: '/pineapple/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
   organizationName: 'totaltechgeek', // Usually your GitHub org/user name.
   projectName: 'pineapple', // Usually your repo name.
   trailingSlash: false,
@@ -46,7 +46,7 @@ const config = {
         title: 'Pineapple',
         logo: {
           alt: 'Pineapple Logo',
-          src: 'img/logo.png',
+          src: 'img/pineapple.svg',
         },
         items: [
           {

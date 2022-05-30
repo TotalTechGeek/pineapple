@@ -1,0 +1,93 @@
+<svg width="64" height="90" xmlns="http://www.w3.org/2000/svg" version="1.1" xml:space="preserve">
+ <defs>
+  <linearGradient id="SVGID_1_" x1="0.47921" y1="-0.78201" x2="0.51977" y2="1.71331">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_2_" x1="0.48522" y1="-0.2084" x2="0.53232" y2="2.25372">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_3_" x1="0.42354" y1="-1.60351" x2="0.55641" y2="2.48609">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_4_" x1="0.46647" y1="-1.32345" x2="0.51418" y2="1.14246">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_5_" x1="0.46653" y1="-1.33005" x2="0.51363" y2="1.14474">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_6_" x1="0.46083" y1="-2.92575" x2="0.50129" y2="0.91887">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_7_" x1="0.48477" y1="-0.22472" x2="0.53259" y2="2.27448">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_8_" x1="0.49728" y1="-0.03452" x2="0.53809" y2="3.8473">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_9_" x1="0.43668" y1="-1.69312" x2="0.57549" y2="2.58171">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#7562D2"/>
+  </linearGradient>
+  <linearGradient id="SVGID_10_" x1="0.50867" y1="1.05985" x2="0.48205" y2="-1.14837">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#C442E3"/>
+  </linearGradient>
+  <linearGradient id="SVGID_11_" x1="0.54154" y1="1.68599" x2="0.46628" y2="0.05833">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#C442E3"/>
+  </linearGradient>
+  <linearGradient id="SVGID_12_" x1="0.51595" y1="1.34863" x2="0.4857" y2="-0.37924">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#C442E3"/>
+  </linearGradient>
+  <linearGradient id="SVGID_13_" x1="0.52209" y1="1.51104" x2="0.48515" y2="-0.42282">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#C442E3"/>
+  </linearGradient>
+  <linearGradient id="SVGID_14_" x1="0.5072" y1="1.23232" x2="0.4628" y2="-3.27807">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#C442E3"/>
+  </linearGradient>
+  <linearGradient id="SVGID_15_" x1="0.50467" y1="0.9038" x2="0.46877" y2="-2.30945">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#C442E3"/>
+  </linearGradient>
+  <linearGradient id="SVGID_16_" x1="0.50428" y1="0.93749" x2="0.48516" y2="-1.00223">
+   <stop offset="0" stop-color="#A04FDC"/>
+   <stop offset="1" stop-color="#C442E3"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1">
+   <g id="svg_2">
+    <polygon class="st1" points="45.33000183105469,65.25 35.68998718261719,55.77000427246094 26.05999755859375,65.57000732421875 35.68998718261719,75.05999755859375 " fill="url(#SVGID_1_)" id="svg_3"/>
+    <path class="st2" d="m34.55,54.65l-9.9,-9.74c-3.81,3.01 -6.35,7.55 -6.69,12.7l6.96,6.85l9.63,-9.81z" fill="url(#SVGID_2_)" id="svg_4"/>
+    <polygon class="st3" points="23.800003051757812,65.58999633789062 17.920000076293945,59.80000305175781 17.920000076293945,71.57000732421875 " fill="url(#SVGID_3_)" id="svg_5"/>
+    <path class="st4" d="m46.47,66.37l-9.65,9.81l9.87,9.71c3.78,-3.07 6.27,-7.68 6.51,-12.88l-6.73,-6.64z" fill="url(#SVGID_4_)" id="svg_6"/>
+    <path class="st5" d="m34.57,76.2l-9.65,-9.49l-6.94,7.07c0.45,5.04 3.01,9.45 6.8,12.38l9.79,-9.96z" fill="url(#SVGID_5_)" id="svg_7"/>
+    <path class="st6" d="m35.72,77.32l-9.61,9.77c2.74,1.74 5.98,2.75 9.47,2.75l0,0c3.65,0 7.02,-1.1 9.84,-2.99l-9.7,-9.53z" fill="url(#SVGID_6_)" id="svg_8"/>
+    <path class="st7" d="m46.45,64.12l6.7,-6.81c-0.42,-5.05 -2.96,-9.5 -6.73,-12.45l-9.61,9.77l9.64,9.49z" fill="url(#SVGID_7_)" id="svg_9"/>
+    <path class="st8" d="m35.67,53.51l9.44,-9.6c-2.75,-1.78 -6.03,-2.8 -9.55,-2.8l0,0c-3.54,0 -6.85,1.04 -9.6,2.85l9.71,9.55z" fill="url(#SVGID_8_)" id="svg_10"/>
+    <polygon class="st9" points="47.59001159667969,65.24000549316406 53.219993591308594,70.77000427246094 53.219993591308594,59.50999450683594 " fill="url(#SVGID_9_)" id="svg_11"/>
+   </g>
+   <g id="svg_12">
+    <path class="st10" d="m42.01,27.5c-0.03,0.02 -3.15,1.95 -6.3,4.77c2.21,1.92 4.54,4.19 6.11,6.4c2.48,-4.99 5.12,-8.48 5.28,-8.72l0,0c2.98,-5.07 6.22,-8.69 6.22,-8.69c-4.42,1.98 -9.53,4.94 -11.01,5.81l-0.3,0.43z" fill="url(#SVGID_10_)" id="svg_13"/>
+    <path class="st11" d="m38.42,19.42l-3.14,-19.42l-3.09,18.92c0.53,0.69 2.37,3.15 3.39,4.7c1.02,-1.59 2.24,-3.35 2.84,-4.2z" fill="url(#SVGID_11_)" id="svg_14"/>
+    <path class="st12" d="m35.38,32c3.01,-2.7 6,-4.61 6.37,-4.83l0.27,-0.38c1.86,-7.61 6.46,-17.04 6.46,-17.04c-3.41,2.56 -8.37,8.19 -9.66,9.68c-1.41,2 -4.54,6.69 -5.84,10.57c0.74,0.61 1.56,1.28 2.4,2z" fill="url(#SVGID_12_)" id="svg_15"/>
+    <path class="st13" d="m32.63,29.74c0.7,-2.03 1.74,-4.03 2.74,-5.71c-1.07,-1.65 -3.22,-4.67 -3.65,-5.28c-4.06,-4.93 -9.04,-8.89 -9.04,-8.89c3.2,5.74 6.05,14.96 6.75,17.31c0.36,0.28 1.76,1.45 3.2,2.57z" fill="url(#SVGID_13_)" id="svg_16"/>
+    <path class="st14" d="m47.06,30.59c-0.93,1.34 -3.15,4.86 -4.32,7.1c4.85,-5.95 10.56,-8.33 10.56,-8.33c-2.11,-0.69 -5.09,0.64 -6.24,1.23z" fill="url(#SVGID_14_)" id="svg_17"/>
+    <path class="st15" d="m23.75,30.4c-2.86,-1.47 -6.75,-1.23 -6.75,-1.23c7.26,3.17 12.61,11.95 12.61,11.95c0.14,-0.08 0.29,-0.16 0.45,-0.24c-2.03,-5.33 -5.35,-9.3 -6.31,-10.48l0,0z" fill="url(#SVGID_15_)" id="svg_18"/>
+    <path class="st16" d="m28.81,27.21c-5.5,-3.65 -11.01,-5.84 -11.18,-5.9c2.08,2.37 5.12,7.02 6.22,8.73c1.12,1.17 4.67,5.05 6.57,10.67c5.93,-2.75 11.73,0.42 11.73,0.42l-0.43,-1.84c-3.52,-5.25 -12.48,-11.76 -12.91,-12.08z" fill="url(#SVGID_16_)" id="svg_19"/>
+   </g>
+  </g>
+ </g>
+</svg>
