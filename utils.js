@@ -5,6 +5,11 @@ import { serialize } from './snapshot.js'
 import fc from 'fast-check'
 import { ConstantFunc } from './symbols.js'
 
+// The following is used as a "simple way" to keep track of whether a complex structure generated from arbitraries is actually constant.
+// This allows us to avoid a bunch of duplicate test effort when someone writes something like:
+// { name: 'Jesse', image: #commonPicture }, where #commonPicture is defined as a constant.
+const constantStructures = new Set()
+
 /**
  * It takes the output of the diff function and if it contains the string "Comparing two different
  * types", it replaces the output with a more detailed message
@@ -29,9 +34,6 @@ const tupleConstApplication = item => {
   }
   return { '#constant': item }
 }
-
-// TODO: add better touch up for [1, 2, #integer],
-// so that if in a tuple or obj, it'll go ahead and make the remaining values #constant wrapped :)
 
 /**
  * Used to touch up the logic so that statements that aren't completely valid with arbitraries are made valid,
@@ -68,7 +70,7 @@ function touchUpArbitrary (item) {
 
   if (key === 'obj') {
     if (item[key].some(i => (Object.keys(i || {})[0] || '').startsWith('#'))) {
-      return {
+      const result = {
         '#record': {
           obj: item[key]
             .map(touchUpArbitrary)
@@ -77,12 +79,19 @@ function touchUpArbitrary (item) {
             .map((i, x) => (x & 1) ? tupleConstApplication(i) : i)
         }
       }
+
+      // detect & track if the result is purely constant.
+      if (result['#record'].obj.every((i, x) => !(x & 1) || constantStructures.has(i) || typeof i['#constant'] !== 'undefined' || engine.methods[Object.keys(i)[0]].method[ConstantFunc])) {
+        constantStructures.add(result)
+      }
+
+      return result
     }
   }
 
   if (key === 'list') {
     if (item[key].some(i => (Object.keys(i || {})[0] || '').startsWith('#'))) {
-      return {
+      const result = {
         '#tuple': {
           list: item[key]
             .map(touchUpArbitrary)
@@ -90,6 +99,13 @@ function touchUpArbitrary (item) {
             .map(tupleConstApplication)
         }
       }
+
+      // detect & track if the result is purely constant.
+      if (result['#tuple'].list.every((i) => typeof i['#constant'] !== 'undefined' || engine.methods[Object.keys(i)[0]].method[ConstantFunc])) {
+        constantStructures.add(result)
+      }
+
+      return result
     }
   }
 
@@ -156,7 +172,6 @@ export function traverseSubstitute (obj, sub = []) {
  */
 export async function argumentsToArbitraries (...args) {
   args = args.map(touchUpArbitrary)
-
   let constant = true
   const list = []
   for (const i of args) {
@@ -164,7 +179,7 @@ export async function argumentsToArbitraries (...args) {
       const keys = Object.keys(i)
 
       if (keys[0].startsWith('#')) {
-        if (keys[0] !== '#constant' && !engine.methods[keys[0]].method[ConstantFunc]) constant = false
+        if (!constantStructures.has(i) && keys[0] !== '#constant' && !engine.methods[keys[0]].method[ConstantFunc]) constant = false
         const result = await (await engine.build(i))()
         if (keys[1] === 'map' && i.map !== basicSub) {
           list.push(result.map(engine.fallback.build(i.map)))

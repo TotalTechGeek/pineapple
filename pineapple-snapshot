@@ -110,5 +110,18 @@
   "serialize(date('2020-01-01')) [be85cb95ea0182c41b0e2e8184de927181c85f5b922254feea45b5f4eb2b0a92]": {
     "value": "date(\"2020-01-01T00:00:00.000Z\")",
     "async": false
+  },
+  "staticTest({ age: #staticAge }) [6e6236d42dace20ba68165d375555811abd88563b3cc9bbf24a578684fffac47]": {
+    "value": {
+      "age": 7
+    },
+    "async": false
+  },
+  "staticTest([#staticAge, #staticAge]) [5a43feee0c92dbc4921c2dadafe1ada1d96d91d401ef61e2a3cbfd9c5943bbcb]": {
+    "value": [
+      7,
+      7
+    ],
+    "async": false
   }
 }
