@@ -115,3 +115,27 @@ function ofAge (person) {
     return person.age > 21
 }
 ```
+
+It is also possible to provide namespaces for your arbitraries:
+
+```js
+/**
+ * @pineapple_define tavern
+ */
+function arbitraries () {
+    return {
+        // you can pass in an arbitrary, a function that returns an arbitrary, or a value that'll be constant.
+        // it will be named the value that you define here in the Pineapple engine.
+        person: fc.record({ id: fc.integer(), name: fc.string(), age: fc.integer(12, 80) }) 
+    }
+}
+
+/**
+ * @test #tavern.person returns args.0.age > 21
+ */
+function ofAge (person) {
+    return person.age > 21
+}
+```
+
+This should make it simpler to organize some of your static / generated data sets that you would like to use for your tests.
