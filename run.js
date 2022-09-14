@@ -22,21 +22,24 @@ export function addMethod (name, fn) {
 /**
  * Executes the method passed in, and adds the arbitraries to the engine.
  * @param {(...args: any[]) => ({ [key: string]: any })} fn
+ * @param {string} category
  */
-export function addDefinitions (fn) {
+export function addDefinitions (fn, category = '') {
   const definitions = fn()
+  category = category.trim() ? `${category}.` : ''
+
   Object.keys(definitions).forEach(key => {
     if (typeof definitions[key] === 'function') {
-      return engine.addMethod(`#${key}`, createArbitrary(definitions[key]), { sync: true })
+      return engine.addMethod(`#${category}${key}`, createArbitrary(definitions[key]), { sync: true })
     }
 
     if (definitions[key] instanceof fc.Arbitrary) {
-      return engine.addMethod(`#${key}`, always(definitions[key]), { sync: true })
+      return engine.addMethod(`#${category}${key}`, always(definitions[key]), { sync: true })
     }
 
     const func = always(fc.constant(definitions[key]))
     func[ConstantFunc] = true
-    return engine.addMethod(`#${key}`, func, { sync: true })
+    return engine.addMethod(`#${category}${key}`, func, { sync: true })
   })
 }
 

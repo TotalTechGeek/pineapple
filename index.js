@@ -108,7 +108,7 @@ async function main () {
       .join('') + '\n' +
       func.tags
         .filter(i => i.type === 'pineapple_define')
-        .map(() => `addDefinitions(${func.alias})\n`)
+        .map((i) => `addDefinitions(${func.alias}, ${JSON.stringify(i.text.trim() || '')})\n`)
         .join('')
 
     const beforeAll = func.tags

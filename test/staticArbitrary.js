@@ -1,15 +1,15 @@
 /**
- * @pineapple_define
+ * @pineapple_define Static
  */
 export function define () {
   return {
-    staticAge: 7
+    age: 7
   }
 }
 
 /**
- * @test { age: #staticAge }
- * @test [#staticAge, #staticAge]
+ * @test { age: #Static.age }
+ * @test [#Static.age, #Static.age]
  */
 export function staticTest (data) {
   return data

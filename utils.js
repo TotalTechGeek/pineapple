@@ -11,6 +11,15 @@ import { ConstantFunc } from './symbols.js'
 const constantStructures = new Set()
 
 /**
+ * Checks if a function in the Logic Engine is logged as constant.
+ * @param {string} name
+ * @returns {boolean}
+ */
+function checkConstantFunction (name) {
+  return engine.methods[name] && engine.methods[name].method && engine.methods[name].method[ConstantFunc]
+}
+
+/**
  * It takes the output of the diff function and if it contains the string "Comparing two different
  * types", it replaces the output with a more detailed message
  * @param expected - The expected value.
@@ -81,7 +90,7 @@ function touchUpArbitrary (item) {
       }
 
       // detect & track if the result is purely constant.
-      if (result['#record'].obj.every((i, x) => !(x & 1) || constantStructures.has(i) || typeof i['#constant'] !== 'undefined' || engine.methods[Object.keys(i)[0]].method[ConstantFunc])) {
+      if (result['#record'].obj.every((i, x) => !(x & 1) || constantStructures.has(i) || typeof i['#constant'] !== 'undefined' || checkConstantFunction(Object.keys(i)[0]))) {
         constantStructures.add(result)
       }
 
@@ -101,7 +110,7 @@ function touchUpArbitrary (item) {
       }
 
       // detect & track if the result is purely constant.
-      if (result['#tuple'].list.every((i) => typeof i['#constant'] !== 'undefined' || engine.methods[Object.keys(i)[0]].method[ConstantFunc])) {
+      if (result['#tuple'].list.every((i) => typeof i['#constant'] !== 'undefined' || checkConstantFunction(Object.keys(i)[0]))) {
         constantStructures.add(result)
       }
 
@@ -179,7 +188,7 @@ export async function argumentsToArbitraries (...args) {
       const keys = Object.keys(i)
 
       if (keys[0].startsWith('#')) {
-        if (!constantStructures.has(i) && keys[0] !== '#constant' && !engine.methods[keys[0]].method[ConstantFunc]) constant = false
+        if (!constantStructures.has(i) && keys[0] !== '#constant' && !checkConstantFunction(keys[0])) constant = false
         const result = await (await engine.build(i))()
         if (keys[1] === 'map' && i.map !== basicSub) {
           list.push(result.map(engine.fallback.build(i.map)))
