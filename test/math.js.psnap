@@ -1,0 +1,26 @@
+{
+  "fib(1) [7515fcd5ed19b7dcf17c0772e1c2adaeb28c7f23bf9ef2fd585f974403ad101d]": {
+    "value": 1,
+    "async": false
+  },
+  "fib(3) [2938e03f4beae5d47ad4124517e3db9a62f489d2efb68f26605e5c01b9ddcf99]": {
+    "value": 2,
+    "async": false
+  },
+  "fib(10) [443a2eea753f32083d3a5b25d4a7751462f18b5223fd5fb76f0d2ca600aa0a76]": {
+    "value": 55,
+    "async": false
+  },
+  "mul(3, 5) [dee2d10b16958debfbd2dbfd2053a52eb15030cdb0616974035ab95b0a28a631]": {
+    "value": 15,
+    "async": false
+  },
+  "mul(10, -1) [327ee1ef714d73ae2cb6ec414f67db25a6fed6a21ebf88df86d4ff5b36d7c700]": {
+    "value": -10,
+    "async": false
+  },
+  "addAsync(5n, 3n) [5fbebec3781c7c8e1054510b5b44a0bf638a617baba5b6eeddcbbee648b621f3]": {
+    "value": 8n,
+    "async": true
+  }
+}

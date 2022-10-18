@@ -8,7 +8,19 @@ import { failure, parseFailure, success, testRuntimeFailure } from './outputs.js
 import fc from 'fast-check'
 import { argumentsToArbitraries } from './utils.js'
 import { always } from 'ramda'
-const snap = snapshot()
+import url from 'url'
+const snap = snapshotManager()
+function snapshotManager () {
+  const snapshots = {}
+  /**
+   * @param {string} file
+   */
+  return (file) => {
+    file = url.fileURLToPath(`${file.substring(0, file.lastIndexOf(':'))}.psnap`)
+    if (!snapshots[file]) snapshots[file] = snapshot(file)
+    return snapshots[file]
+  }
+}
 
 /**
  * Adds a method to the Pineapple JSON Logic Engine.
@@ -103,7 +115,7 @@ export async function run (input, id, func, file) {
           const countStr = count > 1 ? `.${count}` : ''
           result = await engine.run({
             [key]: [{ preserve: args }, expectation]
-          }, { func: current, id: (`${idName}(${input}) [${idHash}${countStr}]`), snap, hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
+          }, { func: current, id: (`${idName}(${input}) [${idHash}${countStr}]`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
           if (!result[1]) failed = result
           return result[1]
         }), {
@@ -135,10 +147,10 @@ export async function run (input, id, func, file) {
   }
 
   try {
-    const [, success, message] = await internalRun(input, id, func)
+    const [data, success, message] = await internalRun(input, id, func)
 
     if (!success) {
-      failure(idName, input, message, file)
+      failure({ name: idName, input, message, file, data })
       return 1
     }
   } catch (err) {

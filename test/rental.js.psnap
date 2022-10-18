@@ -1,0 +1,10 @@
+{
+  "createRental('Morty', 32) [85bd775157b8d9924c9dd1709da9cced0c87ba90df161a6da9391a1d4c508337]": {
+    "value": {
+      "type": "boat",
+      "buyer": "Morty",
+      "length": 32
+    },
+    "async": true
+  }
+}

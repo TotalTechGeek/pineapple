@@ -18,7 +18,7 @@ engine.addMethod('===', ([a, b]) => equals(a, b), {
   deterministic: true
 })
 engine.addMethod('bigint', i => BigInt(i))
-engine.addMethod('date', i => new Date(i))
+engine.addMethod('date', i => i ? new Date(i) : new Date())
 engine.addMethod('as', {
   asyncMethod: async ([item, schema], context, above, engine) => {
     if (schema === 'function') return typeof item === 'function'
@@ -182,7 +182,7 @@ engine.addMethod('resolvesParse', {
     try {
       inputs = await engine.run(inputs, context)
       const result = getDataSpecial(context.func.apply(null, inputs))
-      if (!result || !result.then) return [result, false, 'Was not a promise.']
+      if (!result || !result.then) return [result, false, `Expected ${chalk.green('Promise<T>')}\nReceived ${chalk.red(serialize(result))}`]
       return [await result, Boolean(await engine.run(output, { data: await result, context: context.func.instance, args: inputs }))]
     } catch (err) {
       return [err, false, `Could not execute condition as function rejected with ${generateErrorText(err)}`]
@@ -233,7 +233,7 @@ engine.addMethod('rejects', async ([inputs, output], context) => {
     try { result = getDataSpecial(context.func.apply(null, inputs)) } catch (err2) {
       return [err2, false, 'Async call threw synchronously.']
     }
-    if (!result || !result.then) return [result, false, 'Was not a promise.']
+    if (!result || !result.then) return [result, false, `Expected ${chalk.green('a rejected Promise')}\nReceived ${chalk.red(serialize(result))}`]
     return [await result, false, 'Did not throw.']
   } catch (err) {
     const errorName = err.constructor.name

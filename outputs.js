@@ -36,18 +36,20 @@ export function success (name, input, file) {
 
 /**
  * Announces that a test was not successful.
- * @param {string} name
- * @param {string} input
- * @param {string} message
- * @param {string} file
+ * @param {{ name: string, input: string, message: string, file: string, data: string }}
  */
-export function failure (name, input, message, file) {
+export function failure ({ name, input, message, file, data }) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
     console.log(logSymbols.error, `Failed test (${name}):`, format(input))
     console.log('>>', file)
     if (message) {
       console.log(message)
       console.log()
+
+      if (data && data.stack) {
+        console.log(chalk.red(data.stack))
+        console.log()
+      }
     }
   }
 
