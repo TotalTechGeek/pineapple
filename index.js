@@ -101,7 +101,7 @@ async function main () {
 
   const executeTag = tag => `await execute(${JSON.stringify(tag.text)})`
 
-  const { addedMethods, tests, beforeAll, afterAll } = functions.map(func => {
+  const { addedMethods, tests, beforeAll, afterAll, beforeEachGlobal, beforeGlobal, afterGlobal, afterEachGlobal } = functions.map(func => {
     const addedMethods = func.tags
       .filter(i => i.type === 'pineapple_import')
       .map(i => `addMethod(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`)
@@ -111,55 +111,54 @@ async function main () {
         .map((i) => `addDefinitions(${func.alias}, ${JSON.stringify(i.text.trim() || '')})\n`)
         .join('')
 
-    const beforeAll = func.tags
-      .filter(i => i.type === 'beforeAll')
+    const globalLifecycle = name => func.tags
+      .filter(i => i.type === name)
       .map(() => `${func.alias}()\n`)
       .join('')
 
-    const afterAll = func.tags
-      .filter(i => i.type === 'afterAll')
-      .map(() => `${func.alias}()\n`)
-      .join('')
+    const beforeAll = globalLifecycle('beforeAll')
+    const afterAll = globalLifecycle('afterAll')
+    const beforeEachGlobal = globalLifecycle('beforeEachGlobal')
+    const beforeGlobal = globalLifecycle('beforeGlobal')
+    const afterGlobal = globalLifecycle('afterGlobal')
+    const afterEachGlobal = globalLifecycle('afterEachGlobal')
 
     // before / beforeEach / after / afterEach will get integrated in directly with the tests.
-    const before = func.tags
-      .filter(i => i.type === 'before')
+
+    const testLifecycle = name => func.tags
+      .filter(i => i.type === name)
       .map(executeTag)
       .join('\n')
 
-    const beforeEach = func.tags
-      .filter(i => i.type === 'beforeEach')
-      .map(executeTag)
-      .join('\n')
-
-    const after = func.tags
-      .filter(i => i.type === 'after')
-      .map(executeTag)
-      .join('\n')
-
-    const afterEach = func.tags
-      .filter(i => i.type === 'afterEach')
-      .map(executeTag)
-      .join('\n')
+    const before = testLifecycle('before')
+    const beforeEach = testLifecycle('beforeEach')
+    const after = testLifecycle('after')
+    const afterEach = testLifecycle('afterEach')
 
     const wrapHof = (alias, tag) => func.isClass ? `hof(${alias}, ${tag.type === 'test_static'})` : alias
 
-    const tests = `${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
+    const tests = `%beforeGlobal%\n${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
+            %beforeEachGlobal% 
             ${beforeEach}
             sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)}, "${func.fileName}:${tag.lineNo}")
+            %afterEachGlobal%
             ${afterEach}
-        `).join('')}\n${after}`
+        `).join('')}\n${after}\n%afterGlobal%`
 
-    return { addedMethods, tests, beforeAll, afterAll }
+    return { addedMethods, tests, beforeAll, afterAll, beforeEachGlobal, afterEachGlobal, afterGlobal, beforeGlobal }
   }).reduce((acc, i) => {
-    acc.addedMethods = [...acc.addedMethods, ...i.addedMethods]
-    acc.beforeAll = [...acc.beforeAll, ...i.beforeAll]
-    acc.afterAll = [...acc.afterAll, ...i.afterAll]
-    acc.tests = [...acc.tests, ...i.tests]
+    // eslint-disable-next-line no-return-assign
+    Object.keys(i).forEach(k => acc[k] = [...(acc[k] || []), ...i[k]])
     return acc
-  }, { addedMethods: [], tests: [], beforeAll: [], afterAll: [] })
+  }, { })
 
-  testFunc.setBodyText(`let sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${tests.join('')}\n${afterAll.join('')};
+  const testString = tests.join('')
+    .replace(/%beforeEachGlobal%/g, beforeEachGlobal.join(''))
+    .replace(/%beforeGlobal%/g, beforeGlobal.join(''))
+    .replace(/%afterEachGlobal%/g, afterEachGlobal.join(''))
+    .replace(/%afterGlobal%/g, afterGlobal.join(''))
+
+  testFunc.setBodyText(`let sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${testString}\n${afterAll.join('')};
     return sum`)
 
   // add text to end of file
@@ -183,7 +182,11 @@ const TAG_TYPES = [
   'before',
   'after',
   'beforeEach',
-  'afterEach'
+  'afterEach',
+  'beforeGlobal',
+  'beforeEachGlobal',
+  'afterGlobal',
+  'afterEachGlobal'
 ]
 
 /**
@@ -306,7 +309,7 @@ function exportedOnly (exports) {
         i.originalName = i.name
         i.name = exports[i.name]
         return true
-      } else skippingTest(i.name, i.fileName)
+      } else skippingTest(i.name, i.fileName, i.tags)
     }
     return i.exported
   }

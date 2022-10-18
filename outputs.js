@@ -7,10 +7,15 @@ const format = text => text.includes('\n') ? `\n${text}\n` : text
  * Announces that a test is being skipped due to it not being exported.
  * @param {string} name
  * @param {string} file
+ * @param {{ type: string, text: string, lineNo: number }} tags
  */
-export function skippingTest (name, file) {
+export function skippingTest (name, file, tags) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
-    return console.warn(logSymbols.warning, `Function / Class "${name}" is not exported from ${file}, skipping its tests.`)
+    const tagString =
+      tags.length === 1
+        ? ` the @${tags[0].type} statement on line ${tags[0].lineNo}: "${tags[0].text}"`
+        : `:\n${tags.map(i => `- the @${i.type} statement on line ${i.lineNo}: "${i.text}"`).join('\n')}`
+    return console.warn(logSymbols.warning, `Because the function or class "${name}" is not exported from ${file}, we will be skipping${tagString}`)
   }
 
   if (process.env.OUTPUT_FORMAT === 'JSON') {
