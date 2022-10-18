@@ -6,11 +6,11 @@ sidebar_position: 6
 
 Continuing down the path of writing more complex tests with Pineapple, there may be certain situations where you need to perform some additional setup & teardown. While not strictly required, these are recommended to be embedded in a `.test.js` file.
 
+## Global Before / After Hooks
 
-## Before / After all of the tests
+### Before All / After All
 
 If you wish to run a function before / after all of the tests are run (like an initial setup for every single test you're going to run), you are able to simply add a JSDoc annotation to a function without any other descriptors.
-
 
 ```js
 /**
@@ -19,7 +19,7 @@ If you wish to run a function before / after all of the tests are run (like an i
  * @beforeAll
  */
 export async function initializeCityDatabase() {
-    ...
+    // ...
 }
 
 
@@ -34,6 +34,36 @@ export async function isCity(city) {
 ```
 
 The annotations for this are `beforeAll` and `afterAll`. You may define multiple functions to be invoked.
+
+### Before / After (Global)
+
+If you need to run a function before or after each set of tests (before each function), you may use the `@beforeGlobal` and `@afterGlobal` tags.
+
+```js
+/**
+ * @beforeGlobal
+ */
+function resetCounts() {
+    // ...
+}
+```
+
+This might make sense if you're using a framework and you're performing measurements in each test set.
+
+### Before Each / After Each (Global)
+
+If you need to run a function before or after each test (every individual test case), you may use the `@beforeEachGlobal` and `@afterEachGlobal` tags.
+
+```js
+/**
+ * @beforeEachGlobal
+ */
+function resetCounts() {
+    // ...
+}
+```
+
+This might make sense if you're using a framework and you're performing measurements in each test.
 
 ## Before / After tests within a function
 
@@ -78,7 +108,6 @@ export async function example(name) {
 ### BeforeEach / AfterEach
 
 If you'd prefer for it to run before / after each test case,
-
 
 ```js
 let person
