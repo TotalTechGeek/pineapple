@@ -67,6 +67,8 @@ function generateErrorText (error) {
 engine.addMethod('snapshot', async ([inputs], context) => {
   let result = null
   let promise = false
+  // workaround to get the actualError to the output.
+  let actualError = null
   try {
     const call = getDataSpecialSnapshot(context.func.apply(null, inputs))
     if (call && call.then) {
@@ -77,6 +79,7 @@ engine.addMethod('snapshot', async ([inputs], context) => {
     const errorInfo = err instanceof Error
       ? (err.constructor.name === 'Error' ? err.message : err.constructor.name)
       : err
+    actualError = err
     result = {
       error: errorInfo
     }
@@ -106,10 +109,10 @@ engine.addMethod('snapshot', async ([inputs], context) => {
       await context.snap.set(context.id, result)
       return [result, true]
     }
-    return [result, false, diff(value, result)]
+    return [{ ...result, actualError }, false, diff(value, result)]
   }
 
-  return [result, false, 'There is no snapshot for this test.']
+  return [{ ...result, actualError }, false, 'There is no snapshot for this test.']
 }, {
   useContext: true
 })

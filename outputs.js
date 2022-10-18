@@ -51,6 +51,7 @@ export function failure ({ name, input, message, file, data }) {
       console.log(message)
       console.log()
 
+      if (data && data.actualError) data = data.actualError
       if (data && data.stack) {
         console.log(chalk.red(data.stack))
         console.log()
