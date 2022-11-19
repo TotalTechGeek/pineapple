@@ -45,7 +45,8 @@ export function addDefinitions (fn, category = '') {
       return engine.addMethod(`#${category}${key}`, createArbitrary(definitions[key]), { sync: true })
     }
 
-    if (definitions[key] instanceof fc.Arbitrary) {
+    // todo: come up with a better way to detect that it's an arbitrary; there's probably a much better way
+    if (definitions[key] instanceof fc.Arbitrary || (definitions[key].constructor && definitions[key].constructor.toString().includes('extends Arbitrary'))) {
       return engine.addMethod(`#${category}${key}`, always(definitions[key]), { sync: true })
     }
 

@@ -85,9 +85,10 @@ async function main () {
   let functions = files.flatMap(getFileFunctions)
 
   if (options.watchMode) {
-    chokidar.watch(options.include).on('change', async (pth) => {
-      const correctPath = path.resolve(pth)
+    chokidar.watch(options.include).on('change', async (fileChanged) => {
+      const correctPath = path.resolve(fileChanged)
 
+      if (fileChanged.endsWith('.psnap')) return
       const file = project.addSourceFileAtPath(correctPath)
       await file.refreshFromFileSystem()
       console.clear()
@@ -96,7 +97,9 @@ async function main () {
       )
 
       const execFunctions = functions.filter(i => {
-        return i.dependencies.has(correctPath)
+        // we also always need to include files with @pineapple_define and global tags.
+        const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
+        return i.dependencies.has(correctPath) || global
       })
 
       if (execFunctions.length) {
