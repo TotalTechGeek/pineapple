@@ -298,6 +298,8 @@ async function execute (project, functions, forkProcess = false) {
         ...process.env
       }
     })
+
+    // @ts-ignore
     child.tag = tag
 
     child.on('exit', (_, signal) => {
@@ -334,7 +336,7 @@ function multiLine (fileText, start, type) {
 
     try {
       // attempt a parse, if it succeeds, flag it as successful & use that.
-      parse(text)
+      parse(text, {})
       lastSuccess = text
     } catch (err) {}
 
@@ -486,6 +488,7 @@ function getFileExports (file) {
  *
  * @param {string[]} fileText
  * @param {number} end
+ * @param {number[] | null} onlyLines
  */
 function getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) {
   const tags = []
