@@ -3,7 +3,7 @@
 import { Project } from 'ts-morph'
 import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
-
+import debounce from 'debounce'
 import { program, Option } from 'commander'
 import { hash } from './hash.js'
 import url from 'url'
@@ -41,6 +41,7 @@ if (!options.include || !options.include.length) throw new Error('Please select 
 
 // Used for the "watch" mode.
 let child
+let count = 0
 
 // Add additional code to make it easier to interface with the program when in watch mode.
 if (options.watchMode) {
@@ -89,31 +90,33 @@ async function main () {
   // get variable declarations that are arrow functions / functions
   let functions = files.flatMap(getFileFunctions)
 
-  if (options.watchMode) {
-    chokidar.watch(options.include).on('change', async (fileChanged) => {
-      const correctPath = path.resolve(fileChanged)
+  const fileChanged = debounce(async (fileChanged) => {
+    const correctPath = path.resolve(fileChanged)
 
-      if (fileChanged.endsWith('.psnap')) return
-      const file = project.addSourceFileAtPath(correctPath)
-      await file.refreshFromFileSystem()
-      console.clear()
-      functions = functions.filter(i => i.fileName !== url.pathToFileURL(correctPath).href).concat(
-        getFileFunctions(file)
-      )
+    if (fileChanged.endsWith('.psnap')) return
+    const file = project.addSourceFileAtPath(correctPath)
+    await file.refreshFromFileSystem()
+    console.clear()
+    functions = functions.filter(i => i.fileName !== url.pathToFileURL(correctPath).href).concat(
+      getFileFunctions(file)
+    )
 
-      const execFunctions = functions.filter(i => {
-        // we also always need to include files with @pineapple_define and global tags.
-        const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
-        return i.dependencies.has(correctPath) || global
-      })
-
-      if (execFunctions.length) {
-        const set = new Set()
-        execFunctions.forEach(i => set.add(i.relativePath))
-        await execute(project, execFunctions, true)
-        filesTested(Array.from(set))
-      }
+    const execFunctions = functions.filter(i => {
+      // we also always need to include files with @pineapple_define and global tags.
+      const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
+      return i.dependencies.has(correctPath) || global
     })
+
+    if (execFunctions.length) {
+      const set = new Set()
+      execFunctions.forEach(i => set.add(i.relativePath))
+      await execute(project, execFunctions, true)
+      filesTested(Array.from(set))
+    }
+  }, 50)
+
+  if (options.watchMode) {
+    chokidar.watch(options.include).on('change', fileChanged)
   } else await execute(project, functions, false)
 }
 
@@ -284,12 +287,16 @@ async function execute (project, functions, forkProcess = false) {
   // run the file
   if (forkProcess) {
     const program = options.bun ? 'bun' : 'node'
-    console.time('i')
+
+    const tag = 'i-' + (count++).toString()
+    // console.time(tag)
     child = spawn(program, [tmp], {
       stdio: ['pipe', 'inherit', 'inherit']
     })
-    child.on('exit', () => {
-      console.timeEnd('i')
+    child.tag = tag
+
+    child.on('exit', (_, signal) => {
+      // if (signal !== 'SIGTERM') console.timeEnd(tag)
     })
   } else await import(url.pathToFileURL(tmp).href)
 }
@@ -448,7 +455,6 @@ function getFileExports (file) {
       }
     }
 
-    
     if (!ex) {
       if (right.includes('{')) {
         right.substring(1, right.length - 1).trim().split(',').forEach(i => {

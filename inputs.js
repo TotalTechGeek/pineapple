@@ -10,7 +10,7 @@ async function getConfirmation (message) {
   }
   return new Promise(resolve => {
     const currentMode = process.stdin.isRaw
-    process.stdin.setRawMode(true)
+    if (process.stdin.setRawMode) process.stdin.setRawMode(true)
 
     process.stdout.write(message + ' ')
     let choice = true
@@ -18,8 +18,9 @@ async function getConfirmation (message) {
 
     const func = data => {
       if (data[0] === 13) {
-        process.stdin.setRawMode(currentMode)
+        if (process.stdin.setRawMode) process.stdin.setRawMode(currentMode)
         process.stdin.removeListener('data', func)
+        console.log()
         return resolve(choice)
       }
 
@@ -64,7 +65,7 @@ export async function askSnapshot ({ item, rule, id, file }) {
   }
   console.log(`On test (${id.split('(')[0]}):`, rule)
   console.log(chalk.green(serialize(item)))
-  const result = await getConfirmation('Accept this snapshot?')
+  const result = await getConfirmation('Accept this snapshot?').catch(err => console.log(err))
   return result
 }
 

@@ -13,6 +13,9 @@
     "url": "https://github.com/TotalTechGeek/pineapple",
     "type": "git"
   },
+  "resolutions": {
+    "@typescript-eslint/typescript-estree": "5.43.0"
+  },
   "dependencies": {
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-sucrase": "^4.0.3",
@@ -20,9 +23,9 @@
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "commander": "^9.4.1",
+    "debounce": "^1.2.1",
     "dependency-tree": "^8.1.2",
     "fast-check": "^3.3.0",
-    "inquirer": "^8.2.2",
     "jest-diff": "^27.5.1",
     "json-logic-engine": "^1.1.21",
     "log-symbols": "^5.1.0",
@@ -44,7 +47,7 @@
     "exitzero": "^1.0.1",
     "peggy": "^1.2.0",
     "standard": "^16.0.4",
-    "typescript": "^4.4.4"
+    "typescript": "4.8.4"
   },
   "bin": {
     "pineapple": "./index.js"
