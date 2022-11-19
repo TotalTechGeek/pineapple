@@ -31,7 +31,7 @@ program
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .addOption(formatOption)
 
-if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner (only works for watch mode).')
+if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner.')
 
 program.parse()
 
@@ -41,7 +41,6 @@ if (!options.include || !options.include.length) throw new Error('Please select 
 
 // Used for the "watch" mode.
 let child
-let count = 0
 
 // Add additional code to make it easier to interface with the program when in watch mode.
 if (options.watchMode) {
@@ -289,21 +288,22 @@ async function execute (project, functions, forkProcess = false) {
   if (forkProcess) {
     const program = options.bun ? 'bun' : 'node'
 
-    const tag = 'i-' + (count++).toString()
-    // console.time(tag)
-
     child = spawn(program, [tmp], {
       stdio: ['pipe', 'inherit', 'inherit'],
       env: {
         ...process.env
       }
     })
+  } else if (options.bun) {
+    child = spawn('bun', [tmp], {
+      stdio: ['pipe', 'inherit', 'inherit'],
+      env: {
+        ...process.env
+      }
+    })
 
-    // @ts-ignore
-    child.tag = tag
-
-    child.on('exit', (_, signal) => {
-      // if (signal !== 'SIGTERM') console.timeEnd(tag)
+    child.on('exit', (code) => {
+      process.exit(code || undefined)
     })
   } else await import(url.pathToFileURL(tmp).href)
 }
