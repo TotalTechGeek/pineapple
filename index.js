@@ -3,7 +3,7 @@
 import { Project } from 'ts-morph'
 import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
-
+import debounce from 'debounce'
 import { program, Option } from 'commander'
 import { hash } from './hash.js'
 import url from 'url'
@@ -14,14 +14,15 @@ import chalk from 'chalk'
 import dependencyTree from 'dependency-tree'
 import chokidar from 'chokidar'
 import path from 'path'
-import { spawn } from 'child_process'
-import readline from 'readline'
+import { spawn } from 'node:child_process'
+import readline from 'node:readline'
+import os from 'os'
 
 const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
 program
   .name('pineapple')
-  .version('0.11.0')
+  .version('0.12.0')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
@@ -29,6 +30,8 @@ program
   .option('-t, --typescript', 'Enables typescript (slower).')
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .addOption(formatOption)
+
+if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner.')
 
 program.parse()
 
@@ -49,13 +52,15 @@ if (options.watchMode) {
   readline.emitKeypressEvents(process.stdin)
   process.stdin.setRawMode(true)
 
-  const forward = new Set(['down', 'up', 'return'])
+  const forward = new Set(['down', 'up', 'return', 'backspace'])
+  const forwardEntered = new Set(['y', 'n'])
   process.stdin.on('keypress', (str, key) => {
     if (key.ctrl && key.name === 'c') cleanExit()
     if ((!child || child.exitCode !== null) && key.name === 'q') cleanExit()
 
     // Forward certain keystrokes to the child program
     if (child && child.exitCode === null && forward.has(key.name)) child.stdin.write(key.sequence)
+    if (child && child.exitCode === null && forwardEntered.has(key.name)) child.stdin.write(key.sequence + '\n')
   })
 }
 
@@ -65,6 +70,8 @@ process.env.UPDATE_ALL = options.updateAll || ''
 
 if (options.format === 'json') process.env.OUTPUT_FORMAT = 'JSON'
 process.env.OUTPUT_FORMAT = process.env.OUTPUT_FORMAT || 'CONSOLE'
+if (options.bun) delete options.typescript
+if (options.bun && process.env.OUTPUT_FORMAT === 'CONSOLE') process.env.FORCE_COLOR = '1'
 if (process.env.OUTPUT_FORMAT === 'JSON') {
   chalk.level = 0
   process.env.FORCE_COLOR = '0'
@@ -84,31 +91,33 @@ async function main () {
   // get variable declarations that are arrow functions / functions
   let functions = files.flatMap(getFileFunctions)
 
-  if (options.watchMode) {
-    chokidar.watch(options.include).on('change', async (fileChanged) => {
-      const correctPath = path.resolve(fileChanged)
+  const fileChanged = debounce(async (fileChanged) => {
+    const correctPath = path.resolve(fileChanged)
 
-      if (fileChanged.endsWith('.psnap')) return
-      const file = project.addSourceFileAtPath(correctPath)
-      await file.refreshFromFileSystem()
-      console.clear()
-      functions = functions.filter(i => i.fileName !== url.pathToFileURL(correctPath).href).concat(
-        getFileFunctions(file)
-      )
+    if (fileChanged.endsWith('.psnap')) return
+    const file = project.addSourceFileAtPath(correctPath)
+    await file.refreshFromFileSystem()
+    console.clear()
+    functions = functions.filter(i => i.fileName !== url.pathToFileURL(correctPath).href).concat(
+      getFileFunctions(file)
+    )
 
-      const execFunctions = functions.filter(i => {
-        // we also always need to include files with @pineapple_define and global tags.
-        const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
-        return i.dependencies.has(correctPath) || global
-      })
-
-      if (execFunctions.length) {
-        const set = new Set()
-        execFunctions.forEach(i => set.add(i.relativePath))
-        await execute(project, execFunctions, true)
-        filesTested(Array.from(set))
-      }
+    const execFunctions = functions.filter(i => {
+      // we also always need to include files with @pineapple_define and global tags.
+      const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
+      return i.dependencies.has(correctPath) || global
     })
+
+    if (execFunctions.length) {
+      const set = new Set()
+      execFunctions.forEach(i => set.add(i.relativePath))
+      await execute(project, execFunctions, true)
+      filesTested(Array.from(set))
+    }
+  }, 50)
+
+  if (options.watchMode) {
+    chokidar.watch(options.include).on('change', fileChanged)
   } else await execute(project, functions, false)
 }
 
@@ -170,14 +179,16 @@ async function execute (project, functions, forkProcess = false) {
   const runFile = [...specifier, 'run.js'].join('/')
   const outputFile = [...specifier, 'outputs.js'].join('/')
 
+  const pathScheme = options.bun ? url.fileURLToPath : i => i
+
   testFile.addImportDeclaration({
-    moduleSpecifier: runFile,
+    moduleSpecifier: pathScheme(runFile),
     namedImports: ['run', 'addMethod', 'addDefinitions', 'execute', 'hof'],
     isTypeOnly: false
   })
 
   testFile.addImportDeclaration({
-    moduleSpecifier: outputFile,
+    moduleSpecifier: pathScheme(outputFile),
     namedImports: ['aggregate'],
     isTypeOnly: false
   })
@@ -188,7 +199,7 @@ async function execute (project, functions, forkProcess = false) {
   await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
     if (options.typescript) { moduleSpecifier = await transpile(moduleSpecifier) }
     testFile.addStatements(`
-            import * as $$${index} from '${moduleSpecifier}';
+            import * as $$${index} from '${pathScheme(moduleSpecifier)}';
             const { ${namedImports.map(i => {
       original[i].alias = `$${counter++}`
       return `${i}: ${original[i].alias}`
@@ -276,8 +287,24 @@ async function execute (project, functions, forkProcess = false) {
 
   // run the file
   if (forkProcess) {
-    child = spawn('node', [tmp], {
-      stdio: ['pipe', 'inherit', 'inherit']
+    const program = options.bun ? 'bun' : 'node'
+
+    child = spawn(program, [tmp], {
+      stdio: ['pipe', 'inherit', 'inherit'],
+      env: {
+        ...process.env
+      }
+    })
+  } else if (options.bun) {
+    child = spawn('bun', [tmp], {
+      stdio: ['pipe', 'inherit', 'inherit'],
+      env: {
+        ...process.env
+      }
+    })
+
+    child.on('exit', (code) => {
+      process.exit(code || undefined)
     })
   } else await import(url.pathToFileURL(tmp).href)
 }
@@ -310,7 +337,7 @@ function multiLine (fileText, start, type) {
 
     try {
       // attempt a parse, if it succeeds, flag it as successful & use that.
-      parse(text)
+      parse(text, {})
       lastSuccess = text
     } catch (err) {}
 
@@ -462,6 +489,7 @@ function getFileExports (file) {
  *
  * @param {string[]} fileText
  * @param {number} end
+ * @param {number[] | null} onlyLines
  */
 function getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) {
   const tags = []

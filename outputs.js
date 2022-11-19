@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import logSymbols from 'log-symbols'
 
+if (process.env.FORCE_COLOR) chalk.level = 3
 const format = text => text.includes('\n') ? `\n${text}\n` : text
 
 /**
