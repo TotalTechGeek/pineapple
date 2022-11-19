@@ -9,15 +9,21 @@ import { hash } from './hash.js'
 import url from 'url'
 import { transpile } from './typescriptTranspiler.js'
 import { parse } from './parser/dsl.js'
-import { skippingTest } from './outputs.js'
+import { filesTested, skippingTest } from './outputs.js'
 import chalk from 'chalk'
+import dependencyTree from 'dependency-tree'
+import chokidar from 'chokidar'
+import path from 'path'
+import { spawn } from 'child_process'
+import readline from 'readline'
 
 const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
 program
   .name('pineapple')
-  .version('0.10.1')
+  .version('0.11.0')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
+  .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
   .option('-t, --typescript', 'Enables typescript (slower).')
@@ -29,6 +35,29 @@ program.parse()
 const options = program.opts()
 
 if (!options.include || !options.include.length) throw new Error('Please select files to include.')
+
+// Used for the "watch" mode.
+let child
+
+// Add additional code to make it easier to interface with the program when in watch mode.
+if (options.watchMode) {
+  const cleanExit = () => {
+    console.clear()
+    if (child) child.kill()
+    process.exit()
+  }
+  readline.emitKeypressEvents(process.stdin)
+  process.stdin.setRawMode(true)
+
+  const forward = new Set(['down', 'up', 'return'])
+  process.stdin.on('keypress', (str, key) => {
+    if (key.ctrl && key.name === 'c') cleanExit()
+    if ((!child || child.exitCode !== null) && key.name === 'q') cleanExit()
+
+    // Forward certain keystrokes to the child program
+    if (child && child.exitCode === null && forward.has(key.name)) child.stdin.write(key.sequence)
+  })
+}
 
 // hack for now until I make the code better
 process.env.ACCEPT_ALL = options.acceptAll || ''
@@ -42,7 +71,6 @@ if (process.env.OUTPUT_FORMAT === 'JSON') {
 }
 
 async function main () {
-  const tmp = tempy.file({ extension: 'mjs' })
   const project = new Project({
 
   })
@@ -54,11 +82,77 @@ async function main () {
   })
 
   // get variable declarations that are arrow functions / functions
+  let functions = files.flatMap(getFileFunctions)
 
-  const functions = files.flatMap(file => {
-    const fileText = file.getFullText().split('\n')
-    return getFunctions(file, fileText, url.pathToFileURL(file.getFilePath()).href)
-  })
+  if (options.watchMode) {
+    chokidar.watch(options.include).on('change', async (pth) => {
+      const correctPath = path.resolve(pth)
+
+      const file = project.addSourceFileAtPath(correctPath)
+      await file.refreshFromFileSystem()
+      console.clear()
+      functions = functions.filter(i => i.fileName !== url.pathToFileURL(correctPath).href).concat(
+        getFileFunctions(file)
+      )
+
+      const execFunctions = functions.filter(i => {
+        return i.dependencies.has(correctPath)
+      })
+
+      if (execFunctions.length) {
+        const set = new Set()
+        execFunctions.forEach(i => set.add(i.relativePath))
+        await execute(project, execFunctions, true)
+        filesTested(Array.from(set))
+      }
+    })
+  } else await execute(project, functions, false)
+}
+
+const getFileFunctions = file => {
+  const fileText = file.getFullText().split('\n')
+  const functions = getFunctions(file, fileText, url.pathToFileURL(file.getFilePath()).href)
+
+  if (functions.length) {
+    // grab the dependencies for a given file
+    const dependencies = new Set(dependencyTree.toList({
+      filename: file.getFilePath(),
+      directory: '.',
+      filter: str => !str.includes('/node_modules/')
+    }))
+    // attach the dependencies to the files.
+    return functions.map(i => ({ ...i, dependencies }))
+  }
+
+  return []
+}
+
+const cwd = url.pathToFileURL(process.cwd()).href
+
+const TAG_TYPES = [
+  'test',
+  'test_static',
+  'pineapple_import',
+  'pineapple_define',
+  'beforeAll',
+  'afterAll',
+  'before',
+  'after',
+  'beforeEach',
+  'afterEach',
+  'beforeGlobal',
+  'beforeEachGlobal',
+  'afterGlobal',
+  'afterEachGlobal'
+]
+
+/**
+ * @param {import('ts-morph').Project} project
+ * @param {*} functions
+ * @param {boolean} forkProcess
+ */
+async function execute (project, functions, forkProcess = false) {
+  const tmp = tempy.file({ extension: 'mjs' })
 
   const testFile = project.createSourceFile(tmp, undefined, {
     overwrite: true
@@ -70,11 +164,18 @@ async function main () {
 
   const specifier = import.meta.url.split(/\/|\\/)
   specifier.pop()
-  specifier.push('run.js')
+  const runFile = [...specifier, 'run.js'].join('/')
+  const outputFile = [...specifier, 'outputs.js'].join('/')
 
   testFile.addImportDeclaration({
-    moduleSpecifier: specifier.join('/'),
+    moduleSpecifier: runFile,
     namedImports: ['run', 'addMethod', 'addDefinitions', 'execute', 'hof'],
+    isTypeOnly: false
+  })
+
+  testFile.addImportDeclaration({
+    moduleSpecifier: outputFile,
+    namedImports: ['aggregate'],
     isTypeOnly: false
   })
 
@@ -82,13 +183,13 @@ async function main () {
 
   // add imports
   await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
-    if (options.typescript) moduleSpecifier = await transpile(moduleSpecifier)
+    if (options.typescript) { moduleSpecifier = await transpile(moduleSpecifier) }
     testFile.addStatements(`
             import * as $$${index} from '${moduleSpecifier}';
             const { ${namedImports.map(i => {
-                original[i].alias = `$${counter++}`
-                return `${i}: ${original[i].alias}`
-            }).join(', ')} } = { ...$$${index}.default, ...$$${index} };
+      original[i].alias = `$${counter++}`
+      return `${i}: ${original[i].alias}`
+    }).join(', ')} } = { ...$$${index}.default, ...$$${index} };
         `)
   }))
 
@@ -101,6 +202,7 @@ async function main () {
 
   const executeTag = tag => `await execute(${JSON.stringify(tag.text)})`
 
+  let testCount = 0
   const { addedMethods, tests, beforeAll, afterAll, beforeEachGlobal, beforeGlobal, afterGlobal, afterEachGlobal } = functions.map(func => {
     const addedMethods = func.tags
       .filter(i => i.type === 'pineapple_import')
@@ -124,7 +226,6 @@ async function main () {
     const afterEachGlobal = globalLifecycle('afterEachGlobal')
 
     // before / beforeEach / after / afterEach will get integrated in directly with the tests.
-
     const testLifecycle = name => func.tags
       .filter(i => i.type === name)
       .map(executeTag)
@@ -137,6 +238,8 @@ async function main () {
 
     const wrapHof = (alias, tag) => func.isClass ? `hof(${alias}, ${tag.type === 'test_static'})` : alias
 
+    // this is sloppy, I should make this part of the reducer
+    testCount += func.tags.filter(i => i.type === 'test' || i.type === 'test_static').length
     const tests = `%beforeGlobal%\n${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             %beforeEachGlobal% 
             ${beforeEach}
@@ -150,7 +253,7 @@ async function main () {
     // eslint-disable-next-line no-return-assign
     Object.keys(i).forEach(k => acc[k] = [...(acc[k] || []), ...i[k]])
     return acc
-  }, { })
+  }, {})
 
   const testString = tests.join('')
     .replace(/%beforeEachGlobal%/g, beforeEachGlobal.join(''))
@@ -158,36 +261,23 @@ async function main () {
     .replace(/%afterEachGlobal%/g, afterEachGlobal.join(''))
     .replace(/%afterGlobal%/g, afterGlobal.join(''))
 
-  testFunc.setBodyText(`let sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${testString}\n${afterAll.join('')};
-    return sum`)
+  testFunc.setBodyText(`const count = ${testCount};\nlet sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${testString}\n${afterAll.join('')};
+    return { sum, count }`)
 
   // add text to end of file
-  testFile.addStatements('test().then(i => { process.exit(i) });')
-
+  // eslint-disable-next-line no-template-curly-in-string
+  testFile.addStatements('test().then(({ sum, count }) => { aggregate(sum, count); process.exit(sum) });')
   testFile.saveSync()
 
+  if (child) child.kill()
+
   // run the file
-  await import(url.pathToFileURL(tmp).href)
+  if (forkProcess) {
+    child = spawn('node', [tmp], {
+      stdio: ['pipe', 'inherit', 'inherit']
+    })
+  } else await import(url.pathToFileURL(tmp).href)
 }
-
-const cwd = url.pathToFileURL(process.cwd()).href
-
-const TAG_TYPES = [
-  'test',
-  'test_static',
-  'pineapple_import',
-  'pineapple_define',
-  'beforeAll',
-  'afterAll',
-  'before',
-  'after',
-  'beforeEach',
-  'afterEach',
-  'beforeGlobal',
-  'beforeEachGlobal',
-  'afterGlobal',
-  'afterEachGlobal'
-]
 
 /**
  * An algorithm to try to parse out multi-line tests.

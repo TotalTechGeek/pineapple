@@ -96,3 +96,33 @@ export function testRuntimeFailure (err) {
     return console.log(JSON.stringify({ type: 'Runtime Failure', message: err.message, name: err.name || (err.constructor || {}).name || 'Unidentified Error' }))
   }
 }
+
+/**
+ * Logs the number of tests run.
+ * @param {number} failures
+ * @param {number} total
+ */
+export function aggregate (failures, total) {
+  if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
+    const color = failures ? chalk.red : chalk.green
+    console.log(chalk.bold(color(`Passed ${total - failures}/${total} tests.`)))
+  }
+
+  if (process.env.OUTPUT_FORMAT === 'JSON') {
+    return console.log(JSON.stringify({ type: 'Aggregate', failures, total }))
+  }
+}
+
+/**
+ * Print the files that are being tested.
+ * @param {string[]} files
+ */
+export function filesTested (files) {
+  if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
+    console.log(`Testing: ${files.join(', ')}`)
+  }
+
+  if (process.env.OUTPUT_FORMAT === 'JSON') {
+    /* nothing for now */
+  }
+}
