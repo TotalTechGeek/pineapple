@@ -71,6 +71,7 @@ process.env.UPDATE_ALL = options.updateAll || ''
 
 if (options.format === 'json') process.env.OUTPUT_FORMAT = 'JSON'
 process.env.OUTPUT_FORMAT = process.env.OUTPUT_FORMAT || 'CONSOLE'
+if (options.bun && process.env.OUTPUT_FORMAT === 'CONSOLE') process.env.FORCE_COLOR = '1'
 if (process.env.OUTPUT_FORMAT === 'JSON') {
   chalk.level = 0
   process.env.FORCE_COLOR = '0'
@@ -290,8 +291,12 @@ async function execute (project, functions, forkProcess = false) {
 
     const tag = 'i-' + (count++).toString()
     // console.time(tag)
+
     child = spawn(program, [tmp], {
-      stdio: ['pipe', 'inherit', 'inherit']
+      stdio: ['pipe', 'inherit', 'inherit'],
+      env: {
+        ...process.env
+      }
     })
     child.tag = tag
 

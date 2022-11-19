@@ -20,7 +20,7 @@
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-sucrase": "^4.0.3",
     "ajv": "^8.11.0",
-    "chalk": "^5.0.1",
+    "chalk": "^5.1.2",
     "chokidar": "^3.5.3",
     "commander": "^9.4.1",
     "debounce": "^1.2.1",
