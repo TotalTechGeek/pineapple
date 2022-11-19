@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import inquirer from 'inquirer'
+// import inquirer from 'inquirer'
 import { serialize } from './snapshot.js'
 import { diff } from './utils.js'
 

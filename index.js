@@ -14,8 +14,8 @@ import chalk from 'chalk'
 import dependencyTree from 'dependency-tree'
 import chokidar from 'chokidar'
 import path from 'path'
-import { spawn } from 'child_process'
-import readline from 'readline'
+import { spawn } from 'node:child_process'
+import readline from 'node:readline'
 
 const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
@@ -171,13 +171,13 @@ async function execute (project, functions, forkProcess = false) {
   const outputFile = [...specifier, 'outputs.js'].join('/')
 
   testFile.addImportDeclaration({
-    moduleSpecifier: runFile,
+    moduleSpecifier: url.fileURLToPath(runFile),
     namedImports: ['run', 'addMethod', 'addDefinitions', 'execute', 'hof'],
     isTypeOnly: false
   })
 
   testFile.addImportDeclaration({
-    moduleSpecifier: outputFile,
+    moduleSpecifier: url.fileURLToPath(outputFile),
     namedImports: ['aggregate'],
     isTypeOnly: false
   })
@@ -188,7 +188,7 @@ async function execute (project, functions, forkProcess = false) {
   await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
     if (options.typescript) { moduleSpecifier = await transpile(moduleSpecifier) }
     testFile.addStatements(`
-            import * as $$${index} from '${moduleSpecifier}';
+            import * as $$${index} from '${url.fileURLToPath(moduleSpecifier)}';
             const { ${namedImports.map(i => {
       original[i].alias = `$${counter++}`
       return `${i}: ${original[i].alias}`
@@ -276,8 +276,12 @@ async function execute (project, functions, forkProcess = false) {
 
   // run the file
   if (forkProcess) {
-    child = spawn('node', [tmp], {
+    console.time('i')
+    child = spawn('bun', [tmp], {
       stdio: ['pipe', 'inherit', 'inherit']
+    })
+    child.on('exit', () => {
+      console.timeEnd('i')
     })
   } else await import(url.pathToFileURL(tmp).href)
 }

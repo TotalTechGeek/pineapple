@@ -553,10 +553,10 @@ commander@^4.0.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
   integrity sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
 
-commander@^9.2.0:
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-9.2.0.tgz#6e21014b2ed90d8b7c9647230d8b7a94a4a419a9"
-  integrity sha512-e2i4wANQiSXgnrBlIatyHtP1odfUp0BbV5Y5nEGbxtIrStkEOAAzCUirvLBNXHLr7kwLvJl6V+4V3XV9x7Wd9w==
+commander@^9.4.1:
+  version "9.4.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-9.4.1.tgz#d1dd8f2ce6faf93147295c0df13c7c21141cfbdd"
+  integrity sha512-5EEkTNyHNGFPD2H+c/dXXfQZYa/scCKasxWcXJaWnNJ99pnQN9Vnmqow+p+PlFPE63Q6mThaZws1T+HxfpgtPw==
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -1727,10 +1727,10 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-json-logic-engine@^1.1.19:
-  version "1.1.19"
-  resolved "https://registry.yarnpkg.com/json-logic-engine/-/json-logic-engine-1.1.19.tgz#2a9ee3e3e01df5d159711833721b72e1769d089d"
-  integrity sha512-vXy1LJBzh+I27otUOBNwKq7OilQGIywSun2JT2e1m01Kqh562Le+gooVXVDmHYed91B9jShKTJHyGFUls/bWIw==
+json-logic-engine@^1.1.21:
+  version "1.1.21"
+  resolved "https://registry.yarnpkg.com/json-logic-engine/-/json-logic-engine-1.1.21.tgz#577126b213e5e23f9b3d4970dd2537ff1d4d9a4c"
+  integrity sha512-BjAvLFLyokYumdLxw/Yto4WzfSnFDwynXRZhlpJRT2pnE3HbYV3LowSbiFaCbEbJ0Fp2aOKrMA+5lu1obN5xiA==
 
 json-parse-better-errors@^1.0.1:
   version "1.0.2"
