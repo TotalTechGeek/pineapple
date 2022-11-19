@@ -22,7 +22,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.11.0')
+  .version('0.12.0')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
@@ -70,6 +70,7 @@ process.env.UPDATE_ALL = options.updateAll || ''
 
 if (options.format === 'json') process.env.OUTPUT_FORMAT = 'JSON'
 process.env.OUTPUT_FORMAT = process.env.OUTPUT_FORMAT || 'CONSOLE'
+if (options.bun) delete options.typescript
 if (options.bun && process.env.OUTPUT_FORMAT === 'CONSOLE') process.env.FORCE_COLOR = '1'
 if (process.env.OUTPUT_FORMAT === 'JSON') {
   chalk.level = 0

@@ -49,6 +49,7 @@ Usage: pineapple [options]
 Options:
   -V, --version             output the version number
   -i, --include <files...>  Comma separated globs of files.
+  -w, --watch-mode          Will run tests only when a file is modified.
   -a, --accept-all          Accept all snapshots.
   -u, --update-all          Update all snapshots.
   -t, --typescript          Enables typescript (slower).
@@ -56,11 +57,13 @@ Options:
                             run.
   -f, --format <format>     The output format (choices: "json", "console",
                             default: "console")
+  --bun                     Uses Bun as the test runner.
   -h, --help                display help for command
+
 ```
 
 #### Example
 
-```
-pineapple -i src/**/*.js
+```bash
+pineapple -w -i "src/**/*.js" # Starts Pineapple in "watch mode" so that it'll run on update.
 ```
