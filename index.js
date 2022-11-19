@@ -16,6 +16,7 @@ import chokidar from 'chokidar'
 import path from 'path'
 import { spawn } from 'node:child_process'
 import readline from 'node:readline'
+import os from 'os'
 
 const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
@@ -29,6 +30,8 @@ program
   .option('-t, --typescript', 'Enables typescript (slower).')
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .addOption(formatOption)
+
+if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner (only works for watch mode).')
 
 program.parse()
 
@@ -49,13 +52,15 @@ if (options.watchMode) {
   readline.emitKeypressEvents(process.stdin)
   process.stdin.setRawMode(true)
 
-  const forward = new Set(['down', 'up', 'return'])
+  const forward = new Set(['down', 'up', 'return', 'backspace'])
+  const forwardEntered = new Set(['y', 'n'])
   process.stdin.on('keypress', (str, key) => {
     if (key.ctrl && key.name === 'c') cleanExit()
     if ((!child || child.exitCode !== null) && key.name === 'q') cleanExit()
 
     // Forward certain keystrokes to the child program
     if (child && child.exitCode === null && forward.has(key.name)) child.stdin.write(key.sequence)
+    if (child && child.exitCode === null && forwardEntered.has(key.name)) child.stdin.write(key.sequence + '\n')
   })
 }
 
@@ -170,14 +175,16 @@ async function execute (project, functions, forkProcess = false) {
   const runFile = [...specifier, 'run.js'].join('/')
   const outputFile = [...specifier, 'outputs.js'].join('/')
 
+  const pathScheme = options.bun ? url.fileURLToPath : i => i
+
   testFile.addImportDeclaration({
-    moduleSpecifier: url.fileURLToPath(runFile),
+    moduleSpecifier: pathScheme(runFile),
     namedImports: ['run', 'addMethod', 'addDefinitions', 'execute', 'hof'],
     isTypeOnly: false
   })
 
   testFile.addImportDeclaration({
-    moduleSpecifier: url.fileURLToPath(outputFile),
+    moduleSpecifier: pathScheme(outputFile),
     namedImports: ['aggregate'],
     isTypeOnly: false
   })
@@ -188,7 +195,7 @@ async function execute (project, functions, forkProcess = false) {
   await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
     if (options.typescript) { moduleSpecifier = await transpile(moduleSpecifier) }
     testFile.addStatements(`
-            import * as $$${index} from '${url.fileURLToPath(moduleSpecifier)}';
+            import * as $$${index} from '${pathScheme(moduleSpecifier)}';
             const { ${namedImports.map(i => {
       original[i].alias = `$${counter++}`
       return `${i}: ${original[i].alias}`
@@ -276,8 +283,9 @@ async function execute (project, functions, forkProcess = false) {
 
   // run the file
   if (forkProcess) {
+    const program = options.bun ? 'bun' : 'node'
     console.time('i')
-    child = spawn('bun', [tmp], {
+    child = spawn(program, [tmp], {
       stdio: ['pipe', 'inherit', 'inherit']
     })
     child.on('exit', () => {
@@ -440,6 +448,7 @@ function getFileExports (file) {
       }
     }
 
+    
     if (!ex) {
       if (right.includes('{')) {
         right.substring(1, right.length - 1).trim().split(',').forEach(i => {
