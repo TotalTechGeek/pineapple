@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 // @ts-check
-import { Project } from 'ts-morph'
 import { groupBy, pluck, map, indexBy } from 'ramda'
 import tempy from 'tempy'
 import debounce from 'debounce'
@@ -8,7 +7,6 @@ import { program, Option } from 'commander'
 import { hash } from './hash.js'
 import url from 'url'
 import { transpile } from './typescriptTranspiler.js'
-import { parse } from './parser/dsl.js'
 import { filesTested, skippingTest } from './outputs.js'
 import chalk from 'chalk'
 import dependencyTree from 'dependency-tree'
@@ -17,6 +15,9 @@ import path from 'path'
 import { spawn } from 'node:child_process'
 import readline from 'node:readline'
 import os from 'os'
+import { parseCode } from './basic-parser.js'
+import { readFileSync, writeFileSync } from 'fs'
+import glob from 'glob'
 
 const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
@@ -78,15 +79,9 @@ if (process.env.OUTPUT_FORMAT === 'JSON') {
 }
 
 async function main () {
-  const project = new Project({
-
-  })
-
   const regex = /,\s?(?![^{}]*\})/
 
-  const files = options.include.flatMap(i => i.split(regex)).flatMap(i => {
-    return project.addSourceFilesAtPaths(i)
-  })
+  const files = options.include.flatMap(i => i.split(regex)).flatMap(i => glob.sync(i))
 
   // get variable declarations that are arrow functions / functions
   let functions = files.flatMap(getFileFunctions)
@@ -95,12 +90,12 @@ async function main () {
     const correctPath = path.resolve(fileChanged)
 
     if (fileChanged.endsWith('.psnap')) return
-    const file = project.addSourceFileAtPath(correctPath)
-    await file.refreshFromFileSystem()
-    console.clear()
+
     functions = functions.filter(i => i.fileName !== url.pathToFileURL(correctPath).href).concat(
-      getFileFunctions(file)
+      getFileFunctions(fileChanged)
     )
+
+    console.log(fileChanged, functions)
 
     const execFunctions = functions.filter(i => {
       // we also always need to include files with @pineapple_define and global tags.
@@ -111,24 +106,23 @@ async function main () {
     if (execFunctions.length) {
       const set = new Set()
       execFunctions.forEach(i => set.add(i.relativePath))
-      await execute(project, execFunctions, true)
+      await execute(execFunctions, true)
       filesTested(Array.from(set))
     }
   }, 50)
 
   if (options.watchMode) {
     chokidar.watch(options.include).on('change', fileChanged)
-  } else await execute(project, functions, false)
+  } else await execute(functions, false)
 }
 
 const getFileFunctions = file => {
-  const fileText = file.getFullText().split('\n')
-  const functions = getFunctions(file, fileText, url.pathToFileURL(file.getFilePath()).href)
+  const functions = getFunctions(readFileSync(file).toString(), url.pathToFileURL(file).href)
 
   if (functions.length) {
     // grab the dependencies for a given file
     const dependencies = new Set(dependencyTree.toList({
-      filename: file.getFilePath(),
+      filename: file,
       directory: '.',
       filter: str => !str.includes('/node_modules/')
     }))
@@ -141,34 +135,12 @@ const getFileFunctions = file => {
 
 const cwd = url.pathToFileURL(process.cwd()).href
 
-const TAG_TYPES = [
-  'test',
-  'test_static',
-  'pineapple_import',
-  'pineapple_define',
-  'beforeAll',
-  'afterAll',
-  'before',
-  'after',
-  'beforeEach',
-  'afterEach',
-  'beforeGlobal',
-  'beforeEachGlobal',
-  'afterGlobal',
-  'afterEachGlobal'
-]
-
 /**
- * @param {import('ts-morph').Project} project
  * @param {*} functions
  * @param {boolean} forkProcess
  */
-async function execute (project, functions, forkProcess = false) {
+async function execute (functions, forkProcess = false) {
   const tmp = tempy.file({ extension: 'mjs' })
-
-  const testFile = project.createSourceFile(tmp, undefined, {
-    overwrite: true
-  })
 
   const imports = Object.entries(map(i => {
     return { namedImports: pluck('name', i), original: indexBy(i => i.name, i) }
@@ -181,38 +153,29 @@ async function execute (project, functions, forkProcess = false) {
 
   const pathScheme = options.bun ? url.fileURLToPath : i => i
 
-  testFile.addImportDeclaration({
-    moduleSpecifier: pathScheme(runFile),
-    namedImports: ['run', 'addMethod', 'addDefinitions', 'execute', 'hof'],
-    isTypeOnly: false
-  })
+  let testFileString = ''
 
-  testFile.addImportDeclaration({
-    moduleSpecifier: pathScheme(outputFile),
-    namedImports: ['aggregate'],
-    isTypeOnly: false
-  })
+  testFileString += `import { run, addMethod, addDefinitions, execute, hof } from '${pathScheme(runFile)}';\n`
+  testFileString += `import { aggregate } from '${pathScheme(outputFile)}';\n`
 
   let counter = 0
 
   // add imports
   await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
     if (options.typescript) { moduleSpecifier = await transpile(moduleSpecifier) }
-    testFile.addStatements(`
-            import * as $$${index} from '${pathScheme(moduleSpecifier)}';
-            const { ${namedImports.map(i => {
-      original[i].alias = `$${counter++}`
-      return `${i}: ${original[i].alias}`
-    }).join(', ')} } = { ...$$${index}.default, ...$$${index} };
-        `)
+
+    const str = `
+        import * as $$${index} from '${pathScheme(moduleSpecifier)}';
+        const { ${namedImports.map(i => {
+          original[i].alias = `$${counter++}`
+          return `${i}: ${original[i].alias}`
+        }).join(', ')} } = { ...$$${index}.default, ...$$${index} };
+    `
+    testFileString += str
   }))
 
   // add test functions
-  const testFunc = testFile.addFunction({
-    name: 'test',
-    parameters: [],
-    isAsync: true
-  })
+  testFileString += '\nasync function test() {\n'
 
   const executeTag = tag => `await execute(${JSON.stringify(tag.text)})`
 
@@ -275,13 +238,15 @@ async function execute (project, functions, forkProcess = false) {
     .replace(/%afterEachGlobal%/g, afterEachGlobal.join(''))
     .replace(/%afterGlobal%/g, afterGlobal.join(''))
 
-  testFunc.setBodyText(`const count = ${testCount};\nlet sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${testString}\n${afterAll.join('')};
-    return { sum, count }`)
+  testFileString += `const count = ${testCount};\nlet sum = 0;\n${addedMethods.join('')}\n${beforeAll.join('')}\n${testString}\n${afterAll.join('')};
+    return { sum, count }`
+
+  testFileString += '\n}\n'
 
   // add text to end of file
-  // eslint-disable-next-line no-template-curly-in-string
-  testFile.addStatements('test().then(({ sum, count }) => { aggregate(sum, count); process.exit(sum) });')
-  testFile.saveSync()
+  testFileString += 'test().then(({ sum, count }) => { aggregate(sum, count); process.exit(sum) });'
+
+  writeFileSync(tmp, testFileString)
 
   if (child) child.kill()
 
@@ -310,48 +275,10 @@ async function execute (project, functions, forkProcess = false) {
 }
 
 /**
- * An algorithm to try to parse out multi-line tests.
- * Terminates at either a new tag, or at the end of the comment chain.
- * It will continue crawling down until it terminates, and a test case is parsed correctly,
- * it use that instead of just the first line.
- *
- * This approach allows us to do multi-line without adding "\" to the end of the lines,
- * which would be rather ugly.
- * @param {string[]} fileText
- * @param {number} start
- * @param {string} type
- */
-function multiLine (fileText, start, type) {
-  let end = start + 1
-
-  let text = (fileText[start].split(`@${type} `)[1] || '').trim()
-  let lastSuccess = text
-
-  // while there isn't a "* @" on the line or "*/"
-  while (fileText[end] && !fileText[end].includes('* @') && !fileText[end].includes('*/')) {
-    const addition = fileText[end]
-      .substring(fileText[end].indexOf('*') + 1)
-      .trim()
-
-    text += '\n' + addition
-
-    try {
-      // attempt a parse, if it succeeds, flag it as successful & use that.
-      parse(text, {})
-      lastSuccess = text
-    } catch (err) {}
-
-    end++
-  }
-
-  return lastSuccess.trim()
-}
-
-/**
  * Gets each of the functions from the file & figures out if they have associated pineapple
  * annotations.
  */
-function getFunctions (file, fileText, fileName) {
+function getFunctions (fileText, fileName) {
   let onlyLines = null
   if (options.only && options.only.length) {
     onlyLines = options.only.map(i => {
@@ -362,153 +289,19 @@ function getFunctions (file, fileText, fileName) {
     if (!onlyLines.length) return []
   }
 
-  // Get classes & variable declarations for test cases.
-  const dec = [...file.getClasses(), ...file.getVariableDeclarations()].map(i => {
-    const text = i.getText()
-
-    // BUG: This is a bit imprecise because "=>" and "function" could be present in the variable declaration,
-    // If this situation comes up, where someone adds a JSDoc to a text string, we can resolve it.
-    if (
-      !text.includes('=>') &&
-      !text.includes('function') &&
-      i.getKindName() !== 'ClassDeclaration'
-      // && !getTags(fileText, i.getStartLineNumber() - 2, ['pineapple_force']).length
-    ) return null
-
-    const isClass = i.getKindName() === 'ClassDeclaration'
-
-    return {
-      tags: getTags(fileText, i.getStartLineNumber() - 2, onlyLines),
-      isClass,
-      name: i.getName(),
-      exported: i.isExported(),
-      fileName,
-      relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
-    }
-  }).filter(i => i)
-
-  const exports = getFileExports(file)
-
-  const functions = [
-    ...dec,
-    // Attempt to get function declarations & get the tags.
-    ...file
-      .getFunctions()
-      .map(i => [i.getName(), i.getJsDocs().flatMap(i => i.getTags()), i.getExportKeyword()])
-      .map(item => {
-        const tags = item[1].filter(i => TAG_TYPES.includes(i.getTagName())).map(tag => {
-          const tagName = tag.getTagName()
-          if (onlyLines && !onlyLines.includes(tag.getStartLineNumber())) return null
-          return { type: tagName, text: multiLine(fileText, tag.getStartLineNumber() - 1, tagName), lineNo: tag.getStartLineNumber() }
-        }).filter(i => i)
-
-        return {
-          name: item[0],
-          tags,
-          exported: Boolean(item[2]),
-          fileName,
-          relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
-        }
-      })
-  ].filter(exportedOnly(exports))
+  const functions = parseCode(fileText).map(i => ({
+    ...i,
+    fileName,
+    isClass: i.type === 'class',
+    relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
+  })).filter(i => {
+    console.log(i)
+    if (!i.tags || !i.tags.length) return false
+    if (!i.exported) skippingTest(i.name, i.fileName, i.tags)
+    return i.exported
+  })
 
   return functions
 }
 
 main()
-
-/**
- * Filters out any functions without tags or that are not exported.
- */
-function exportedOnly (exports) {
-  return i => {
-    if (!i.tags.length) return false
-
-    if (!i.exported) {
-      if (exports[i.name]) {
-        i.originalName = i.name
-        i.name = exports[i.name]
-        return true
-      } else skippingTest(i.name, i.fileName, i.tags)
-    }
-    return i.exported
-  }
-}
-
-/**
- * Gets all of the exports of a file, currently only supports
- * non-defaults.
- * You may use "exports.X = ...",
- * "module.exports = { X: ... }"
- * "export X"
- * "export function X"
- */
-function getFileExports (file) {
-  return file.getStatements().filter(i => {
-    // expression statement
-    return (i.getKindName() === 'ExpressionStatement' && (i.getText().trim().includes('module.exports') || i.getText().trim().startsWith('exports.'))) || (i.getKindName() === 'ExportDeclaration')
-  }).map(i => i.getText().trim()).reduce((exports, statement) => {
-    const [ex, right] = statement.replace(';', '').split(/=|export /).map(i => i.trim())
-
-    if (ex === 'module.exports') {
-      if (right.includes('{')) {
-        right.substring(1, right.length - 1).trim().split(',').forEach(i => {
-          if (i.includes(':')) {
-            const [key, value] = i.split(':').map(i => i.trim())
-            if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) { exports[key] = value }
-          } else exports[i.trim()] = i.trim()
-        })
-      } else {
-        // support module.exports = func at some point
-      }
-    }
-
-    if (!ex) {
-      if (right.includes('{')) {
-        right.substring(1, right.length - 1).trim().split(',').forEach(i => {
-          if (i.includes(':')) {
-            const [key, value] = i.split(':').map(i => i.trim())
-            if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) { exports[key] = value }
-          } else { exports[i] = i }
-        })
-      }
-    }
-
-    if (ex.startsWith('exports.')) {
-      const key = ex.split('.')[1]
-      if (/^[A-Za-z$_][A-Za-z$_0-9]+$/.test(key)) { exports[key] = right }
-    }
-
-    return exports
-  }, {})
-}
-
-/**
- * Tries to parse tags from a multi-line jsdoc comment block.
- * You need to specify where the end of the comment block is so that it can crawl up.
- *
- * @param {string[]} fileText
- * @param {number} end
- * @param {number[] | null} onlyLines
- */
-function getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) {
-  const tags = []
-  // check if previous line has a comment ender
-  if (fileText[end].includes('*/')) {
-    // crawl up until you see comment begin
-    while (end > 0 && !fileText[end].includes('/*')) {
-      end--
-      if (onlyLines && !onlyLines.includes(end + 1)) continue
-      for (const type of tagTypes) {
-        if (new RegExp(`@${type}($| )`).test(fileText[end])) {
-          tags.unshift({
-            type,
-            text: multiLine(fileText, end, type),
-            lineNo: end + 1
-          })
-        }
-      }
-    }
-  }
-  return tags
-}

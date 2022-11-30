@@ -1,0 +1,168 @@
+{
+  "strip(\"function a () { function b () {} return b }\") [29ecef3995a697e23749bb7434ba2eff728cdb9a55aede8f39cfa3a635031ff0]": {
+    "value": "function a () ",
+    "async": false
+  },
+  "strip('function a () { function b () {} return b } function b () { }') [d64a6d71a9e36e594b9402598380a36a8b79fdddba53d78e133a67ea40a1fb0b]": {
+    "value": "function a ()  function b () ",
+    "async": false
+  },
+  "strip('z + { { a } + } { b } + c') [eb2a862aea58239a6a00121a631455166c5c76f1ac4ba318fe2dc8e0428b720e]": {
+    "value": "z +   + c",
+    "async": false
+  },
+  "strip(#this) [4d65eaa2e420fcdffbdf76839b71460df67152127cbfa791967495b4dd2e6b23]": {
+    "value": "import  from \nimport  from \n\n/\nexport function InternalTests () \n\n/\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n/\nexport function getOuterDeclarations (code) \n\n/\nexport function parseCode (code) \n\n/\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n/\nfunction multiLine (fileText, start, type) \n\n/\nexport function getExports (code) ",
+    "async": false
+  },
+  "getOuterDeclarations('export const a = () => b + c; const b = 3') [fbd03bdaf87902765e7ccb156b5e53b1f05013a08369ee241e5a74c87ec4bd28]": {
+    "value": [
+      {
+        "name": "a",
+        "exported": true,
+        "type": "const",
+        "raw": "export const a"
+      },
+      {
+        "name": "b",
+        "exported": false,
+        "type": "const",
+        "raw": "const b"
+      }
+    ],
+    "async": false
+  },
+  "getOuterDeclarations('class A {}') [5e3b326fe7fe62b74fae6872b4e91217ee218e3128b95bc58b70ef7a210e9565]": {
+    "value": [
+      {
+        "name": "A",
+        "exported": false,
+        "type": "class",
+        "raw": "class A"
+      }
+    ],
+    "async": false
+  },
+  "getOuterDeclarations('export class A {} class B {}') [dc7995117e68e1ddce6eb6ae86a521f2aaf9df62bb95b47901d9a7427b65cdbf]": {
+    "value": [
+      {
+        "name": "A",
+        "exported": true,
+        "type": "class",
+        "raw": "export class A"
+      },
+      {
+        "name": "B",
+        "exported": false,
+        "type": "class",
+        "raw": "class B"
+      }
+    ],
+    "async": false
+  },
+  "getOuterDeclarations('module.exports = {}') [6b752c2e3185da1f6274ebe57eca4abc5cf3e5b32231fa882600b4d4ef1ffdcb]": {
+    "value": [
+    ],
+    "async": false
+  },
+  "parseCode(\"export function y () { function b () {} return b } const b = 1 + 2\") [bb95771774e8f468a11ec88c59f150456163ef88c968408bbd2e35e9cfc39942]": {
+    "value": [
+      {
+        "name": "y",
+        "exported": true,
+        "type": "function",
+        "raw": "export function y",
+        "index": 0,
+        "lineNo": 1,
+        "tags": [
+        ]
+      },
+      {
+        "name": "b",
+        "exported": false,
+        "type": "const",
+        "raw": "const b",
+        "index": 51,
+        "lineNo": 1,
+        "tags": [
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(cat(#voidTest, 'function a() {}')) [bb3815dc7bdd40532b61549a15723b5ca488ff0282caabdcd4a7dce1657ab15a]": {
+    "value": [
+      {
+        "name": "a",
+        "exported": false,
+        "type": "function",
+        "raw": "function a",
+        "index": 64,
+        "lineNo": 5,
+        "tags": [
+          {
+            "type": "test",
+            "text": "void",
+            "lineNo": 3
+          }
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(#addTest) [56cef2ae76a110c4e7939af7007b8e312c7d11593759333794fa4b50e88b6eed]": {
+    "value": [
+      {
+        "name": "add",
+        "exported": true,
+        "type": "function",
+        "raw": "export function add",
+        "index": 87,
+        "lineNo": 6,
+        "tags": [
+          {
+            "type": "test",
+            "text": "1,\n2 returns 3",
+            "lineNo": 3
+          }
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(#mathCjs) [a9c0aca2e167c1cf6a26e2d160b0d381d66d6f602e1f1f1e83463e97fe976f15]": {
+    "value": [
+      {
+        "name": "add",
+        "exported": true,
+        "type": "function",
+        "raw": "function add",
+        "index": 105,
+        "lineNo": 8,
+        "tags": [
+          {
+            "type": "test",
+            "text": "10, 20 returns 30",
+            "lineNo": 4
+          }
+        ],
+        "originalName": "add"
+      }
+    ],
+    "async": false
+  },
+  "getExports(#moduleExports) [022d1b62b065f69d2ed62fbf2fb3b35fe2f41a97703328bff98c0404bf8be141]": {
+    "value": {
+      "age": "hello",
+      "name": "name"
+    },
+    "async": false
+  },
+  "getExports(#typicalExport) [d96782dcba953e96d77f9c88b8ef3937847cde0772853ea17d1edc9171d69a20]": {
+    "value": {
+      "X": "X",
+      "Z": "Y"
+    },
+    "async": false
+  }
+}

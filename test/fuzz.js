@@ -11,8 +11,8 @@ export function sum (values) {
 }
 
 /**
- * @test { name: #string, age: #integer(1, 20) } throws
- * @test { name: 'Jesse', age: #integer(21, 80) } returns cat(args.0.name, ' is drinking age.')
+ * @test { name: #string, age: #integer({ min: 1,  max: 20 }) } throws
+ * @test { name: 'Jesse', age: #integer({ min: 21, max: 80 }) } returns cat(args.0.name, ' is drinking age.')
  */
 export function drinkingAge ({ name, age }) {
   if (age >= 21) return `${name} is drinking age.`
