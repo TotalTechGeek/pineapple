@@ -103,7 +103,12 @@
 }
 
 // Documents
-Document = TestExpressionLayered
+Document = 
+    '@__fails__' _req val:TestExpressionLayered { 
+      const key = Object.keys(val[0])[0]
+      return [{ __fails__: [key, ...val[0][key]] }] 
+  }
+  / TestExpressionLayered
 
 TypesParsed = val:Types { return { preserve: toJsonSchema(val) } }
 

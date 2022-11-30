@@ -247,6 +247,11 @@ engine.addMethod('rejects', async ([inputs, output], context) => {
   }
 })
 
+engine.addMethod('__fails__', async ([func, inputs, output], context, above, engine) => {
+  const data = await engine.run({ [func.join('')]: [inputs, output] }, context)
+  return [data, !data[1]]
+})
+
 export const createArbitrary = method => data => {
   if (data === undefined) return method()
   return method(...[].concat(data))

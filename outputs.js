@@ -9,6 +9,13 @@ const format = text => text.includes('\n') ? `\n${text}\n` : text
  * @param {string} name
  * @param {string} file
  * @param {{ type: string, text: string, lineNo: number }[]} tags
+ * @test 'ForcedSkip', './outputs.js', [
+ *  { type: 'nonexistent', lineNo: 12, text: 'This is forced.' }
+ * ] returns void
+ * @test 'ForcedSkip2', './outputs.js', [
+ *  { type: 'nonexistent', lineNo: 14, text: 'This is forced in an array.' },
+ *  { type: 'nonexistent', lineNo: 15, text: 'This is forced in an array, too.' }
+ * ] returns void
  */
 export function skippingTest (name, file, tags) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
@@ -43,6 +50,7 @@ export function success (name, input, file) {
 /**
  * Announces that a test was not successful.
  * @param {{ name: string, input: string, message: string, file: string, data: string }}
+ * @test { name: 'Forced Output', input: 'If this appears, this is successful', file: './outputs.js:46', data: [] } returns void
  */
 export function failure ({ name, input, message, file, data }) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
@@ -71,6 +79,7 @@ export function failure ({ name, input, message, file, data }) {
  * @param {string} input
  * @param {string} message
  * @param {string} file
+ * @test 'Forced', 'Forced Parse Failure Output', 'Forced Parse Failure Output', './outputs.js' returns void
  */
 export function parseFailure (name, input, message, file) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
@@ -87,6 +96,7 @@ export function parseFailure (name, input, message, file) {
 /**
  * Tries to log a test runtime error
  * @param {*} err
+ * @test 'Anything' returns void
  */
 export function testRuntimeFailure (err) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
@@ -117,6 +127,7 @@ export function aggregate (failures, total) {
 /**
  * Print the files that are being tested.
  * @param {string[]} files
+ * @test ['./outputs.js'] returns void
  */
 export function filesTested (files) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
