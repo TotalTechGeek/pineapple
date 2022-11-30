@@ -95,8 +95,7 @@ async function main () {
       getFileFunctions(fileChanged)
     )
 
-    console.log(fileChanged, functions)
-
+    console.clear()
     const execFunctions = functions.filter(i => {
       // we also always need to include files with @pineapple_define and global tags.
       const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
@@ -291,7 +290,6 @@ function getFunctions (fileText, fileName) {
     isClass: i.type === 'class',
     relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
   })).filter(i => {
-    console.log(i)
     if (!i.tags || !i.tags.length) return false
     if (!i.exported) skippingTest(i.name, i.fileName, i.tags)
     return i.exported

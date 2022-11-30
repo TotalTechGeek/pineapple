@@ -41,7 +41,8 @@ export function InternalTests () {
  * @param {string} code
  */
 export function strip (code) {
-  const codeStripped = code.replace(/=\s+\//g, '= //')
+  const codeStripped = code
+  // .replace(/=>?\s+\//g, '= //')
   let count = 0
   let res = ''
   let quoteMode = null
@@ -57,14 +58,32 @@ export function strip (code) {
 
     if (commentMode) continue
 
-    if (!quoteMode && codeStripped[i] === '/' && codeStripped[i + 1] === '*') commentMode = 1
-    if (!quoteMode && codeStripped[i] === '/' && codeStripped[i + 1] === '/') commentMode = 2
+    if (!quoteMode && codeStripped[i] === '/' && codeStripped[i + 1] === '*') {
+      commentMode = 1
+      continue
+    }
+    if (!quoteMode && codeStripped[i] === '/' && codeStripped[i + 1] === '/') {
+      commentMode = 2
+      continue
+    }
 
     if (codeStripped[i] === '"') {
       if (quoteMode === '"') {
         quoteMode = null
         continue
       } else if (!quoteMode) quoteMode = '"'
+    }
+
+    if (quoteMode === '/' && codeStripped[i] === '\n') {
+      quoteMode = null
+      continue
+    }
+
+    if (codeStripped[i] === '/') {
+      if (quoteMode === '/') {
+        quoteMode = null
+        continue
+      } else if (!quoteMode) quoteMode = '/'
     }
 
     if (codeStripped[i] === "'") {
@@ -136,6 +155,7 @@ export function parseCode (code) {
 
     // this is stupidly inefficient. I'm writing it in a stupid way so
     // it can be replaced by something intelligent later
+
     result.lineNo = code.substring(0, result.index).split('\n').length
 
     return result
@@ -188,7 +208,7 @@ function getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) {
     while (end > 0) {
       end--
       if (onlyLines && !onlyLines.includes(end + 1)) continue
-      if (fileText[end].includes('/*') && !fileText[end].includes('*/')) break
+      if (fileText[end].includes('/*') && !fileText[end].includes('*/') && !(fileText[end - 1] || '').includes('*/')) break
       for (const type of tagTypes) {
         if (new RegExp(`@${type}($| )`).test(fileText[end])) {
           tags.unshift({

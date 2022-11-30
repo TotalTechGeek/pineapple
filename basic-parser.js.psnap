@@ -12,7 +12,7 @@
     "async": false
   },
   "strip(#this) [4d65eaa2e420fcdffbdf76839b71460df67152127cbfa791967495b4dd2e6b23]": {
-    "value": "import  from \nimport  from \n\n/\nexport function InternalTests () \n\n/\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n/\nexport function getOuterDeclarations (code) \n\n/\nexport function parseCode (code) \n\n/\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n/\nfunction multiLine (fileText, start, type) \n\n/\nexport function getExports (code) ",
+    "value": "import  from \nimport  from \n\n\nexport function InternalTests () \n\n\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n\nexport function getOuterDeclarations (code) \n\n\nexport function parseCode (code) \n\n\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n\nfunction multiLine (fileText, start, type) \n\n\nexport function getExports (code) \n",
     "async": false
   },
   "getOuterDeclarations('export const a = () => b + c; const b = 3') [fbd03bdaf87902765e7ccb156b5e53b1f05013a08369ee241e5a74c87ec4bd28]": {
