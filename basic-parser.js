@@ -320,7 +320,9 @@ function multiLine (fileText, start, type) {
  * Parses out exports that are not declared on the function,
  * typical for "exports.X", "module.exports = { X }", "export { X }"
  *
- * Right now, this only supports module.exports and export { X }, the others will be crafted soon.
+ * Right now, this only supports module.exports and export { X }, and exports.X = X
+ *
+ * Todo: Default Functions and module.exports = X.
  *
  * @test #Parser.moduleExports
  * @test #Parser.typicalExport

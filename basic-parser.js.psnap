@@ -765,23 +765,23 @@
         "exported": true,
         "type": "function",
         "raw": "export function getExports ",
-        "index": 8718,
-        "lineNo": 331,
+        "index": 8757,
+        "lineNo": 333,
         "tags": [
           {
             "type": "test",
             "text": "#Parser.moduleExports",
-            "lineNo": 325
+            "lineNo": 327
           },
           {
             "type": "test",
             "text": "#Parser.typicalExport",
-            "lineNo": 326
+            "lineNo": 328
           },
           {
             "type": "test",
             "text": "#Parser.exports",
-            "lineNo": 327
+            "lineNo": 329
           }
         ]
       }
