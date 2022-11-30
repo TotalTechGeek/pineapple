@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-check
 import { Project } from 'ts-morph'
-import { groupBy, pluck, map, indexBy } from 'ramda'
+import { groupBy, pluck, map, indexBy, pickBy, identity } from 'ramda'
 import tempy from 'tempy'
 import debounce from 'debounce'
 import { program, Option } from 'commander'
@@ -22,7 +22,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.12.0')
+  .version('0.12.1')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
@@ -291,16 +291,12 @@ async function execute (project, functions, forkProcess = false) {
 
     child = spawn(program, [tmp], {
       stdio: ['pipe', 'inherit', 'inherit'],
-      env: {
-        ...process.env
-      }
+      env: pickBy(identity, process.env)
     })
   } else if (options.bun) {
     child = spawn('bun', [tmp], {
       stdio: ['pipe', 'inherit', 'inherit'],
-      env: {
-        ...process.env
-      }
+      env: pickBy(identity, process.env)
     })
 
     child.on('exit', (code) => {
@@ -494,7 +490,7 @@ function getFileExports (file) {
 function getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) {
   const tags = []
   // check if previous line has a comment ender
-  if (fileText[end].includes('*/')) {
+  if (end > 0 && fileText[end].includes('*/')) {
     // crawl up until you see comment begin
     while (end > 0 && !fileText[end].includes('/*')) {
       end--
