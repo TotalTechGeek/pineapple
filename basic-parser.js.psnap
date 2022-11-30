@@ -1,0 +1,812 @@
+{
+  "strip(\"function a () { function b () {} return b }\") [29ecef3995a697e23749bb7434ba2eff728cdb9a55aede8f39cfa3a635031ff0]": {
+    "value": "function a () ",
+    "async": false
+  },
+  "strip('function a () { function b () {} return b } function b () { }') [d64a6d71a9e36e594b9402598380a36a8b79fdddba53d78e133a67ea40a1fb0b]": {
+    "value": "function a ()  function b () ",
+    "async": false
+  },
+  "strip('z + { { a } + } { b } + c') [eb2a862aea58239a6a00121a631455166c5c76f1ac4ba318fe2dc8e0428b720e]": {
+    "value": "z +   + c",
+    "async": false
+  },
+  "strip(#Parser.this) [b2c9b0778c038b4c610f0b7bf33c855e55c7bd420998e5e270a953b68436a856]": {
+    "value": "import  from \nimport  from \n\n\nexport function InternalTests () \n\n\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n\nexport function getOuterDeclarations (code) \n\n\nexport function parseCode (code) \n\n\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n\nfunction multiLine (fileText, start, type) \n\n\nexport function getExports (code) \n",
+    "async": false
+  },
+  "strip(#Parser.quoteIssue) [54d9dec5f289594ea462458dfef36c98062bcebcbc20b1ade2ddd558f251c7f1]": {
+    "value": "\n          function a (x = ) \n\n          function b () \n\n          function c () \n    ",
+    "async": false
+  },
+  "strip(#Parser.passwordModule) [e827997ef4fd0a0508ab31e4871d05998fc2f0bede859edbbb28cc7cd9e1a044]": {
+    "value": "\n\n\nexport function password (...rules) \n\n\nexport function min (num) \n\n\nexport function max (num) \n\n\nexport function has (charSet, num = 1, name = ) \n\nexport function hasLowerCase (num = 1) \n\n\nexport function hasUpperCase (num = 1) \n\n\nexport function hasSpecial (num = 1) \n\n\nexport function hasDigit (num = 1) \n\n\nexport function includes (requiredText) \n\n\nexport function notIncludes (requiredText, substitute = false) \n\n\nfunction substituteError (substitute, text) \n\n\nexport function some (...rules) \n\n\nexport function not (rule, error) \n\n\nexport function template (stringTemplate) \n",
+    "async": false
+  },
+  "strip(#Parser.setupTest) [3ca9201f21f33d7197508b830d4d56c51671170bb96a74311dc1438a68c192bd]": {
+    "value": "\nexport function isPrime (n) \n\n\nexport function generatePrime () \n\nlet person\n\n\nexport function createPerson (name, level) \n\n\nexport function levelUp (amount) \n\nlet cities = new Set()\n\n\nexport async function initializeCityDatabase () \n\n\nexport async function isCity (city) \n",
+    "async": false
+  },
+  "getOuterDeclarations('export const a = () => b + c; const b = 3') [fbd03bdaf87902765e7ccb156b5e53b1f05013a08369ee241e5a74c87ec4bd28]": {
+    "value": [
+      {
+        "name": "a",
+        "exported": true,
+        "type": "const",
+        "raw": "export const a "
+      },
+      {
+        "name": "b",
+        "exported": false,
+        "type": "const",
+        "raw": "const b "
+      }
+    ],
+    "async": false
+  },
+  "getOuterDeclarations('class A {}') [5e3b326fe7fe62b74fae6872b4e91217ee218e3128b95bc58b70ef7a210e9565]": {
+    "value": [
+      {
+        "name": "A",
+        "exported": false,
+        "type": "class",
+        "raw": "class A "
+      }
+    ],
+    "async": false
+  },
+  "getOuterDeclarations('export class A {} class B {}') [dc7995117e68e1ddce6eb6ae86a521f2aaf9df62bb95b47901d9a7427b65cdbf]": {
+    "value": [
+      {
+        "name": "A",
+        "exported": true,
+        "type": "class",
+        "raw": "export class A "
+      },
+      {
+        "name": "B",
+        "exported": false,
+        "type": "class",
+        "raw": "class B "
+      }
+    ],
+    "async": false
+  },
+  "getOuterDeclarations('module.exports = {}') [6b752c2e3185da1f6274ebe57eca4abc5cf3e5b32231fa882600b4d4ef1ffdcb]": {
+    "value": [
+    ],
+    "async": false
+  },
+  "parseCode(\"export function y () { function b () {} return b } const b = 1 + 2\") [bb95771774e8f468a11ec88c59f150456163ef88c968408bbd2e35e9cfc39942]": {
+    "value": [
+      {
+        "name": "y",
+        "exported": true,
+        "type": "function",
+        "raw": "export function y ",
+        "index": 0,
+        "lineNo": 1,
+        "tags": [
+        ]
+      },
+      {
+        "name": "b",
+        "exported": false,
+        "type": "const",
+        "raw": "const b ",
+        "index": 51,
+        "lineNo": 1,
+        "tags": [
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(cat(#Parser.voidTest, 'function a() {}')) [abb8a7487db82a00aee82f4df41d877319ddd1a014d8f8a0641344176148679e]": {
+    "value": [
+      {
+        "name": "a",
+        "exported": false,
+        "type": "function",
+        "raw": "function a(",
+        "index": 64,
+        "lineNo": 5,
+        "tags": [
+          {
+            "type": "test",
+            "text": "void",
+            "lineNo": 3
+          }
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(#Parser.addTest) [eb06d1f7401f1f43197450d6ab1093da4de1f0c363a9f8bfc2bd39a08e8e150b]": {
+    "value": [
+      {
+        "name": "add",
+        "exported": true,
+        "type": "function",
+        "raw": "export function add ",
+        "index": 87,
+        "lineNo": 6,
+        "tags": [
+          {
+            "type": "test",
+            "text": "1,\n2 returns 3",
+            "lineNo": 3
+          }
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(#Parser.mathCjs) [4fb1aeb1fe3ddbb68fb48f5ef1d00590dfe06fb8075da4367d90e9a1f6e14d6e]": {
+    "value": [
+      {
+        "name": "add",
+        "exported": true,
+        "type": "function",
+        "raw": "function add ",
+        "index": 105,
+        "lineNo": 8,
+        "tags": [
+          {
+            "type": "test",
+            "text": "10, 20 returns 30",
+            "lineNo": 4
+          }
+        ],
+        "originalName": "add"
+      }
+    ],
+    "async": false
+  },
+  "parseCode(#Parser.passwordModule) [e827997ef4fd0a0508ab31e4871d05998fc2f0bede859edbbb28cc7cd9e1a044]": {
+    "value": [
+      {
+        "name": "password",
+        "exported": true,
+        "type": "function",
+        "raw": "export function password ",
+        "index": 189,
+        "lineNo": 8,
+        "tags": [
+        ]
+      },
+      {
+        "name": "min",
+        "exported": true,
+        "type": "function",
+        "raw": "export function min ",
+        "index": 629,
+        "lineNo": 27,
+        "tags": [
+          {
+            "type": "test",
+            "text": "3 ~> 'hi' returns truthy",
+            "lineNo": 20
+          },
+          {
+            "type": "test",
+            "text": "3 ~> 'hi hi hi' returns undefined",
+            "lineNo": 21
+          }
+        ]
+      },
+      {
+        "name": "max",
+        "exported": true,
+        "type": "function",
+        "raw": "export function max ",
+        "index": 1000,
+        "lineNo": 39,
+        "tags": [
+          {
+            "type": "test",
+            "text": "3 ~> 'hi' returns undefined",
+            "lineNo": 32
+          },
+          {
+            "type": "test",
+            "text": "3 ~> 'hi hi hi' returns truthy",
+            "lineNo": 33
+          }
+        ]
+      },
+      {
+        "name": "has",
+        "exported": true,
+        "type": "function",
+        "raw": "export function has ",
+        "index": 1484,
+        "lineNo": 53,
+        "tags": [
+          {
+            "type": "test",
+            "text": "['ø'], 1 ~> 'Test' returns truthy",
+            "lineNo": 44
+          },
+          {
+            "type": "test",
+            "text": "['ø'], 1 ~> 'Testø' returns undefined",
+            "lineNo": 45
+          }
+        ]
+      },
+      {
+        "name": "hasLowerCase",
+        "exported": true,
+        "type": "function",
+        "raw": "export function hasLowerCase ",
+        "index": 2061,
+        "lineNo": 70,
+        "tags": [
+          {
+            "type": "test",
+            "text": "1 ~> 'HELLO' returns truthy",
+            "lineNo": 63
+          },
+          {
+            "type": "test",
+            "text": "1 ~> 'Hello' returns undefined",
+            "lineNo": 64
+          }
+        ]
+      },
+      {
+        "name": "hasUpperCase",
+        "exported": true,
+        "type": "function",
+        "raw": "export function hasUpperCase ",
+        "index": 2425,
+        "lineNo": 82,
+        "tags": [
+          {
+            "type": "test",
+            "text": "1 ~> 'hello' returns truthy",
+            "lineNo": 75
+          },
+          {
+            "type": "test",
+            "text": "1 ~> 'Hello' returns undefined",
+            "lineNo": 76
+          }
+        ]
+      },
+      {
+        "name": "hasSpecial",
+        "exported": true,
+        "type": "function",
+        "raw": "export function hasSpecial ",
+        "index": 2826,
+        "lineNo": 94,
+        "tags": [
+          {
+            "type": "test",
+            "text": "1 ~> 'Hello' returns truthy",
+            "lineNo": 87
+          },
+          {
+            "type": "test",
+            "text": "1 ~> 'He!lo' returns undefined",
+            "lineNo": 88
+          }
+        ]
+      },
+      {
+        "name": "hasDigit",
+        "exported": true,
+        "type": "function",
+        "raw": "export function hasDigit ",
+        "index": 3179,
+        "lineNo": 106,
+        "tags": [
+          {
+            "type": "test",
+            "text": "1 ~> 'Hello' returns truthy",
+            "lineNo": 99
+          },
+          {
+            "type": "test",
+            "text": "1 ~> 'Hell0' returns undefined",
+            "lineNo": 100
+          }
+        ]
+      },
+      {
+        "name": "includes",
+        "exported": true,
+        "type": "function",
+        "raw": "export function includes ",
+        "index": 3522,
+        "lineNo": 118,
+        "tags": [
+          {
+            "type": "test",
+            "text": "'Hello' ~> 'Hello World' returns undefined",
+            "lineNo": 111
+          },
+          {
+            "type": "test",
+            "text": "'Hello' ~> '' returns truthy",
+            "lineNo": 112
+          }
+        ]
+      },
+      {
+        "name": "notIncludes",
+        "exported": true,
+        "type": "function",
+        "raw": "export function notIncludes ",
+        "index": 4501,
+        "lineNo": 143,
+        "tags": [
+          {
+            "type": "test",
+            "text": "'Kevin' ~> 'Kevin' returns truthy",
+            "lineNo": 130
+          },
+          {
+            "type": "test",
+            "text": "'Kevin' ~> 'Steve' returns undefined",
+            "lineNo": 131
+          },
+          {
+            "type": "test",
+            "text": "'Kevin', false ~> 'Kevin'",
+            "lineNo": 132
+          },
+          {
+            "type": "test",
+            "text": "'Kevin', true ~> 'Kevin'",
+            "lineNo": 133
+          },
+          {
+            "type": "test",
+            "text": "'Kevin', 'This is a message.' ~> 'Kevin'",
+            "lineNo": 134
+          },
+          {
+            "type": "test",
+            "text": "['password01', 'yeet'] ~> 'password01'",
+            "lineNo": 135
+          },
+          {
+            "type": "test",
+            "text": "['password01'] ~> 'yeet'",
+            "lineNo": 136
+          }
+        ]
+      },
+      {
+        "name": "substituteError",
+        "exported": false,
+        "type": "function",
+        "raw": "function substituteError ",
+        "index": 5236,
+        "lineNo": 164,
+        "tags": [
+        ]
+      },
+      {
+        "name": "some",
+        "exported": true,
+        "type": "function",
+        "raw": "export function some ",
+        "index": 5747,
+        "lineNo": 176,
+        "tags": [
+        ]
+      },
+      {
+        "name": "not",
+        "exported": true,
+        "type": "function",
+        "raw": "export function not ",
+        "index": 6367,
+        "lineNo": 191,
+        "tags": [
+        ]
+      },
+      {
+        "name": "template",
+        "exported": true,
+        "type": "function",
+        "raw": "export function template ",
+        "index": 7139,
+        "lineNo": 210,
+        "tags": [
+          {
+            "type": "test",
+            "text": "'Hello, $0' ~> 'World' returns 'Hello, World'",
+            "lineNo": 201
+          },
+          {
+            "type": "test",
+            "text": "'$0, $1' ~> 'Hello', 'World' returns 'Hello, World'",
+            "lineNo": 202
+          },
+          {
+            "type": "test",
+            "text": "'Hey $0' ~> 'Steve' returns 'Hey Steve'",
+            "lineNo": 203
+          },
+          {
+            "type": "test",
+            "text": "\"Attempt: $0\" ~> #string returns cat(\"Attempt: \", args.0)",
+            "lineNo": 204
+          },
+          {
+            "type": "test",
+            "text": "\"Attempt: $0 $1\" ~> #string, #string returns cat('Attempt: ', args.0, ' ', args.1)",
+            "lineNo": 205
+          }
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(#Parser.setupTest) [3ca9201f21f33d7197508b830d4d56c51671170bb96a74311dc1438a68c192bd]": {
+    "value": [
+      {
+        "name": "isPrime",
+        "exported": true,
+        "type": "function",
+        "raw": "export function isPrime ",
+        "index": 50,
+        "lineNo": 5,
+        "tags": [
+          {
+            "type": "pineapple_import",
+            "text": "",
+            "lineNo": 2
+          }
+        ]
+      },
+      {
+        "name": "generatePrime",
+        "exported": true,
+        "type": "function",
+        "raw": "export function generatePrime ",
+        "index": 235,
+        "lineNo": 17,
+        "tags": [
+          {
+            "type": "test",
+            "text": "void returns isPrime(@)",
+            "lineNo": 15
+          }
+        ]
+      },
+      {
+        "name": "person",
+        "exported": false,
+        "type": "let",
+        "raw": "let person\n",
+        "index": 285,
+        "lineNo": 21,
+        "tags": [
+        ]
+      },
+      {
+        "name": "createPerson",
+        "exported": true,
+        "type": "function",
+        "raw": "export function createPerson ",
+        "index": 384,
+        "lineNo": 27,
+        "tags": [
+          {
+            "type": "pineapple_import",
+            "text": "",
+            "lineNo": 25
+          }
+        ]
+      },
+      {
+        "name": "levelUp",
+        "exported": true,
+        "type": "function",
+        "raw": "export function levelUp ",
+        "index": 644,
+        "lineNo": 40,
+        "tags": [
+          {
+            "type": "beforeEach",
+            "text": "createPerson('John', 5)",
+            "lineNo": 36
+          },
+          {
+            "type": "test",
+            "text": "3 returns @.level === 8",
+            "lineNo": 37
+          },
+          {
+            "type": "test",
+            "text": "1 returns @.level === 6",
+            "lineNo": 38
+          }
+        ]
+      },
+      {
+        "name": "cities",
+        "exported": false,
+        "type": "let",
+        "raw": "let cities ",
+        "index": 723,
+        "lineNo": 45,
+        "tags": [
+        ]
+      },
+      {
+        "name": "initializeCityDatabase",
+        "exported": true,
+        "type": "function",
+        "raw": "export async function initializeCityDatabase ",
+        "index": 769,
+        "lineNo": 50,
+        "tags": [
+          {
+            "type": "beforeAll",
+            "text": "",
+            "lineNo": 48
+          }
+        ]
+      },
+      {
+        "name": "isCity",
+        "exported": true,
+        "type": "function",
+        "raw": "export async function isCity ",
+        "index": 1031,
+        "lineNo": 64,
+        "tags": [
+          {
+            "type": "test",
+            "text": "'Vienna' resolves truthy",
+            "lineNo": 60
+          },
+          {
+            "type": "test",
+            "text": "'San Juan' resolves truthy",
+            "lineNo": 61
+          },
+          {
+            "type": "test",
+            "text": "'United Kingdom' resolves falsy",
+            "lineNo": 62
+          }
+        ]
+      }
+    ],
+    "async": false
+  },
+  "parseCode(#Parser.this) [b2c9b0778c038b4c610f0b7bf33c855e55c7bd420998e5e270a953b68436a856]": {
+    "value": [
+      {
+        "name": "InternalTests",
+        "exported": true,
+        "type": "function",
+        "raw": "export function InternalTests ",
+        "index": 111,
+        "lineNo": 7,
+        "tags": [
+          {
+            "type": "pineapple_define",
+            "text": "Parser",
+            "lineNo": 5
+          }
+        ]
+      },
+      {
+        "name": "strip",
+        "exported": true,
+        "type": "function",
+        "raw": "export function strip ",
+        "index": 1636,
+        "lineNo": 69,
+        "tags": [
+          {
+            "type": "test",
+            "text": "\"function a () { function b () {} return b }\"",
+            "lineNo": 60
+          },
+          {
+            "type": "test",
+            "text": "'function a () { function b () {} return b } function b () { }'",
+            "lineNo": 61
+          },
+          {
+            "type": "test",
+            "text": "'z + { { a } + } { b } + c'",
+            "lineNo": 62
+          },
+          {
+            "type": "test",
+            "text": "#Parser.this",
+            "lineNo": 63
+          },
+          {
+            "type": "test",
+            "text": "#Parser.quoteIssue",
+            "lineNo": 64
+          },
+          {
+            "type": "test",
+            "text": "#Parser.passwordModule",
+            "lineNo": 65
+          },
+          {
+            "type": "test",
+            "text": "#Parser.setupTest",
+            "lineNo": 66
+          }
+        ]
+      },
+      {
+        "name": "matchExpr",
+        "exported": false,
+        "type": "function",
+        "raw": "function matchExpr ",
+        "index": 3872,
+        "lineNo": 151,
+        "tags": [
+        ]
+      },
+      {
+        "name": "getOuterDeclarations",
+        "exported": true,
+        "type": "function",
+        "raw": "export function getOuterDeclarations ",
+        "index": 4440,
+        "lineNo": 168,
+        "tags": [
+          {
+            "type": "test",
+            "text": "'export const a = () => b + c; const b = 3'",
+            "lineNo": 162
+          },
+          {
+            "type": "test",
+            "text": "'class A {}'",
+            "lineNo": 163
+          },
+          {
+            "type": "test",
+            "text": "'export class A {} class B {}'",
+            "lineNo": 164
+          },
+          {
+            "type": "test",
+            "text": "'module.exports = {}'",
+            "lineNo": 165
+          }
+        ]
+      },
+      {
+        "name": "parseCode",
+        "exported": true,
+        "type": "function",
+        "raw": "export function parseCode ",
+        "index": 4886,
+        "lineNo": 183,
+        "tags": [
+          {
+            "type": "test",
+            "text": "\"export function y () { function b () {} return b } const b = 1 + 2\"",
+            "lineNo": 174
+          },
+          {
+            "type": "test",
+            "text": "cat(#Parser.voidTest, 'function a() {}')",
+            "lineNo": 175
+          },
+          {
+            "type": "test",
+            "text": "#Parser.addTest",
+            "lineNo": 176
+          },
+          {
+            "type": "test",
+            "text": "#Parser.mathCjs",
+            "lineNo": 177
+          },
+          {
+            "type": "test",
+            "text": "#Parser.passwordModule",
+            "lineNo": 178
+          },
+          {
+            "type": "test",
+            "text": "#Parser.setupTest",
+            "lineNo": 179
+          },
+          {
+            "type": "test",
+            "text": "#Parser.this",
+            "lineNo": 180
+          }
+        ]
+      },
+      {
+        "name": "getTags",
+        "exported": false,
+        "type": "function",
+        "raw": "function getTags ",
+        "index": 6289,
+        "lineNo": 239,
+        "tags": [
+        ]
+      },
+      {
+        "name": "TAG_TYPES",
+        "exported": false,
+        "type": "const",
+        "raw": "const TAG_TYPES ",
+        "index": 7071,
+        "lineNo": 265,
+        "tags": [
+        ]
+      },
+      {
+        "name": "multiLine",
+        "exported": false,
+        "type": "function",
+        "raw": "function multiLine ",
+        "index": 7798,
+        "lineNo": 294,
+        "tags": [
+        ]
+      },
+      {
+        "name": "getExports",
+        "exported": true,
+        "type": "function",
+        "raw": "export function getExports ",
+        "index": 8776,
+        "lineNo": 333,
+        "tags": [
+          {
+            "type": "test",
+            "text": "#Parser.moduleExports",
+            "lineNo": 327
+          },
+          {
+            "type": "test",
+            "text": "#Parser.typicalExport",
+            "lineNo": 328
+          },
+          {
+            "type": "test",
+            "text": "#Parser.exports",
+            "lineNo": 329
+          }
+        ]
+      }
+    ],
+    "async": false
+  },
+  "getExports(#Parser.moduleExports) [1d6c0c272292a43eec8625d8aaad33fe55cbb3f6a321eb124ab645520e796d63]": {
+    "value": {
+      "age": "hello",
+      "name": "name"
+    },
+    "async": false
+  },
+  "getExports(#Parser.typicalExport) [7445ee16714bef86ac4d69a5f8cf5a01f102697be027f1fa62fcd0b9d265fcec]": {
+    "value": {
+      "X": "X",
+      "Z": "Z"
+    },
+    "async": false
+  },
+  "getExports(#Parser.exports) [42e0fa053676204860d6d026c53f7928f6e02ed481389a9e69f4bd97421ee590]": {
+    "value": {
+      "XYZ": "X",
+      "Y": "Y"
+    },
+    "async": false
+  }
+}

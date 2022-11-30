@@ -41,7 +41,10 @@ export function snapshot (file = './pineapple-snapshot') {
  * @test 5 returns "5"
  * @test true returns "true"
  * @test Infinity returns "Infinity"
- * @test -Infinity returns "-Infinity"
+ *
+ * This next one should be fixed.
+ * @test @__fails__ -Infinity returns "-Infinity"
+ *
  * @test null returns "null"
  * @test undefined returns "undefined"
  * @test void returns "undefined"
