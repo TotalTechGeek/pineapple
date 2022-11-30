@@ -42,6 +42,7 @@ export function InternalTests () {
  */
 export function strip (code) {
   const codeStripped = code
+    .replace(/as\s+const/g, '')
   // .replace(/=>?\s+\//g, '= //')
   let count = 0
   let res = ''

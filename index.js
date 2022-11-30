@@ -91,11 +91,11 @@ async function main () {
 
     if (fileChanged.endsWith('.psnap')) return
 
+    console.clear()
     functions = functions.filter(i => i.fileName !== url.pathToFileURL(correctPath).href).concat(
       getFileFunctions(fileChanged)
     )
 
-    console.clear()
     const execFunctions = functions.filter(i => {
       // we also always need to include files with @pineapple_define and global tags.
       const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
