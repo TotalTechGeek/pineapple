@@ -34,7 +34,7 @@ export function InternalTests () {
       exports.Y = Y;
     `,
     quoteIssue: `
-          function a () {
+          function a (x = /helloWorld\\//) {
 
           }
 

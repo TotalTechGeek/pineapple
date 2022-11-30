@@ -16,7 +16,7 @@
     "async": false
   },
   "strip(#Parser.quoteIssue) [54d9dec5f289594ea462458dfef36c98062bcebcbc20b1ade2ddd558f251c7f1]": {
-    "value": "\n          function a () \n\n          function b () \n\n          function c () \n    ",
+    "value": "\n          function a (x = ) \n\n          function b () \n\n          function c () \n    ",
     "async": false
   },
   "strip(#Parser.passwordModule) [e827997ef4fd0a0508ab31e4871d05998fc2f0bede859edbbb28cc7cd9e1a044]": {
@@ -605,7 +605,7 @@
         "exported": true,
         "type": "function",
         "raw": "export function strip ",
-        "index": 1617,
+        "index": 1636,
         "lineNo": 69,
         "tags": [
           {
@@ -650,7 +650,7 @@
         "exported": false,
         "type": "function",
         "raw": "function matchExpr ",
-        "index": 3853,
+        "index": 3872,
         "lineNo": 151,
         "tags": [
         ]
@@ -660,7 +660,7 @@
         "exported": true,
         "type": "function",
         "raw": "export function getOuterDeclarations ",
-        "index": 4421,
+        "index": 4440,
         "lineNo": 168,
         "tags": [
           {
@@ -690,7 +690,7 @@
         "exported": true,
         "type": "function",
         "raw": "export function parseCode ",
-        "index": 4867,
+        "index": 4886,
         "lineNo": 183,
         "tags": [
           {
@@ -735,7 +735,7 @@
         "exported": false,
         "type": "function",
         "raw": "function getTags ",
-        "index": 6270,
+        "index": 6289,
         "lineNo": 239,
         "tags": [
         ]
@@ -745,7 +745,7 @@
         "exported": false,
         "type": "const",
         "raw": "const TAG_TYPES ",
-        "index": 7052,
+        "index": 7071,
         "lineNo": 265,
         "tags": [
         ]
@@ -755,7 +755,7 @@
         "exported": false,
         "type": "function",
         "raw": "function multiLine ",
-        "index": 7779,
+        "index": 7798,
         "lineNo": 294,
         "tags": [
         ]
@@ -765,7 +765,7 @@
         "exported": true,
         "type": "function",
         "raw": "export function getExports ",
-        "index": 8757,
+        "index": 8776,
         "lineNo": 333,
         "tags": [
           {
