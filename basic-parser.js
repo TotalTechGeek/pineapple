@@ -2,7 +2,7 @@ import { parse } from './parser/dsl.js'
 import { readFileSync } from 'fs'
 
 /**
- * @pineapple_define
+ * @pineapple_define Parser
  */
 export function InternalTests () {
   return {
@@ -27,17 +27,43 @@ export function InternalTests () {
       `,
     typicalExport: `
           export { X, Y as Z }
+          export { Two }
+    `,
+    exports: `
+      exports.X = XYZ;
+      exports.Y = Y;
+    `,
+    quoteIssue: `
+          function a () {
+
+          }
+
+          function b () {
+            return "hello{" + 'wrld{\\''
+          }
+
+          function c () {
+
+          }
     `,
     this: readFileSync('./basic-parser.js').toString(),
-    mathCjs: readFileSync('./test/math.cjs').toString()
+    mathCjs: readFileSync('./test/math.cjs').toString(),
+    passwordModule: readFileSync('./test/password_module.js').toString(),
+    setupTest: readFileSync('./test/setup.test.js').toString()
   }
 }
 
 /**
+ * This function removes all of the strings, Regexes and contents in between braces.
+ * This is done to make it simpler to run a regex to fetch out classes,
+ * functions and variable declarations.
  * @test "function a () { function b () {} return b }"
  * @test 'function a () { function b () {} return b } function b () { }'
  * @test 'z + { { a } + } { b } + c'
- * @test #this
+ * @test #Parser.this
+ * @test #Parser.quoteIssue
+ * @test #Parser.passwordModule
+ * @test #Parser.setupTest
  * @param {string} code
  */
 export function strip (code) {
@@ -76,30 +102,39 @@ export function strip (code) {
     }
 
     if (quoteMode === '/' && codeStripped[i] === '\n') {
-      quoteMode = null
-      continue
+      if (codeStripped[i - 1] !== '\\' || (codeStripped[i - 1] === '\\' && codeStripped[i - 2] === '\\')) {
+        quoteMode = null
+        continue
+      }
     }
 
     if (codeStripped[i] === '/') {
       if (quoteMode === '/') {
-        quoteMode = null
-        continue
+        if (codeStripped[i - 1] !== '\\' || (codeStripped[i - 1] === '\\' && codeStripped[i - 2] === '\\')) {
+          quoteMode = null
+          continue
+        }
       } else if (!quoteMode) quoteMode = '/'
     }
 
     if (codeStripped[i] === "'") {
       if (quoteMode === "'") {
-        quoteMode = null
-        continue
+        if (codeStripped[i - 1] !== '\\' || (codeStripped[i - 1] === '\\' && codeStripped[i - 2] === '\\')) {
+          quoteMode = null
+          continue
+        }
       } else if (!quoteMode) quoteMode = "'"
     }
 
     if (codeStripped[i] === '`') {
       if (quoteMode === '`') {
-        quoteMode = null
-        continue
+        if (codeStripped[i - 1] !== '\\' || (codeStripped[i - 1] === '\\' && codeStripped[i - 2] === '\\')) {
+          quoteMode = null
+          continue
+        }
       } else if (!quoteMode) quoteMode = '`'
     }
+
     if (quoteMode) continue
 
     if (codeStripped[i] === '{') count++
@@ -114,7 +149,7 @@ export function strip (code) {
 }
 
 function matchExpr (stripped, types = 'function') {
-  const regex = new RegExp(`(export\\s+)?(async\\s+)?(${types.join('|')})\\s+([A-Za-z0-9_]+)`, 'mg')
+  const regex = new RegExp(`(export\\s+)?(async\\s+)?(${types.join('|')})\\s+([A-Za-z0-9_]+)[\\s(={]`, 'mg')
   return [...(stripped.matchAll(regex))].map(i => ({
     /** @type {string}  */ name: i[4],
     /** @type {boolean} */ exported: Boolean(i[1]),
@@ -137,9 +172,12 @@ export function getOuterDeclarations (code) {
 
 /**
  * @test "export function y () { function b () {} return b } const b = 1 + 2"
- * @test cat(#voidTest, 'function a() {}')
- * @test #addTest
- * @test #mathCjs
+ * @test cat(#Parser.voidTest, 'function a() {}')
+ * @test #Parser.addTest
+ * @test #Parser.mathCjs
+ * @test #Parser.passwordModule
+ * @test #Parser.setupTest
+ * @test #Parser.this
  * @param {string} code
  */
 export function parseCode (code) {
@@ -156,7 +194,6 @@ export function parseCode (code) {
 
     // this is stupidly inefficient. I'm writing it in a stupid way so
     // it can be replaced by something intelligent later
-
     result.lineNo = code.substring(0, result.index).split('\n').length
 
     return result
@@ -285,15 +322,16 @@ function multiLine (fileText, start, type) {
  *
  * Right now, this only supports module.exports and export { X }, the others will be crafted soon.
  *
- * @test #moduleExports
- * @test #typicalExport
+ * @test #Parser.moduleExports
+ * @test #Parser.typicalExport
+ * @test #Parser.exports
  *
  * @param {string} code
  */
 export function getExports (code) {
-  const module = /module.exports\s*=\s*{\s*([A-Za-z0-9._$]+,?\s*|'?"?[A-Za-z0-9._$]+'?"?\s*:\s*[A-Za-z0-9._$]+,?\s*)+\s*}/
-
   const exported = {}
+
+  const module = /module.exports\s*=\s*{\s*([A-Za-z0-9._$]+,?\s*|'?"?[A-Za-z0-9._$]+'?"?\s*:\s*[A-Za-z0-9._$]+,?\s*)+\s*}/
   const item = code.match(module)
 
   if (item) {
@@ -308,18 +346,30 @@ export function getExports (code) {
   }
 
   const module2 = /export\s*{\s*([A-Za-z0-9._$]+,?\s*|[A-Za-z0-9._$]+\s*as\s*[A-Za-z0-9._$]+,?\s*)+\s*}/
-
   const item2 = code.match(module2)
 
   if (item2) {
-    const match = item2[0]
-    match.substring(match.indexOf('{') + 1, match.length - 1).trim().split(',').map(i => {
-      const arr = i.split('as').map(i => i.trim().replace(/"|'/g, ''))
-      if (arr.length === 1) return [arr[0], arr[0]]
-      return arr
-    }).forEach(item => {
-      exported[item[1]] = item[0]
-    })
+    for (const match of item2) {
+      match.substring(match.indexOf('{') + 1, match.length - 1).trim().split(',').map(i => {
+        const arr = i.split('as').map(i => i.trim().replace(/"|'/g, ''))
+        if (arr.length === 1) return [arr[0], arr[0]]
+        return arr
+      }).forEach(item => {
+        exported[item[1]] = item[0]
+      })
+    }
+  }
+
+  const module3 = /exports\.([A-Za-z0-9._$]+)\s*=\s*([A-Za-z0-9._$]+)/g
+  const item3 = code.match(module3)
+
+  if (item3) {
+    for (const match of item3) {
+      match.trim().split(',').forEach(i => {
+        const arr = i.split('=').map(i => i.trim().replace(/"|'/g, ''))
+        exported[arr[1]] = arr[0].substring(8)
+      })
+    }
   }
 
   return exported
