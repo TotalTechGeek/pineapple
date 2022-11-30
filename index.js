@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @ts-check
-import { groupBy, pluck, map, indexBy } from 'ramda'
+import { groupBy, pluck, map, indexBy, pickBy, identity } from 'ramda'
 import tempy from 'tempy'
 import debounce from 'debounce'
 import { program, Option } from 'commander'
@@ -23,7 +23,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.12.0')
+  .version('0.12.1')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
@@ -256,16 +256,12 @@ async function execute (functions, forkProcess = false) {
 
     child = spawn(program, [tmp], {
       stdio: ['pipe', 'inherit', 'inherit'],
-      env: {
-        ...process.env
-      }
+      env: pickBy(identity, process.env)
     })
   } else if (options.bun) {
     child = spawn('bun', [tmp], {
       stdio: ['pipe', 'inherit', 'inherit'],
-      env: {
-        ...process.env
-      }
+      env: pickBy(identity, process.env)
     })
 
     child.on('exit', (code) => {
