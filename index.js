@@ -276,12 +276,13 @@ async function execute (functions, forkProcess = false) {
 function getFunctions (fileText, fileName) {
   let onlyLines = null
   if (options.only && options.only.length) {
-    onlyLines = options.only.map(i => {
+    onlyLines = new Set(options.only.map(i => {
       const index = i.lastIndexOf(':')
       const fileRequested = i.substring(0, index)
       return fileName === fileRequested ? +i.substring(index + 1) : null
-    }).filter(i => i)
-    if (!onlyLines.length) return []
+    }).filter(i => i))
+
+    if (!onlyLines.size) return []
   }
 
   const functions = parseCode(fileText).map(i => ({
@@ -290,7 +291,13 @@ function getFunctions (fileText, fileName) {
     isClass: i.type === 'class',
     relativePath: fileName.startsWith(cwd) ? fileName.substring(cwd.length + 1) : ''
   })).filter(i => {
-    if (!i.tags || !i.tags.length) return false
+    if (onlyLines) {
+      i.tags = i.tags.filter(tag => {
+        if (tag.type !== 'test' && tag.type !== 'test_static') return true
+        return onlyLines.has(tag.lineNo)
+      })
+    }
+    if (!i.tags.length) return false
     if (!i.exported) skippingTest(i.name, i.fileName, i.tags)
     return i.exported
   })
