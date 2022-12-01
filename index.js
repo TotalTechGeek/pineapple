@@ -23,7 +23,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.12.2')
+  .version('0.12.3')
   .option('-i, --include <files...>', 'Comma separated globs of files.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
