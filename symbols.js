@@ -1,2 +1,2 @@
-export const SpecialHoF = Symbol('SpecialHoF')
-export const ConstantFunc = Symbol('ConstantFunc')
+export const SpecialHoF = '___SpecialHoF___'
+export const ConstantFunc = '___ConstantFunc___'
