@@ -5,7 +5,7 @@ const namespaces = {}
 // Todo: Make this file work with the alternative formats & etc.
 
 /**
- * @param {string | [string]} name
+ * @param {string | TemplateStringsArray} name
  * @returns {Omit<{ [key: string]: (description: string, func: (...args: any[]) => void) => void }, 'Scenario'> & { Scenario: typeof Scenario }}
  */
 function createNamespace (name = 'default') {
@@ -31,6 +31,9 @@ function createNamespace (name = 'default') {
     registered: {}
   }
 
+  /**
+   * @param {TemplateStringsArray} param
+   */
   function Scenario ([script]) {
     return async (...args) => {
       const steps = script.split('\n').filter(i => i.trim())
