@@ -1,0 +1,8 @@
+{
+  "parseTest('-Infinity', { startRule: 'Expression' }) [518b82629bbd788780e776b9725cec033ba1a04c1bf443aab804c168b5ab6645]": {
+    "value": {
+      "-": Infinity
+    },
+    "async": false
+  }
+}

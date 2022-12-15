@@ -1615,10 +1615,10 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-json-logic-engine@^1.1.21:
-  version "1.1.21"
-  resolved "https://registry.yarnpkg.com/json-logic-engine/-/json-logic-engine-1.1.21.tgz#577126b213e5e23f9b3d4970dd2537ff1d4d9a4c"
-  integrity sha512-BjAvLFLyokYumdLxw/Yto4WzfSnFDwynXRZhlpJRT2pnE3HbYV3LowSbiFaCbEbJ0Fp2aOKrMA+5lu1obN5xiA==
+json-logic-engine@^1.1.22:
+  version "1.1.22"
+  resolved "https://registry.yarnpkg.com/json-logic-engine/-/json-logic-engine-1.1.22.tgz#50c4b830a14f9785848397d60fae12cf4a3a1714"
+  integrity sha512-/MDsgT2389QoajA8yHvAadPCAoXlCK6w1Jd06YX4Iq+afTOpxR2wj2OXScfLR3T2ILRs1KVmu9PUBcondMMYwA==
 
 json-parse-better-errors@^1.0.1:
   version "1.0.2"
