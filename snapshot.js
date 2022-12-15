@@ -71,7 +71,7 @@ export function serialize (item, indent = 0) {
         '\n' + indentStr('}')).replace(/:[ ]+/g, ': ')
   }
 
-  throw new Error('Unsupported Data Type.')
+  throw new Error('Unsupported Data Type: ' + item)
 }
 
 /**
