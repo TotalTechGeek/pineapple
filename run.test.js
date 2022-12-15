@@ -16,3 +16,17 @@ class Counter {
  * @test 100 ~> $.increment() ~> $.increment() returns 102
  */
 export const CreateCounter = hof(Counter)
+
+/**
+ * @test void ~>
+ *  $.create('Jesse') ~>
+ *  $.greet() returns 'Hello Jesse'
+ */
+export const Module = hof({
+  create (name) {
+    this.person = { name }
+  },
+  greet () {
+    return `Hello ${this.person.name}`
+  }
+})

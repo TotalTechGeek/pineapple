@@ -1,13 +1,16 @@
 {
   "name": "pineapple",
-  "version": "0.12.4",
+  "version": "0.13.0",
   "description": "A testing framework for humans.",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run buildPackage",
     "build": "npm run generate:parser",
+    "buildPackage": "run-script-os",
+    "buildPackage:win32": "rm -rf dist && rollup index.js --file dist/cjs/index.js --format cjs --exports named && rollup index.js --file dist/esm/index.js --format esm && echo { \"type\": \"module\" } > dist/esm/package.json && echo { \"type\": \"commonjs\" } > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
+    "buildPackage:default": "rm -rf dist && rollup index.js --file dist/cjs/index.js --format cjs --exports named && rollup index.js --file dist/esm/index.js --format esm && echo '{ \"type\": \"module\" }' > dist/esm/package.json && echo '{ \"type\": \"commonjs\" }' > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
     "generate:parser": "peggy --allowed-start-rules Document,Expression --cache --format es -o parser/dsl.js parser/grammar.pegjs && cd parser && exitzero standard --fix *.js && node patch.js",
-    "test": "c8 node index.js -i \"test/*,*.js\" -t"
+    "test": "c8 node cli.js -i \"test/*,*.js\" -t"
   },
   "repository": {
     "url": "https://github.com/TotalTechGeek/pineapple",
@@ -32,7 +35,7 @@
     "log-symbols": "^5.1.0",
     "ramda": "^0.28.0",
     "ramda-adjunct": "^3.0.0",
-    "rollup": "^2.70.2",
+    "rollup": "^3.7.4",
     "rollup-plugin-require": "^0.0.1",
     "tempy": "^2.0.0"
   },
@@ -46,11 +49,12 @@
     "eslint-plugin-promise": "^4.2.1",
     "exitzero": "^1.0.1",
     "peggy": "^1.2.0",
+    "run-script-os": "^1.1.6",
     "standard": "^16.0.4",
     "typescript": "4.8.4"
   },
   "bin": {
-    "pineapple": "./index.js"
+    "pineapple": "./cli.js"
   },
   "keywords": [
     "test",
@@ -61,6 +65,12 @@
       "node_modules/**",
       "parser/**"
     ]
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
   },
   "types": "./index.d.ts",
   "author": "Jesse Daniel Mitchell",

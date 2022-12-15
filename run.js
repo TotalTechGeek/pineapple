@@ -107,7 +107,8 @@ export async function run (input, id, func, file) {
 
       const key = Object.keys(step)[0]
       const [inputs, expectation] = step[key]
-      const arbs = await argumentsToArbitraries(...inputs)
+
+      const arbs = await argumentsToArbitraries({ data: current.result }, ...inputs)
       let failed = null
       try {
         let count = 0
@@ -129,6 +130,7 @@ export async function run (input, id, func, file) {
           }
         })
       } catch (e) {
+        if (!failed) return [e, false, 'An unexpected issue was encountered.']
         if (e instanceof FuzzError && !arbs.constant) {
           failed[2] = (failed[2] || '') + `\nFailing Example: ${serialize(e.counterExample)}\nShrunk ${e.shrunk} times.\nSeed: ${e.seed}`
         }
@@ -168,13 +170,28 @@ export async function run (input, id, func, file) {
 }
 
 /**
+ * Tries to invoke "new" to construct a class,
+ * otherwise falls back to executing the function.
+ * @param {(...args: any) => any} ClassToUse
+ * @param  {any[]} args
+ */
+function forceConstruct (ClassToUse, ...args) {
+  try {
+    return new ClassToUse(...args)
+  } catch (err) {
+    return ClassToUse(...args)
+  }
+}
+
+/**
  * A way to turn a class into a higher-order function chain for testing purposes.
  * @param {*} ClassToUse
  * @param {boolean} staticClass
  */
 export function hof (ClassToUse, staticClass = false) {
+  if (typeof ClassToUse !== 'function') ClassToUse = always(ClassToUse)
   return (...args) => {
-    const instance = staticClass ? ClassToUse : new ClassToUse(...args)
+    const instance = staticClass ? ClassToUse : forceConstruct(ClassToUse, ...args)
     const f = (method, ...args) => {
       if (!(method in instance && (instance.hasOwnProperty(method) || ClassToUse.prototype.hasOwnProperty(method)))) { throw new Error(`'${method}' is not a method of '${ClassToUse.name}'`) }
       f.result = instance[method](...args)

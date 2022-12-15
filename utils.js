@@ -179,7 +179,7 @@ export function traverseSubstitute (obj, sub = []) {
  * Convert the arguments for a test case into arbitraries.
  * @param  {...any} args
  */
-export async function argumentsToArbitraries (...args) {
+export async function argumentsToArbitraries (data, ...args) {
   args = args.map(touchUpArbitrary)
   let constant = true
   const list = []
@@ -189,7 +189,7 @@ export async function argumentsToArbitraries (...args) {
 
       if (keys[0].startsWith('#')) {
         if (!constantStructures.has(i) && keys[0] !== '#constant' && !checkConstantFunction(keys[0])) constant = false
-        const result = await (await engine.build(i))()
+        const result = await (await engine.build(i))(data)
         if (keys[1] === 'map' && i.map !== basicSub) {
           list.push(result.map(engine.fallback.build(i.map)))
           continue
@@ -199,7 +199,7 @@ export async function argumentsToArbitraries (...args) {
       }
     }
 
-    list.push(fc.constant(await (await engine.build(i))()))
+    list.push(fc.constant(await (await engine.build(i))(data)))
   }
 
   list.constant = constant
