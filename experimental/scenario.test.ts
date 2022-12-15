@@ -1,7 +1,7 @@
 
 import Gherkin from './scenario.js'
 
-const { Given, When, Then, Scenario } = Gherkin()
+const { Given, When, Then, Scenario } = Gherkin<{ pineapples: number }>()
 
 Given('I have {num} pineapples in my belly', function ({ num }) {
   this.pineapples = num
