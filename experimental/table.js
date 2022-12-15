@@ -1,4 +1,5 @@
 import fc from 'fast-check'
+import { sequenceArbitrary } from './sequence-arbitrary'
 
 /**
  * @param {string} str
@@ -47,17 +48,21 @@ export function parseTable (str, header) {
 /**
  * @param {string} name
  * @param {string} param
+ * @param {boolean} randomize
  */
-export function HeaderTable (name, str) {
+export function HeaderTable (name, str, randomize = false) {
+  const arbitrary = randomize ? fc.constantFrom : sequenceArbitrary
   if (Array.isArray(str)) str = str[0]
-  return () => ({ [name]: fc.constantFrom(...parseTable(str, true)) })
+  return () => ({ [name]: arbitrary(...parseTable(str, true)) })
 }
 
 /**
  * @param {string} name
  * @param {string} param
+ * @param {boolean} randomize
  */
-export function ArrayTable (name, str) {
+export function ArrayTable (name, str, randomize = false) {
+  const arbitrary = randomize ? fc.constantFrom : sequenceArbitrary
   if (Array.isArray(str)) str = str[0]
-  return () => ({ [name]: fc.constantFrom(...parseTable(str, false)) })
+  return () => ({ [name]: arbitrary(...parseTable(str, false)) })
 }

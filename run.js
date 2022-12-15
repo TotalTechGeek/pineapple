@@ -109,6 +109,17 @@ export async function run (input, id, func, file) {
       const [inputs, expectation] = step[key]
 
       const arbs = await argumentsToArbitraries({ data: current.result }, ...inputs)
+
+      let numRuns
+
+      // If the arguments are absolutely constant, run once
+      if (arbs.constant) numRuns = 1
+      // if there's only one argument and it has a fixed size, set the size to that.
+      else if (arbs.length === 1 && arbs[0].size) numRuns = arbs[0].size
+      // otherwise, reduce the number of runs for a snapshot
+      // todo: make this configurable
+      else if (key === 'snapshot') numRuns = 10
+
       let failed = null
       try {
         let count = 0
@@ -122,7 +133,7 @@ export async function run (input, id, func, file) {
           return result[1]
         }), {
           seed: key === 'snapshot' ? parseInt(h.substring(0, 16), 16) : undefined,
-          numRuns: arbs.constant ? 1 : key === 'snapshot' ? 10 : undefined,
+          numRuns,
           reporter (out) {
             if (out.failed) {
               throw new FuzzError(out.counterexample, out.seed, out.error, out.numShrinks)
