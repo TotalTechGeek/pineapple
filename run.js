@@ -117,7 +117,7 @@ export async function run (input, id, func, file) {
           const countStr = count > 1 ? `.${count}` : ''
           result = await engine.run({
             [key]: [{ preserve: args }, expectation]
-          }, { data: 1, func: current, id: (`${idName}(${input}) [${idHash}${countStr}]`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
+          }, { func: current, id: (`${idName}(${input}) [${idHash}${countStr}]`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
           if (!result[1]) failed = result
           return result[1]
         }), {
