@@ -20,7 +20,7 @@ Then('The number of pineapples should be positive.', function () {
 })
 
 /**
- * @test { num: 5 }
+ * @test { num: 5 } resolves @.pineapples === 4
  * @test { num: #integer({ min: 1 }) } resolves
  */
 export const Example = Scenario`
@@ -30,7 +30,7 @@ Then I should have one less pineapple in my belly
 And The number of pineapples should be positive.`
 
 /**
- * @test { num: 5 }
+ * @test { num: 5 } resolves @.pineapples === 2
  */
 export const SecondExample = Scenario`
  Given I have {num} pineapples in my belly
