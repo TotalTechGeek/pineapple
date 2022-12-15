@@ -1,0 +1,66 @@
+{
+  "parseTable(#Tables.cucumberWithTitles, true) [a934a610e5e5a1c798a069798855be46f35940dced1596cc389e77fab8cf68ac]": {
+    "value": [
+      {
+        "title": "The Devil in the White City",
+        "author": "Erik Larson"
+      },
+      {
+        "title": "The Lion, the Witch and the Wardrobe",
+        "author": "C.S. Lewis"
+      },
+      {
+        "title": "In the Garden of Beasts",
+        "author": "Erik Larson"
+      }
+    ],
+    "async": false
+  },
+  "parseTable(#Tables.markDown, true) [f60f64bbc69d42e40f8ef3736a4da427721321a9c97d900a397f35441f6f7a41]": {
+    "value": [
+      {
+        "title": "The Devil in the White City",
+        "author": "Erik Larson"
+      },
+      {
+        "title": "The Lion, the Witch and the Wardrobe",
+        "author": "C.S. Lewis"
+      },
+      {
+        "title": "In the Garden of Beasts",
+        "author": "Erik Larson"
+      }
+    ],
+    "async": false
+  },
+  "parseTable(#Tables.cucumberWithoutTitles, false) [213e7c6f3d605bc83450dc58616a0b8b4d3635da664125231d3b2d819ae0ef29]": {
+    "value": [
+      [
+        "The Devil in the White City",
+        "Erik Larson"
+      ],
+      [
+        "The Lion, the Witch and the Wardrobe",
+        "C.S. Lewis"
+      ],
+      [
+        "In the Garden of Beasts",
+        "Erik Larson"
+      ]
+    ],
+    "async": false
+  },
+  "parseTable(#Tables.sample, true) [c789c50bd758606f2ed630e4b38830106ac338a3a1da82f4880d8ee7dd955775]": {
+    "value": [
+      {
+        "name": "Jesse Mitchell",
+        "title": "Lead Software Engineer"
+      },
+      {
+        "name": "Hooman Famili",
+        "title": "VP of Engineering"
+      }
+    ],
+    "async": false
+  }
+}

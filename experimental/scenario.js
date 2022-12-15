@@ -2,7 +2,8 @@ import chalk from 'chalk'
 
 const namespaces = {}
 
-// Todo: Make this file work with the alternative formats & etc.
+// Todo: Make this file work with the alternative output formats & etc.
+// Todo: Add support for reading from feature files.
 
 /**
  * @param {string | TemplateStringsArray} name

@@ -1,6 +1,6 @@
 {
   "name": "pineapple",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "description": "A testing framework for humans.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "buildPackage:win32": "rm -rf dist && rollup index.js --file dist/cjs/index.js --format cjs --exports named && rollup index.js --file dist/esm/index.js --format esm && echo { \"type\": \"module\" } > dist/esm/package.json && echo { \"type\": \"commonjs\" } > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
     "buildPackage:default": "rm -rf dist && rollup index.js --file dist/cjs/index.js --format cjs --exports named && rollup index.js --file dist/esm/index.js --format esm && echo '{ \"type\": \"module\" }' > dist/esm/package.json && echo '{ \"type\": \"commonjs\" }' > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
     "generate:parser": "peggy --allowed-start-rules Document,Expression --cache --format es -o parser/dsl.js parser/grammar.pegjs && cd parser && exitzero standard --fix *.js && node patch.js",
-    "test": "c8 node cli.js -i \"experimental/*,test/*,*.js\" -t"
+    "test": "c8 node cli.js -i \"experimental/*,test/*,*.js\" -t --exclude \"**/*.d.ts\""
   },
   "repository": {
     "url": "https://github.com/TotalTechGeek/pineapple",
