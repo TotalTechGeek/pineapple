@@ -3,7 +3,7 @@ import { serialize } from './snapshot.js'
 import { diff } from './utils.js'
 
 async function getConfirmation (message) {
-  if (typeof prompt !== 'undefined' && !process.stdin) {
+  if (typeof prompt !== 'undefined') {
     const result = prompt(`${message} (Y/N)`).toLowerCase()
     console.log()
     return result === 'y' || result === 'yes'
