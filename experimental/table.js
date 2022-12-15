@@ -1,10 +1,19 @@
 import fc from 'fast-check'
 
 /**
+ * @param {string} str
+ */
+function isNumeric (str) {
+  if (typeof str !== 'string') return false
+  return !isNaN(str) && !isNaN(parseFloat(str))
+}
+
+/**
  * @test #Tables.cucumberWithTitles, true
  * @test #Tables.markDown, true
  * @test #Tables.cucumberWithoutTitles, false
  * @test #Tables.sample, true
+ * @test #Tables.accounts, true
  * @param {string} str
  * @param {boolean} header
  */
@@ -20,7 +29,9 @@ export function parseTable (str, header) {
   }
 
   for (const line of lines) {
-    const items = line.split('|').map(i => i.trim())
+    const items = line.split('|').map(i => i.trim()).map(i => {
+      return isNumeric(i) ? +i : i
+    })
     if (!items[0]) items.shift()
     if (!items[items.length - 1]) items.pop()
     if (!items.some(i => /[A-Za-z0-9]/.test(i))) continue

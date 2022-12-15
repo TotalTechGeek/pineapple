@@ -27,7 +27,13 @@ export function Tables () {
       -- | --
       Jesse Mitchell | Lead Software Engineer
       Hooman Famili | VP of Engineering
-      `
+      `,
+    accounts: `
+     name | balance
+     -- | --
+     Bob | 200.35
+     Dave | 193
+    `
   }
 }
 

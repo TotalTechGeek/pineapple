@@ -62,5 +62,18 @@
       }
     ],
     "async": false
+  },
+  "parseTable(#Tables.accounts, true) [be5043b5ee81f03ce7edb443ca52841f3b4dfd1f76adf315c68b608bd5fdcd4f]": {
+    "value": [
+      {
+        "name": "Bob",
+        "balance": 200.35
+      },
+      {
+        "name": "Dave",
+        "balance": 193
+      }
+    ],
+    "async": false
   }
 }
