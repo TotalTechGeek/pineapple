@@ -67,6 +67,8 @@ export function InternalTests () {
  * @param {string} code
  */
 export function strip (code) {
+  code = code.replace(/\r\n/g, '\n')
+
   const codeStripped = code
     .replace(/as\s+const/g, '')
   // .replace(/=>?\s+\//g, '= //')
@@ -181,6 +183,7 @@ export function getOuterDeclarations (code) {
  * @param {string} code
  */
 export function parseCode (code) {
+  code = code.replace(/\r\n/g, '\n')
   const fileLines = code.split('\n')
 
   // first, get the outer declarations (things that can be tested by Pineapple)
@@ -331,6 +334,8 @@ function multiLine (fileText, start, type) {
  * @param {string} code
  */
 export function getExports (code) {
+  code = code.replace(/\r\n/g, '\n')
+
   const exported = {}
 
   const module = /module.exports\s*=\s*{\s*([A-Za-z0-9._$]+,?\s*|'?"?[A-Za-z0-9._$]+'?"?\s*:\s*[A-Za-z0-9._$]+,?\s*)+\s*}/

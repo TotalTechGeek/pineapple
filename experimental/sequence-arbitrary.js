@@ -1,4 +1,4 @@
-import { generatorToArbitrary } from './generator-to-arbitrary'
+import { generatorToArbitrary } from './generator-to-arbitrary.js'
 
 function * sequence (...arr) {
   for (let i = 0; i < Infinity; i++) {
