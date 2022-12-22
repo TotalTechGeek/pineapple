@@ -1,14 +1,14 @@
 {
   "name": "pineapple",
-  "version": "0.13.7",
+  "version": "0.13.8",
   "description": "A testing framework for humans.",
   "main": "index.js",
   "scripts": {
     "prepublish": "npm run build && npm run buildPackage",
     "build": "npm run generate:parser",
     "buildPackage": "run-script-os",
-    "buildPackage:win32": "rm -rf dist && rollup index.js --file dist/cjs/index.js --format cjs --exports named && rollup index.js --file dist/esm/index.js --format esm && echo { \"type\": \"module\" } > dist/esm/package.json && echo { \"type\": \"commonjs\" } > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
-    "buildPackage:default": "rm -rf dist && rollup index.js --file dist/cjs/index.js --format cjs --exports named && rollup index.js --file dist/esm/index.js --format esm && echo '{ \"type\": \"module\" }' > dist/esm/package.json && echo '{ \"type\": \"commonjs\" }' > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
+    "buildPackage:win32": "rm -rf dist && esbuild index.js --outfile=dist/cjs/index.js --format=cjs --bundle --packages=external && esbuild index.js --outfile=dist/esm/index.js --format=esm --bundle --packages=external && echo { \"type\": \"module\" } > dist/esm/package.json && echo { \"type\": \"commonjs\" } > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
+    "buildPackage:default": "rm -rf dist && esbuild index.js --outfile=dist/cjs/index.js --format=cjs --bundle --packages=external && esbuild index.js --outfile=dist/esm/index.js --format=esm --bundle --packages=external && echo '{ \"type\": \"module\" }' > dist/esm/package.json && echo '{ \"type\": \"commonjs\" }' > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
     "generate:parser": "peggy --allowed-start-rules Document,Expression --cache --format es -o parser/dsl.js parser/grammar.pegjs && cd parser && exitzero standard --fix *.js && node patch.js",
     "test": "c8 --reporter=text --reporter=lcov node cli.js -i \"experimental/*,test/*,*.js\" -t --exclude \"**/*.d.ts\""
   },
@@ -20,14 +20,13 @@
     "@typescript-eslint/typescript-estree": "5.43.0"
   },
   "dependencies": {
-    "@rollup/plugin-commonjs": "^22.0.0",
-    "@rollup/plugin-sucrase": "^4.0.3",
     "ajv": "^8.11.0",
     "chalk": "^5.1.2",
     "chokidar": "^3.5.3",
     "commander": "^9.4.1",
     "debounce": "^1.2.1",
     "dependency-tree": "^8.1.2",
+    "esbuild": "^0.16.10",
     "fast-check": "^3.3.0",
     "glob": "^8.0.3",
     "jest-diff": "^27.5.1",
@@ -35,8 +34,6 @@
     "log-symbols": "^5.1.0",
     "ramda": "^0.28.0",
     "ramda-adjunct": "^3.0.0",
-    "rollup": "^3.7.4",
-    "rollup-plugin-require": "^0.0.1",
     "tempy": "^2.0.0"
   },
   "devDependencies": {

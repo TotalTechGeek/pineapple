@@ -23,13 +23,13 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.13.7')
+  .version('0.13.8')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
-  .option('-t, --typescript', 'Enables typescript (slower).')
+  .option('-t, --typescript', 'Enables typescript.')
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .addOption(formatOption)
 
