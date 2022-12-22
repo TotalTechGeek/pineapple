@@ -650,8 +650,8 @@
         "exported": false,
         "type": "function",
         "raw": "function matchExpr ",
-        "index": 3872,
-        "lineNo": 151,
+        "index": 3910,
+        "lineNo": 153,
         "tags": [
         ]
       },
@@ -660,28 +660,28 @@
         "exported": true,
         "type": "function",
         "raw": "export function getOuterDeclarations ",
-        "index": 4440,
-        "lineNo": 168,
+        "index": 4478,
+        "lineNo": 170,
         "tags": [
           {
             "type": "test",
             "text": "'export const a = () => b + c; const b = 3'",
-            "lineNo": 162
-          },
-          {
-            "type": "test",
-            "text": "'class A {}'",
-            "lineNo": 163
-          },
-          {
-            "type": "test",
-            "text": "'export class A {} class B {}'",
             "lineNo": 164
           },
           {
             "type": "test",
-            "text": "'module.exports = {}'",
+            "text": "'class A {}'",
             "lineNo": 165
+          },
+          {
+            "type": "test",
+            "text": "'export class A {} class B {}'",
+            "lineNo": 166
+          },
+          {
+            "type": "test",
+            "text": "'module.exports = {}'",
+            "lineNo": 167
           }
         ]
       },
@@ -690,43 +690,43 @@
         "exported": true,
         "type": "function",
         "raw": "export function parseCode ",
-        "index": 4886,
-        "lineNo": 183,
+        "index": 4924,
+        "lineNo": 185,
         "tags": [
           {
             "type": "test",
             "text": "\"export function y () { function b () {} return b } const b = 1 + 2\"",
-            "lineNo": 174
-          },
-          {
-            "type": "test",
-            "text": "cat(#Parser.voidTest, 'function a() {}')",
-            "lineNo": 175
-          },
-          {
-            "type": "test",
-            "text": "#Parser.addTest",
             "lineNo": 176
           },
           {
             "type": "test",
-            "text": "#Parser.mathCjs",
+            "text": "cat(#Parser.voidTest, 'function a() {}')",
             "lineNo": 177
           },
           {
             "type": "test",
-            "text": "#Parser.passwordModule",
+            "text": "#Parser.addTest",
             "lineNo": 178
           },
           {
             "type": "test",
-            "text": "#Parser.setupTest",
+            "text": "#Parser.mathCjs",
             "lineNo": 179
           },
           {
             "type": "test",
-            "text": "#Parser.this",
+            "text": "#Parser.passwordModule",
             "lineNo": 180
+          },
+          {
+            "type": "test",
+            "text": "#Parser.setupTest",
+            "lineNo": 181
+          },
+          {
+            "type": "test",
+            "text": "#Parser.this",
+            "lineNo": 182
           }
         ]
       },
@@ -735,8 +735,8 @@
         "exported": false,
         "type": "function",
         "raw": "function getTags ",
-        "index": 6289,
-        "lineNo": 239,
+        "index": 6364,
+        "lineNo": 242,
         "tags": [
         ]
       },
@@ -745,8 +745,8 @@
         "exported": false,
         "type": "const",
         "raw": "const TAG_TYPES ",
-        "index": 7071,
-        "lineNo": 265,
+        "index": 7146,
+        "lineNo": 268,
         "tags": [
         ]
       },
@@ -755,8 +755,8 @@
         "exported": false,
         "type": "function",
         "raw": "function multiLine ",
-        "index": 7798,
-        "lineNo": 294,
+        "index": 7873,
+        "lineNo": 297,
         "tags": [
         ]
       },
@@ -765,23 +765,23 @@
         "exported": true,
         "type": "function",
         "raw": "export function getExports ",
-        "index": 8776,
-        "lineNo": 333,
+        "index": 8851,
+        "lineNo": 336,
         "tags": [
           {
             "type": "test",
             "text": "#Parser.moduleExports",
-            "lineNo": 327
+            "lineNo": 330
           },
           {
             "type": "test",
             "text": "#Parser.typicalExport",
-            "lineNo": 328
+            "lineNo": 331
           },
           {
             "type": "test",
             "text": "#Parser.exports",
-            "lineNo": 329
+            "lineNo": 332
           }
         ]
       }

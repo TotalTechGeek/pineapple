@@ -1,5 +1,5 @@
 import fc from 'fast-check'
-import { sequenceArbitrary } from './sequence-arbitrary'
+import { sequenceArbitrary } from './sequence-arbitrary.js'
 
 /**
  * @param {string} str
