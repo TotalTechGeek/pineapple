@@ -15,8 +15,27 @@ function isNumeric (str) {
  * @test #Tables.cucumberWithoutTitles, false
  * @test #Tables.sample, true
  * @test #Tables.accounts, true
- * @param {string} str
- * @param {boolean} header
+ */
+/**
+ * Allows you to parse a text table, either in Cucumber's typical format or Markdown-esque format.
+ *
+ * For example:
+ * ```text
+ * Name | Age
+ * -- | --
+ * Jesse | 25
+ * Bob | 23
+ *```
+
+ Would be parsed as:
+ ```
+ [
+    { "name": "Jesse", "age": 25 },
+    { "name": "Bob", "age": 23 }
+ ]
+ ```
+ * @param {string} str The table to parse
+ * @param {boolean} header Whether the table has a header specified of not.
  */
 export function parseTable (str, header) {
   const lines = str.split('\n').filter(i => i.trim())
@@ -46,9 +65,39 @@ export function parseTable (str, header) {
 }
 
 /**
+ *
+ * Allows you to parse a text table, either in Cucumber's typical format or Markdown-esque format.
+ *
+ * For example:
+ * ```text
+ * Name | Age
+ * -- | --
+ * Jesse | 25
+ * Bob | 23
+ *```
+
+ Would be parsed as:
+ ```
+ [
+    { "name": "Jesse", "age": 25 },
+    { "name": "Bob", "age": 23 }
+ ]
+ ```
+ *
  * @param {string} name
  * @param {string} param
- * @param {boolean} randomize
+ * @param {boolean} randomize Decides whether to use this arbitrary sequentially or not.
+ *
+ * * @example
+ * ```
+ * // "@pineapple_define" this
+ * const People = HeaderTable('People', `
+ *  Name | Age
+ *  -- | --
+ *  Jesse | 25
+ *  Bob | 23
+ * `)
+ * ```
  */
 export function HeaderTable (name, str, randomize = false) {
   const arbitrary = randomize ? fc.constantFrom : sequenceArbitrary
@@ -59,7 +108,16 @@ export function HeaderTable (name, str, randomize = false) {
 /**
  * @param {string} name
  * @param {string} param
- * @param {boolean} randomize
+ * @param {boolean} randomize Decides whether to use this arbitrary sequentially or not
+ *
+ * @example
+ * ```
+ * // "@pineapple_define" this
+ * const People = ArrayTable('People', `
+ *  Jesse | 25
+ *  Bob | 23
+ * `)
+ * ```
  */
 export function ArrayTable (name, str, randomize = false) {
   const arbitrary = randomize ? fc.constantFrom : sequenceArbitrary
