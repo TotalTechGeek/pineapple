@@ -1,6 +1,6 @@
 
 <p align="center">
-<img width=300 alt="A picture of a pineapple with a galaxy behind it with the word 'pineapple' under it." src="https://jessemitchell.me/pineapple/img/pineapple.png" /><br/> <p align="center" style="font-size: 18px;">A software testing framework for humans :) </p>
+<img width=300 alt="A picture of a pineapple with a galaxy behind it with the word 'pineapple' under it." src="https://raw.githubusercontent.com/TotalTechGeek/pineapple/master/resources/pineapple.png" /><br/> <p align="center" style="font-size: 18px;">A software testing framework for humans :) </p>
 
 </p>
 
@@ -8,7 +8,7 @@
 
 ## What is this?
 
-[![npm version](https://badge.fury.io/js/pineapple.svg)](https://badge.fury.io/js/pineapple) [![Node.js CI](https://github.com/TotalTechGeek/pineapple/actions/workflows/node.js.yml/badge.svg)](https://github.com/TotalTechGeek/pineapple/actions/workflows/node.js.yml) [![Coverage Status](https://coveralls.io/repos/github/TotalTechGeek/pineapple/badge.svg)](https://coveralls.io/github/TotalTechGeek/pineapple) 
+[![npm version](https://badge.fury.io/js/pineapple.svg)](https://badge.fury.io/js/pineapple) [![Node.js CI](https://github.com/TotalTechGeek/pineapple/actions/workflows/node.js.yml/badge.svg)](https://github.com/TotalTechGeek/pineapple/actions/workflows/node.js.yml) [![Coverage Status](https://coveralls.io/repos/github/TotalTechGeek/pineapple/badge.svg)](https://coveralls.io/github/TotalTechGeek/pineapple)
 
 Pineapple is a test framework designed to remove the cruft from writing unit tests and creating snapshots.
 
