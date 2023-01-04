@@ -5,6 +5,7 @@ import Link from '@docusaurus/Link'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import styles from './index.module.css'
 import HomepageFeatures from '@site/src/components/HomepageFeatures'
+import Head from '@docusaurus/Head'
 
 function LogoHeader () {
   const { siteConfig } = useDocusaurusContext()
@@ -43,6 +44,9 @@ export default function Home () {
     <Layout
       title={`Hello from ${siteConfig.title}`}
       description="A testing framework for humans.">
+        <Head>
+          <meta property='og:image' content='./img/pineapple.png'/>
+        </Head>
       <LogoHeader />
       <OtherHeader />
       <main>
