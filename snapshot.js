@@ -16,20 +16,30 @@ export function snapshot (file = './pineapple-snapshot') {
     }
   })
 
+  const notAccessed = data.then(data => new Set(Object.keys(data)))
+
   const find = async (key) => {
+    (await notAccessed).delete(key)
     return {
       exists: key in (await data),
       value: (await data)[key]
     }
   }
 
+  // todo: make this not hammer disk.
   const set = async function (key, value) {
     if (!this.data) this.data = await data
     this.data[key] = value
     await fs.writeFile(file, serialize(this.data))
   }
 
-  return { find, set }
+  const remove = async function (key) {
+    if (!this.data) this.data = await data
+    delete this.data[key]
+    await fs.writeFile(file, serialize(this.data))
+  }
+
+  return { find, set, remove, notAccessed }
 }
 
 /**

@@ -4,7 +4,7 @@ import { parse } from './parser/dsl.js'
 import { serialize, snapshot } from './snapshot.js'
 import { hash } from './hash.js'
 import { SpecialHoF, ConstantFunc } from './symbols.js'
-import { failure, parseFailure, success, testRuntimeFailure } from './outputs.js'
+import { failure, parseFailure, success, testRuntimeFailure, snapshotsUnused } from './outputs.js'
 import fc from 'fast-check'
 import { argumentsToArbitraries } from './utils.js'
 import { always } from 'ramda'
@@ -15,12 +15,33 @@ function snapshotManager () {
   /**
    * @param {string} file
    */
-  return (file) => {
+  const result = (file) => {
     file = url.fileURLToPath(`${file.substring(0, file.lastIndexOf(':'))}.psnap`)
     if (!snapshots[file]) snapshots[file] = snapshot(file)
     return snapshots[file]
   }
+
+  result.check = async (mode = false) => {
+    const tests = []
+    for (const file in snapshots) {
+      const remaining = await snapshots[file].notAccessed
+      if (mode === 'clean') for (const item of Array.from(remaining)) await snapshots[file].remove(item)
+      else if (remaining.size) tests.push(...Array.from(remaining).map(item => [file, item]))
+    }
+
+    if (tests.length) {
+      snapshotsUnused(tests, mode)
+      // if strict, return 1, otherwise 0
+      return +mode
+    }
+
+    return 0
+  }
+
+  return result
 }
+
+export const check = snap.check
 
 /**
  * Adds a method to the Pineapple JSON Logic Engine.
