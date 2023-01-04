@@ -80,3 +80,12 @@ Then I should have eaten 80 pineapples
  And I have eaten 30 pineapples
  Then I should have eaten 80 pineapples, which is more than {num}
  `
+
+ /**
+  * @test void throws
+  */
+ export const Fails = () => {
+  Given('I have {num} pineapples in my belly', function ({ num }) {
+    this.pineapples = num
+  })
+ }
