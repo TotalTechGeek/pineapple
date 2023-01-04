@@ -1,0 +1,14 @@
+{
+  "SimulateSnapshot({ key: 'hello', value: 'world' })": {
+    "value": {
+      "text": "{\n  \"hello\": \"world\"\n}"
+    },
+    "async": true
+  },
+  "SimulateSnapshotWithDeletion({ key: 'hello', value: 'world' })": {
+    "value": {
+      "text": "{\n}"
+    },
+    "async": true
+  }
+}

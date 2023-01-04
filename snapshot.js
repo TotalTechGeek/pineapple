@@ -4,7 +4,7 @@ import { parse } from './parser/dsl.js'
 
 /**
  * @param {*} file
- * @returns {{ set: async (key: string, value: any) => void, find: async (key: string) => any }}
+ * @returns {{ set: async (key: string, value: any) => void, find: async (key: string) => any, remove: async (key: string) => void }}
  */
 export function snapshot (file = './pineapple-snapshot') {
   const data = fs.readFile(file).catch(() => {}).then(async text => {
