@@ -18,10 +18,10 @@ export default createNamespace;
  * ```
  * 
  * @param {string | [string]} name The namespace for the steps to avoid collisions
- * @returns {Omit<{ [key: string]: (description: string, func: (...args: any[]) => void) => void }, 'Scenario'> & { Scenario: typeof Scenario }}
+ * @returns {Omit<{ [key: string]: (description: string | RegExp, func: (...args: any[]) => void) => void }, 'Scenario'> & { Scenario: typeof Scenario }}
  */
 declare function createNamespace <T> (name?: string | TemplateStringsArray): Omit<{
-    [key: string]: (description: string, func: (this: T, ...args: any[]) => void) => void;
+    [key: string]: (description: string | RegExp, func: (this: T, ...args: any[]) => void) => void;
 }, "Scenario"> & {
     Scenario: ([script]: TemplateStringsArray) => (...args: any[]) => Promise<{
         ___func___: any;

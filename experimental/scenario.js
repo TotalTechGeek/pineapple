@@ -4,6 +4,7 @@ const namespaces = {}
 
 // Todo: Make this file work with the alternative output formats & etc.
 // Todo: Add support for reading from feature files.
+// Todo: Validate that only one regex step matches.
 
 /**
  * This function creates a dynamic step namespace for the scenarios.
@@ -24,12 +25,20 @@ const namespaces = {}
  * ```
  *
  * @param {string | TemplateStringsArray} name The namespace for the steps to avoid collisions
- * @returns {Omit<{ [key: string]: (description: string, func: (...args: any[]) => void) => void }, 'Scenario'> & { Scenario: typeof Scenario }}
+ * @returns {Omit<{ [key: string]: (description: string | RegExp, func: (...args: any[]) => void) => void }, 'Scenario'> & { Scenario: typeof Scenario }}
  */
 function createNamespace (name = 'default') {
   if (Array.isArray(name)) name = name[0]
   if (namespaces[name]) return namespaces[name]
   const createHandler = (type) => (str, func) => {
+    if (str instanceof RegExp) {
+      if (!target.regex[type]) target.regex[type] = []
+      target.regex[type].push({
+        regex: str,
+        func
+      })
+      return
+    }
     if (!target.registered[type]) target.registered[type] = {}
     const registeredType = target.registered[type]
     if (registeredType[str]) throw new Error(`${type} ${str} is already implemented.`)
@@ -46,7 +55,8 @@ function createNamespace (name = 'default') {
 
   const target = {
     methods: {},
-    registered: {}
+    registered: {},
+    regex: {}
   }
 
   /**
@@ -67,9 +77,13 @@ function createNamespace (name = 'default') {
         const rest = sentence.join(' ')
         if (verb === 'And' || verb === 'and') verb = lastStep
         if (!target.registered[verb] || !target.registered[verb][rest]) {
-          if (missing) missing += '\n\n'
-          else missing += '\n// Step Implementations:\n'
-          missing += `${verb}(${JSON.stringify(rest)}, function () {\n\n})`
+          if (target.regex[verb] && target.regex[verb].some(item => item.regex.exec(rest))) {
+            // do nothing
+          } else {
+            if (missing) missing += '\n\n'
+            else missing += '\n// Step Implementations:\n'
+            missing += `${verb}(${JSON.stringify(rest)}, function () {\n\n})`
+          }
         }
         lastStep = verb
       }
@@ -91,7 +105,17 @@ function createNamespace (name = 'default') {
         const rest = sentence.join(' ')
         if (verb === 'And' || verb === 'and') verb = lastStep
         obj.___func___ = target.registered[verb][rest]
-        await obj.___func___(...args)
+        if (!obj.___func___) {
+          for (const item of target.regex[verb]) {
+            const result = item.regex.exec(rest)
+            if (result) {
+              obj.___func___ = item.func
+              const received = await obj.___func___(...(result.groups ? [result.groups] : [...result].slice(1)))
+              if (typeof received === 'function') await received(...args)
+              break
+            }
+          }
+        } else await obj.___func___(...args)
         lastStep = verb
       }
 
