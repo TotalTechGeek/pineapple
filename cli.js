@@ -4,7 +4,6 @@ import { groupBy, pluck, map, indexBy, pickBy, identity } from 'ramda'
 import tempy from 'tempy'
 import debounce from 'debounce'
 import { program, Option } from 'commander'
-import { hash } from './hash.js'
 import url from 'url'
 import { transpile } from './typescriptTranspiler.js'
 import { filesTested, skippingTest } from './outputs.js'
@@ -222,7 +221,7 @@ async function execute (functions, forkProcess = false) {
     const tests = `%beforeGlobal%\n${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             %beforeEachGlobal% 
             ${beforeEach}
-            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)}, "${func.fileName}:${tag.lineNo}")
+            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}', ${wrapHof(func.alias, tag)}, "${func.fileName}:${tag.lineNo}")
             %afterEachGlobal%
             ${afterEach}
         `).join('')}\n${after}\n%afterGlobal%`

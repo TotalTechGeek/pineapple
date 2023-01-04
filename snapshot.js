@@ -29,11 +29,7 @@ export function snapshot (file = './pineapple-snapshot') {
     await fs.writeFile(file, serialize(this.data))
   }
 
-  const save = async function () {
-    await fs.writeFile(file, serialize(this.data))
-  }
-
-  return { find, set, save }
+  return { find, set }
 }
 
 /**

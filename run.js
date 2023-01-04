@@ -83,15 +83,13 @@ class FuzzError extends Error {
  * @param {string} file
  */
 export async function run (input, id, func, file) {
-  const [idName] = id.split('.')
-
   /**
      * @param {string} input
      * @param {string} id
      * @param {(...args: any[]) => any} func
      * @returns {Promise<[any, boolean] | [any, false, string]>}
      */
-  async function internalRun (input, id, func) {
+  async function internalRun (input, func) {
     const script = parse(input)
     const h = hash(input)
     let result = [func]
@@ -128,7 +126,7 @@ export async function run (input, id, func, file) {
           const countStr = count > 1 ? `.${count}` : ''
           result = await engine.run({
             [key]: [{ preserve: args }, expectation]
-          }, { func: current, id: (`${idName}(${input})${countStr}`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
+          }, { func: current, id: (`${id}(${input})${countStr}`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
           if (!result[1]) failed = result
           return result[1]
         }), {
@@ -161,22 +159,22 @@ export async function run (input, id, func, file) {
   }
 
   try {
-    const [data, success, message] = await internalRun(input, id, func)
+    const [data, success, message] = await internalRun(input, func)
 
     if (!success) {
-      failure({ name: idName, input, message, file, data })
+      failure({ name: id, input, message, file, data })
       return 1
     }
   } catch (err) {
     if (err.expected) {
       const { message } = err
-      parseFailure(idName, input, message, file)
+      parseFailure(id, input, message, file)
     } else testRuntimeFailure(err)
 
     return 1
   }
 
-  success(idName, input, file)
+  success(id, input, file)
   return 0
 }
 
