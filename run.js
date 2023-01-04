@@ -83,7 +83,7 @@ class FuzzError extends Error {
  * @param {string} file
  */
 export async function run (input, id, func, file) {
-  const [idName, idHash] = id.split('.')
+  const [idName] = id.split('.')
 
   /**
      * @param {string} input
@@ -128,7 +128,7 @@ export async function run (input, id, func, file) {
           const countStr = count > 1 ? `.${count}` : ''
           result = await engine.run({
             [key]: [{ preserve: args }, expectation]
-          }, { func: current, id: (`${idName}(${input}) [${idHash}${countStr}]`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
+          }, { func: current, id: (`${idName}(${input})${countStr}`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
           if (!result[1]) failed = result
           return result[1]
         }), {

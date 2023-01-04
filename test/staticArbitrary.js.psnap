@@ -1,11 +1,11 @@
 {
-  "staticTest({ age: #Static.age }) [7c6fa3e8fd9e455aff7fe64bab5ebed88154689450e79fc17bbc873ec7784ae4]": {
+  "staticTest({ age: #Static.age })": {
     "value": {
       "age": 7
     },
     "async": false
   },
-  "staticTest([#Static.age, #Static.age]) [40f3f7e194d9dd677eb398175a77917d7e8a2c2ce8a628a12a9b70839008b3d6]": {
+  "staticTest([#Static.age, #Static.age])": {
     "value": [
       7,
       7

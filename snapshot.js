@@ -10,7 +10,7 @@ export function snapshot (file = './pineapple-snapshot') {
   const data = fs.readFile(file).catch(() => {}).then(async text => {
     if (!text) return {}
     try {
-      return await deserialize(text)
+      return cleanOldSnapshots(await deserialize(text))
     } catch (e) {
       return {}
     }
@@ -29,7 +29,31 @@ export function snapshot (file = './pineapple-snapshot') {
     await fs.writeFile(file, serialize(this.data))
   }
 
-  return { find, set }
+  const save = async function () {
+    await fs.writeFile(file, serialize(this.data))
+  }
+
+  return { find, set, save }
+}
+
+/**
+ * Handles pre-2023 snapshots so that they are still valid upon being read,
+ * but it'll convert it to remove the hashes attached.
+ * @test { "add(1, 2) [abcd]": {}, "add(1, 2) [abcd.2]": {} }
+ * @test { "add(1, 2)": {} }
+ */
+export function cleanOldSnapshots (result) {
+  for (const key in result) {
+    if (key.endsWith(']')) {
+      const data = result[key]
+      delete result[key]
+      const arbitraryPoint = key.indexOf('.', key.lastIndexOf('['))
+      let correctedKey = key.substring(0, key.lastIndexOf('[') - 1)
+      if (arbitraryPoint !== -1) { correctedKey += key.substring(arbitraryPoint, key.length - 1) }
+      result[correctedKey] = data
+    }
+  }
+  return result
 }
 
 /**

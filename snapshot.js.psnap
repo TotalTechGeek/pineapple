@@ -1,17 +1,33 @@
 {
-  "serialize('Hello, World!') [7e11a42dd66972715f8ad98680a7dbbfd8b20b8f6d38d417e6681e1b02c6d990]": {
+  "cleanOldSnapshots({ \"add(1, 2) [abcd]\": {}, \"add(1, 2) [abcd.2]\": {} })": {
+    "value": {
+      "add(1, 2)": {
+      },
+      "add(1, 2).2": {
+      }
+    },
+    "async": false
+  },
+  "cleanOldSnapshots({ \"add(1, 2)\": {} })": {
+    "value": {
+      "add(1, 2)": {
+      }
+    },
+    "async": false
+  },
+  "serialize('Hello, World!')": {
     "value": "\"Hello, World!\"",
     "async": false
   },
-  "serialize([1, 2, 3]) [f0ffdb66d8cbcbeb8d1366d39bc84df922979ff882f1409a76744d1dc02c1ecd]": {
+  "serialize([1, 2, 3])": {
     "value": "[\n  1,\n  2,\n  3\n]",
     "async": false
   },
-  "serialize({ name: 'Rick', age: 1000 }) [c564b6c8eaaad787dddff8ce731fcb55059290f369e9fe2441bc537960c0cd42]": {
+  "serialize({ name: 'Rick', age: 1000 })": {
     "value": "{\n  \"name\": \"Rick\",\n  \"age\": 1000\n}",
     "async": false
   },
-  "serialize(date('2020-01-01')) [be85cb95ea0182c41b0e2e8184de927181c85f5b922254feea45b5f4eb2b0a92]": {
+  "serialize(date('2020-01-01'))": {
     "value": "date(\"2020-01-01T00:00:00.000Z\")",
     "async": false
   }

@@ -1,9 +1,9 @@
 {
-  "hash('Hello World') [3c7656b25a3b5d6f5ed3b7ebc2632cc8300509e0c042f9434436a748f2126588]": {
+  "hash('Hello World')": {
     "value": "a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e",
     "async": false
   },
-  "hash('Kevin') [867a5a722a0ce7fd834bb48d08309f164f87b29da2928a11f95d890259b24e12]": {
+  "hash('Kevin')": {
     "value": "0e4dd66217fc8d2e298b78c8cd9392870dcd065d0ff675d0edff5bcd227837e9",
     "async": false
   }

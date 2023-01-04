@@ -1,33 +1,33 @@
 {
-  "strip(\"function a () { function b () {} return b }\") [29ecef3995a697e23749bb7434ba2eff728cdb9a55aede8f39cfa3a635031ff0]": {
+  "strip(\"function a () { function b () {} return b }\")": {
     "value": "function a () ",
     "async": false
   },
-  "strip('function a () { function b () {} return b } function b () { }') [d64a6d71a9e36e594b9402598380a36a8b79fdddba53d78e133a67ea40a1fb0b]": {
+  "strip('function a () { function b () {} return b } function b () { }')": {
     "value": "function a ()  function b () ",
     "async": false
   },
-  "strip('z + { { a } + } { b } + c') [eb2a862aea58239a6a00121a631455166c5c76f1ac4ba318fe2dc8e0428b720e]": {
+  "strip('z + { { a } + } { b } + c')": {
     "value": "z +   + c",
     "async": false
   },
-  "strip(#Parser.this) [b2c9b0778c038b4c610f0b7bf33c855e55c7bd420998e5e270a953b68436a856]": {
+  "strip(#Parser.this)": {
     "value": "import  from \nimport  from \n\n\nexport function InternalTests () \n\n\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n\nexport function getOuterDeclarations (code) \n\n\nexport function parseCode (code) \n\n\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n\nfunction multiLine (fileText, start, type) \n\n\nexport function getExports (code) \n",
     "async": false
   },
-  "strip(#Parser.quoteIssue) [54d9dec5f289594ea462458dfef36c98062bcebcbc20b1ade2ddd558f251c7f1]": {
+  "strip(#Parser.quoteIssue)": {
     "value": "\n          function a (x = ) \n\n          function b () \n\n          function c () \n    ",
     "async": false
   },
-  "strip(#Parser.passwordModule) [e827997ef4fd0a0508ab31e4871d05998fc2f0bede859edbbb28cc7cd9e1a044]": {
+  "strip(#Parser.passwordModule)": {
     "value": "\n\n\nexport function password (...rules) \n\n\nexport function min (num) \n\n\nexport function max (num) \n\n\nexport function has (charSet, num = 1, name = ) \n\nexport function hasLowerCase (num = 1) \n\n\nexport function hasUpperCase (num = 1) \n\n\nexport function hasSpecial (num = 1) \n\n\nexport function hasDigit (num = 1) \n\n\nexport function includes (requiredText) \n\n\nexport function notIncludes (requiredText, substitute = false) \n\n\nfunction substituteError (substitute, text) \n\n\nexport function some (...rules) \n\n\nexport function not (rule, error) \n\n\nexport function template (stringTemplate) \n",
     "async": false
   },
-  "strip(#Parser.setupTest) [3ca9201f21f33d7197508b830d4d56c51671170bb96a74311dc1438a68c192bd]": {
+  "strip(#Parser.setupTest)": {
     "value": "\nexport function isPrime (n) \n\n\nexport function generatePrime () \n\nlet person\n\n\nexport function createPerson (name, level) \n\n\nexport function levelUp (amount) \n\nlet cities = new Set()\n\n\nexport async function initializeCityDatabase () \n\n\nexport async function isCity (city) \n",
     "async": false
   },
-  "getOuterDeclarations('export const a = () => b + c; const b = 3') [fbd03bdaf87902765e7ccb156b5e53b1f05013a08369ee241e5a74c87ec4bd28]": {
+  "getOuterDeclarations('export const a = () => b + c; const b = 3')": {
     "value": [
       {
         "name": "a",
@@ -44,7 +44,7 @@
     ],
     "async": false
   },
-  "getOuterDeclarations('class A {}') [5e3b326fe7fe62b74fae6872b4e91217ee218e3128b95bc58b70ef7a210e9565]": {
+  "getOuterDeclarations('class A {}')": {
     "value": [
       {
         "name": "A",
@@ -55,7 +55,7 @@
     ],
     "async": false
   },
-  "getOuterDeclarations('export class A {} class B {}') [dc7995117e68e1ddce6eb6ae86a521f2aaf9df62bb95b47901d9a7427b65cdbf]": {
+  "getOuterDeclarations('export class A {} class B {}')": {
     "value": [
       {
         "name": "A",
@@ -72,12 +72,12 @@
     ],
     "async": false
   },
-  "getOuterDeclarations('module.exports = {}') [6b752c2e3185da1f6274ebe57eca4abc5cf3e5b32231fa882600b4d4ef1ffdcb]": {
+  "getOuterDeclarations('module.exports = {}')": {
     "value": [
     ],
     "async": false
   },
-  "parseCode(\"export function y () { function b () {} return b } const b = 1 + 2\") [bb95771774e8f468a11ec88c59f150456163ef88c968408bbd2e35e9cfc39942]": {
+  "parseCode(\"export function y () { function b () {} return b } const b = 1 + 2\")": {
     "value": [
       {
         "name": "y",
@@ -102,7 +102,7 @@
     ],
     "async": false
   },
-  "parseCode(cat(#Parser.voidTest, 'function a() {}')) [abb8a7487db82a00aee82f4df41d877319ddd1a014d8f8a0641344176148679e]": {
+  "parseCode(cat(#Parser.voidTest, 'function a() {}'))": {
     "value": [
       {
         "name": "a",
@@ -122,7 +122,7 @@
     ],
     "async": false
   },
-  "parseCode(#Parser.addTest) [eb06d1f7401f1f43197450d6ab1093da4de1f0c363a9f8bfc2bd39a08e8e150b]": {
+  "parseCode(#Parser.addTest)": {
     "value": [
       {
         "name": "add",
@@ -142,7 +142,7 @@
     ],
     "async": false
   },
-  "parseCode(#Parser.mathCjs) [4fb1aeb1fe3ddbb68fb48f5ef1d00590dfe06fb8075da4367d90e9a1f6e14d6e]": {
+  "parseCode(#Parser.mathCjs)": {
     "value": [
       {
         "name": "add",
@@ -163,7 +163,7 @@
     ],
     "async": false
   },
-  "parseCode(#Parser.passwordModule) [e827997ef4fd0a0508ab31e4871d05998fc2f0bede859edbbb28cc7cd9e1a044]": {
+  "parseCode(#Parser.passwordModule)": {
     "value": [
       {
         "name": "password",
@@ -448,7 +448,7 @@
     ],
     "async": false
   },
-  "parseCode(#Parser.setupTest) [3ca9201f21f33d7197508b830d4d56c51671170bb96a74311dc1438a68c192bd]": {
+  "parseCode(#Parser.setupTest)": {
     "value": [
       {
         "name": "isPrime",
@@ -583,7 +583,7 @@
     ],
     "async": false
   },
-  "parseCode(#Parser.this) [b2c9b0778c038b4c610f0b7bf33c855e55c7bd420998e5e270a953b68436a856]": {
+  "parseCode(#Parser.this)": {
     "value": [
       {
         "name": "InternalTests",
@@ -788,21 +788,21 @@
     ],
     "async": false
   },
-  "getExports(#Parser.moduleExports) [1d6c0c272292a43eec8625d8aaad33fe55cbb3f6a321eb124ab645520e796d63]": {
+  "getExports(#Parser.moduleExports)": {
     "value": {
       "age": "hello",
       "name": "name"
     },
     "async": false
   },
-  "getExports(#Parser.typicalExport) [7445ee16714bef86ac4d69a5f8cf5a01f102697be027f1fa62fcd0b9d265fcec]": {
+  "getExports(#Parser.typicalExport)": {
     "value": {
       "X": "X",
       "Z": "Z"
     },
     "async": false
   },
-  "getExports(#Parser.exports) [42e0fa053676204860d6d026c53f7928f6e02ed481389a9e69f4bd97421ee590]": {
+  "getExports(#Parser.exports)": {
     "value": {
       "XYZ": "X",
       "Y": "Y"
