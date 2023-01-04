@@ -4,32 +4,62 @@ import { parse } from './parser/dsl.js'
 
 /**
  * @param {*} file
- * @returns {{ set: async (key: string, value: any) => void, find: async (key: string) => any }}
+ * @returns {{ set: async (key: string, value: any) => void, find: async (key: string) => any, remove: async (key: string) => void }}
  */
 export function snapshot (file = './pineapple-snapshot') {
   const data = fs.readFile(file).catch(() => {}).then(async text => {
     if (!text) return {}
     try {
-      return await deserialize(text)
+      return cleanOldSnapshots(await deserialize(text))
     } catch (e) {
       return {}
     }
   })
 
+  const notAccessed = data.then(data => new Set(Object.keys(data)))
+
   const find = async (key) => {
+    (await notAccessed).delete(key)
     return {
       exists: key in (await data),
       value: (await data)[key]
     }
   }
 
+  // todo: make this not hammer disk.
   const set = async function (key, value) {
     if (!this.data) this.data = await data
     this.data[key] = value
     await fs.writeFile(file, serialize(this.data))
   }
 
-  return { find, set }
+  const remove = async function (key) {
+    if (!this.data) this.data = await data
+    delete this.data[key]
+    await fs.writeFile(file, serialize(this.data))
+  }
+
+  return { find, set, remove, notAccessed }
+}
+
+/**
+ * Handles pre-2023 snapshots so that they are still valid upon being read,
+ * but it'll convert it to remove the hashes attached.
+ * @test { "add(1, 2) [abcd]": {}, "add(1, 2) [abcd.2]": {} }
+ * @test { "add(1, 2)": {} }
+ */
+export function cleanOldSnapshots (result) {
+  for (const key in result) {
+    if (key.endsWith(']')) {
+      const data = result[key]
+      delete result[key]
+      const arbitraryPoint = key.indexOf('.', key.lastIndexOf('['))
+      let correctedKey = key.substring(0, key.lastIndexOf('[') - 1)
+      if (arbitraryPoint !== -1) { correctedKey += key.substring(arbitraryPoint, key.length - 1) }
+      result[correctedKey] = data
+    }
+  }
+  return result
 }
 
 /**

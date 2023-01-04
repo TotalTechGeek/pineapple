@@ -4,7 +4,6 @@ import { groupBy, pluck, map, indexBy, pickBy, identity } from 'ramda'
 import tempy from 'tempy'
 import debounce from 'debounce'
 import { program, Option } from 'commander'
-import { hash } from './hash.js'
 import url from 'url'
 import { transpile } from './typescriptTranspiler.js'
 import { filesTested, skippingTest } from './outputs.js'
@@ -23,23 +22,26 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.14.1')
+  .version('0.15.0')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
   .option('-t, --typescript', 'Enables typescript.')
+  .option('--strict', 'Enables additional checks to enforce better testing, namely validating that all snapshots are used.')
+  .option('--clean', 'Cleans up unused snapshots.')
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .addOption(formatOption)
 
 if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner.')
-
 program.parse()
 
 const options = program.opts()
 
 if (!options.include || !options.include.length) throw new Error('Please select files to include.')
+if (!options.only && options.strict) process.env.STRICT = 'true'
+if (options.clean && options.strict) throw new Error('Strict & Clean cannot be enabled at the same time.')
 
 // Used for the "watch" mode.
 let child
@@ -157,7 +159,7 @@ async function execute (functions, forkProcess = false) {
 
   let testFileString = ''
 
-  testFileString += `import { run, addMethod, addDefinitions, execute, hof } from '${pathScheme(runFile)}';\n`
+  testFileString += `import { check, run, addMethod, addDefinitions, execute, hof } from '${pathScheme(runFile)}';\n`
   testFileString += `import { aggregate } from '${pathScheme(outputFile)}';\n`
 
   let counter = 0
@@ -222,7 +224,7 @@ async function execute (functions, forkProcess = false) {
     const tests = `%beforeGlobal%\n${before}\n${func.tags.filter(i => i.type === 'test' || i.type === 'test_static').map((tag, index) => `
             %beforeEachGlobal% 
             ${beforeEach}
-            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}.${hash(func.relativePath + ':' + tag.text)}', ${wrapHof(func.alias, tag)}, "${func.fileName}:${tag.lineNo}")
+            sum += await run(${JSON.stringify(tag.text)}, '${func.originalName || func.name}', ${wrapHof(func.alias, tag)}, "${func.fileName}:${tag.lineNo}")
             %afterEachGlobal%
             ${afterEach}
         `).join('')}\n${after}\n%afterGlobal%`
@@ -246,7 +248,10 @@ async function execute (functions, forkProcess = false) {
   testFileString += '\n}\n'
 
   // add text to end of file
-  testFileString += 'test().then(({ sum, count }) => { aggregate(sum, count); process.exit(sum) });'
+  testFileString += `test().then(async ({ sum, count }) => { 
+    aggregate(sum, count); 
+    process.exit(sum + await check(${!!options.strict || (options.clean && '"clean"')})) 
+  });`
 
   writeFileSync(tmp, testFileString)
 

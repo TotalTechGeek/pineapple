@@ -138,3 +138,21 @@ export function filesTested (files) {
     /* nothing for now */
   }
 }
+
+/**
+ * Prints out the snapshots that are unused.
+ * @param {[string, string][]} tests
+ * @param {boolean} strict
+ * @test [['Forced', 'Forced']], true returns
+ * @test [['Forced 1', 'Forced'], ['Forced 2', 'Forced']], false returns
+ */
+export function snapshotsUnused (tests, strict) {
+  if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
+    const icon = strict ? logSymbols.error : logSymbols.warning
+    console.log(icon, 'The following snapshot(s) are unused:', tests.map(i => `\n- ${i[0]}: ${i[1]}`).join(''))
+  }
+
+  if (process.env.OUTPUT_FORMAT === 'JSON') {
+    return console.log(JSON.stringify({ type: 'Snapshots Unused', tests }))
+  }
+}
