@@ -128,7 +128,8 @@ const getFileFunctions = file => {
     const dependencies = new Set(dependencyTree.toList({
       filename: file,
       directory: '.',
-      filter: str => !str.includes('/node_modules/')
+      filter: str => !str.includes('/node_modules/'),
+      noTypeDefinitions: true
     }))
     // attach the dependencies to the files.
     return functions.map(i => ({ ...i, dependencies }))
