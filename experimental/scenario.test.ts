@@ -39,7 +39,7 @@ Then(/^I should have eaten (?<count>\d+) pineapples, which is more than {num}$/,
  * @test { num: 5 } resolves @.pineapples === 4
  * @test { num: #integer({ min: 1 }) } resolves
  */
-export const Example = Scenario`
+export const Eating = Scenario`
 Given I have {num} pineapples in my belly
 When I vomit one
 Then I should have one less pineapple in my belly
@@ -48,7 +48,7 @@ And The number of pineapples should be positive.`
 /**
  * @test { num: 5 } resolves @.pineapples === 2
  */
-export const SecondExample = Scenario`
+export const MultiVomit = Scenario`
  Given I have {num} pineapples in my belly
  When I vomit one
  And I vomit one
@@ -58,7 +58,7 @@ export const SecondExample = Scenario`
 /**
  * @test @__fails__ void resolves
  */
-export const Unimplemented = Scenario`
+export const UnimplementedScenario = Scenario`
 Given I have not implemented a scenario
 Then I should receive a warning telling me what to implement`
 
@@ -66,11 +66,10 @@ Then I should receive a warning telling me what to implement`
 /**
  * @test void resolves
  */
-export const Regex = Scenario`
+export const RegexScenario = Scenario`
 Given I have eaten 50 pineapples
 And I have eaten 30 pineapples
-Then I should have eaten 80 pineapples
-`
+Then I should have eaten 80 pineapples`
 
 /**
  * @test { num: 75 } resolves
@@ -84,7 +83,7 @@ Then I should have eaten 80 pineapples
  /**
   * @test void throws
   */
- export const Fails = () => {
+ export const FailsDeclaration = () => {
   Given('I have {num} pineapples in my belly', function ({ num }) {
     this.pineapples = num
   })

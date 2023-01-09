@@ -2,6 +2,7 @@
  * @test #number, #number returns @ as number
  * @test #integer, #string throws
  * @test #string, #integer throws
+ * @test #integer, #integer
  * @param {number} a
  * @param {number} b
  */

@@ -1,0 +1,18 @@
+{
+  "add(5, 3)": {
+    "value": 8,
+    "async": false
+  },
+  "toString(5)": {
+    "value": "5",
+    "async": false
+  },
+  "toString(3)": {
+    "value": "3",
+    "async": false
+  },
+  "toString(void)": {
+    "value": "default string",
+    "async": false
+  }
+}

@@ -10,7 +10,7 @@
     "buildPackage:win32": "rm -rf dist && esbuild index.js --outfile=dist/cjs/index.js --format=cjs --bundle --packages=external && esbuild index.js --outfile=dist/esm/index.js --format=esm --bundle --packages=external && echo { \"type\": \"module\" } > dist/esm/package.json && echo { \"type\": \"commonjs\" } > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
     "buildPackage:default": "rm -rf dist && esbuild index.js --outfile=dist/cjs/index.js --format=cjs --bundle --packages=external && esbuild index.js --outfile=dist/esm/index.js --format=esm --bundle --packages=external && echo '{ \"type\": \"module\" }' > dist/esm/package.json && echo '{ \"type\": \"commonjs\" }' > dist/cjs/package.json && cd dist && exitzero standard --fix */*.js && tsc ../index.js --declaration --allowJs --emitDeclarationOnly --target ESNext --moduleResolution node",
     "generate:parser": "peggy --allowed-start-rules Document,Expression --cache --format es -o parser/dsl.js parser/grammar.pegjs && cd parser && exitzero standard --fix *.js && node patch.js",
-    "test": "c8 --reporter=text --reporter=lcov node cli.js --strict -i \"experimental/*,test/*,*.js\" -t --exclude \"**/*.d.ts\""
+    "test": "c8 --reporter=text --reporter=lcov node cli.js --strict -i \"experimental/*,test/*,*.js\" -t --exclude \"**/*.d.ts\" --fuzz-runs 1000 --timeout 2000"
   },
   "repository": {
     "url": "https://github.com/TotalTechGeek/pineapple",
@@ -45,6 +45,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "exitzero": "^1.0.1",
+    "flow-remove-types": "^2.196.3",
     "peggy": "^1.2.0",
     "run-script-os": "^1.1.6",
     "standard": "^16.0.4",

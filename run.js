@@ -129,7 +129,7 @@ export async function run (input, id, func, file) {
 
       const arbs = await argumentsToArbitraries({ data: current.result }, ...inputs)
 
-      let numRuns
+      let numRuns = +process.env.FAST_CHECK_NUM_RUNS || 100
 
       // If the arguments are absolutely constant, run once
       if (arbs.constant) numRuns = 1
@@ -137,7 +137,7 @@ export async function run (input, id, func, file) {
       else if (arbs.length === 1 && arbs[0].size) numRuns = arbs[0].size
       // otherwise, reduce the number of runs for a snapshot
       // todo: make this configurable
-      else if (key === 'snapshot') numRuns = 10
+      else if (key === 'snapshot') numRuns = +process.env.SNAPSHOT_FAST_CHECK_NUM_RUNS || 10
 
       let failed = null
       try {
@@ -153,8 +153,13 @@ export async function run (input, id, func, file) {
         }), {
           seed: key === 'snapshot' ? parseInt(h.substring(0, 16), 16) : undefined,
           numRuns,
+          ...(process.env.TEST_TIMEOUT && {
+            markInterruptAsFailure: true,
+            interruptAfterTimeLimit: +process.env.TEST_TIMEOUT
+          }),
           reporter (out) {
             if (out.failed) {
+              if (out.interrupted) throw new FuzzError(out.counterexample, out.seed, 'Test timed out.', out.numShrinks)
               throw new FuzzError(out.counterexample, out.seed, out.error, out.numShrinks)
             }
           }

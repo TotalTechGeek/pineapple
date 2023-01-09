@@ -22,5 +22,85 @@
   "addAsync(5n, 3n)": {
     "value": 8n,
     "async": true
+  },
+  "add(#integer, #integer)": {
+    "value": 1235817845,
+    "async": false,
+    "input": [
+      -233008397,
+      1468826242
+    ]
+  },
+  "add(#integer, #integer).2": {
+    "value": -4019576970,
+    "async": false,
+    "input": [
+      -2147483623,
+      -1872093347
+    ]
+  },
+  "add(#integer, #integer).3": {
+    "value": -2147483673,
+    "async": false,
+    "input": [
+      -2147483648,
+      -25
+    ]
+  },
+  "add(#integer, #integer).4": {
+    "value": -2147483631,
+    "async": false,
+    "input": [
+      -2147483633,
+      2
+    ]
+  },
+  "add(#integer, #integer).5": {
+    "value": -2431079740,
+    "async": false,
+    "input": [
+      -2147483641,
+      -283596099
+    ]
+  },
+  "add(#integer, #integer).6": {
+    "value": -1590925578,
+    "async": false,
+    "input": [
+      -432694778,
+      -1158230800
+    ]
+  },
+  "add(#integer, #integer).7": {
+    "value": 3810924324,
+    "async": false,
+    "input": [
+      1663440700,
+      2147483624
+    ]
+  },
+  "add(#integer, #integer).8": {
+    "value": 4294967271,
+    "async": false,
+    "input": [
+      2147483640,
+      2147483631
+    ]
+  },
+  "add(#integer, #integer).9": {
+    "value": 1195364898,
+    "async": false,
+    "input": [
+      4,
+      1195364894
+    ]
+  },
+  "add(#integer, #integer).10": {
+    "value": 619638713,
+    "async": false,
+    "input": [
+      619638685,
+      28
+    ]
   }
 }
