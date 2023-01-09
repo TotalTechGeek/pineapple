@@ -1,6 +1,6 @@
 {
   "name": "pineapple",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "A testing framework for humans.",
   "main": "index.js",
   "scripts": {
