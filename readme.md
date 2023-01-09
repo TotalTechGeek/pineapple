@@ -56,16 +56,23 @@ Alternatively, you may install the runner globally (add a `-g` flag).
 Usage: pineapple [options]
 
 Options:
-  -V, --version             output the version number
-  -i, --include <files...>  Comma separated globs of files.
-  -a, --accept-all          Accept all snapshots.
-  -u, --update-all          Update all snapshots.
-  -t, --typescript          Enables typescript (slower).
-  --only <lines...>         Allows you to specify which tests you would like to
-                            run.
-  -f, --format <format>     The output format (choices: "json", "console",
-                            default: "console")
-  -h, --help                display help for command
+  -V, --version                  output the version number
+  -i, --include <files...>       Comma separated globs of files to include.
+  -e, --exclude <files...>       Comma separated globs of files to exclude.
+  -w, --watch-mode               Will run tests only when a file is modified.
+  -a, --accept-all               Accept all snapshots.
+  -u, --update-all               Update all snapshots.
+  -t, --transpile                Enables transpilation.
+  --typescript                   Enables transpilation for TypeScript. (legacy flag)
+  --timeout <milliseconds>       The timeout for each test. (default: "5000")
+  --strict                       Enables additional checks to enforce better testing, namely validating that all snapshots are used.
+  --clean                        Cleans up unused snapshots.
+  --only <lines...>              Allows you to specify which tests you would like to run.
+  --fuzz-runs <amount>           The number of runs that fuzz tests perform. (default: "100")
+  --snapshot-fuzz-runs <amount>  The number of runs that fuzz tests perform on a snapshot. (default: "10")
+  -f, --format <format>          The output format (choices: "json", "console", default: "console")
+  --bun                          Uses Bun as the test runner.
+  -h, --help                     display help for command
 ```
 
 #### Example
