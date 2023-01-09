@@ -1,5 +1,6 @@
 
-import { snapshot } from './snapshot.js'
+import { snapshot, serialize, deserialize } from './snapshot.js'
+import fc from 'fast-check'
 import fs from 'fs'
 import Steps from './experimental/scenario.js'
 
@@ -66,13 +67,23 @@ export const Characters = () => {
 }
 
 /**
+ * @pineapple_define Snapshots
+ */
+export const Arbitraries = () => {
+  return {
+    Text: fc.string().filter(text => !text.endsWith('\\'))
+  }
+}
+
+/**
   * @test void
   */
 export const SnapshotUnicode = () => '\u1516\u1596\u4851'
 
-// /**
-//  * @test #string resolves args.0
-//  */
-// export function serializeAndDeserialize (value) {
-//   return deserialize(serialize(value))
-// }
+/**
+ * We need to test ' \\' because it fails, however everything else serializes properly.
+ * @test #Snapshots.Text resolves args.0
+ */
+export function serializeAndDeserialize (value) {
+  return deserialize(serialize(value))
+}
