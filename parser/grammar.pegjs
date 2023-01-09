@@ -386,8 +386,8 @@ Null = 'null' { return null }
 Undefined = ('undefined' / 'void') { return undefined }
 
 Numeric
-  = _ [0-9]* "." [0-9]+ ([eE][-]?[0-9]+)? { return Number(text()) }
-  / _ [0-9]+ "." [0-9]* ([eE][-]?[0-9]+)? { return Number(text()) }
+  = _ [0-9]* "." [0-9]+ ([eE][+-]?[0-9]+)? { return Number(text()) }
+  / _ [0-9]+ "." [0-9]* ([eE][+-]?[0-9]+)? { return Number(text()) }
   / BigInt
   / Integer
   
@@ -395,7 +395,7 @@ BigInt
  = num:([0-9]+) "n" { return { bigint: text().replace("n", "") } }
 
 Integer 'integer'
-  = _ [0-9]+ ([eE][-]?[0-9]+)? { return Number(text()) }
+  = _ [0-9]+ ([eE][+-]?[0-9]+)? { return Number(text()) }
   
 // Whitespace & Comments 
 Comment =   [ \t\n\r]* '//' ([^\n]*)       
