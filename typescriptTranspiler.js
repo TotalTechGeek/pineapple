@@ -1,6 +1,3 @@
-
-import url from 'url'
-import path from 'path'
 import esbuild from 'esbuild'
 
 /**
@@ -20,5 +17,5 @@ export async function transpile (input, file) {
     packages: 'external'
   })
 
-  return url.pathToFileURL(path.resolve(file)).href
+  return file
 }

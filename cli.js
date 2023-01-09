@@ -190,7 +190,7 @@ async function execute (functions, forkProcess = false) {
       const transpileFunc = transpileFunctions.find(i => i.files.some(i =>
         minimatch(moduleSpecifier, i, { matchBase: true })
       ))?.transpile ?? transpile
-      moduleSpecifier = await transpileFunc(url.fileURLToPath(moduleSpecifier), path.resolve(recommended))
+      moduleSpecifier = url.pathToFileURL(await transpileFunc(url.fileURLToPath(moduleSpecifier), path.resolve(recommended))).href
     }
 
     const str = `
