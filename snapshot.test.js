@@ -55,3 +55,24 @@ export const SimulateSnapshotWithDeletion = Scenario`
  Then {key} should not exist
  After I should clean up
  `
+
+/**
+  * @pineapple_define Characters
+  */
+export const Characters = () => {
+  return {
+    Backslash: '\\'
+  }
+}
+
+/**
+  * @test void
+  */
+export const SnapshotUnicode = () => '\u1516\u1596\u4851'
+
+// /**
+//  * @test #string resolves args.0
+//  */
+// export function serializeAndDeserialize (value) {
+//   return deserialize(serialize(value))
+// }

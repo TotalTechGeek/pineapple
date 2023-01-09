@@ -1,6 +1,5 @@
 {
-  String.prototype.stripEscape = function(seq) { return this.replace(`\\${seq}`, seq); }
-  
+ function stripEscape (text, seq) { return text.replace(`\\${seq}`, seq); }
  
  function toJsonSchema (schema) {
     if (Array.isArray(schema)) {
@@ -366,16 +365,16 @@ OperatorIdentifier "operator-identifier"
 
 
 String "string"
-  = '"' value:(DoubleQuotedStringContents*) '"'   { return value.join(''); }
-  / "'" value:(SingleQuotedStringContents*) "'"   { return value.join(''); }  
-  
+  = '"\\\\"' { return "\\" } 
+  / '"' value:(DoubleQuotedStringContents*) '"'   { return JSON.parse('"' + value.join('').replace(/"/g, '\\"') + '"'); }
+  / "'" value:(SingleQuotedStringContents*) "'"   { return JSON.parse('"' + value.join('').replace(/"/g, '\\"') + '"'); }  
   
 DoubleQuotedStringContents
-  = '\\"' { return text().stripEscape('"'); }
+  = '\\"' { return stripEscape(text(), '"'); }
   / [^"]
 
 SingleQuotedStringContents
-  = "\\'" { return text().stripEscape("'") }
+  = "\\'" { return stripEscape(text(), "'") }
   / [^']
 
 Boolean

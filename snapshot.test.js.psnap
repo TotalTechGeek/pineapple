@@ -10,5 +10,9 @@
       "text": "{\n}"
     },
     "async": true
+  },
+  "SnapshotUnicode(void)": {
+    "value": "ᔖᖖ䡑",
+    "async": false
   }
 }

@@ -67,6 +67,7 @@ export function cleanOldSnapshots (result) {
  * This allows me to use the Pineapple Parser to deserialize values,
  * Which makes it easier to add support for custom types.
  *
+ * @test #Characters.Backslash
  * @test 'Hello, World!'
  * @test 5 returns "5"
  * @test true returns "true"
@@ -111,9 +112,7 @@ export function serialize (item, indent = 0) {
 export async function deserialize (text) {
   return engine.run(
     parse(text
-      .toString()
-      .replace(/\\n/g, '\n')
-      .replace(/\\\n/g, '\n'), {
+      .toString(), {
       startRule: 'Expression'
     })
   )

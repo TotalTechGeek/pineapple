@@ -1,18 +1,6 @@
 {
-  "cleanOldSnapshots({ \"add(1, 2) [abcd]\": {}, \"add(1, 2) [abcd.2]\": {} })": {
-    "value": {
-      "add(1, 2)": {
-      },
-      "add(1, 2).2": {
-      }
-    },
-    "async": false
-  },
-  "cleanOldSnapshots({ \"add(1, 2)\": {} })": {
-    "value": {
-      "add(1, 2)": {
-      }
-    },
+  "serialize(#Characters.Backslash)": {
+    "value": "\"\\\\\"",
     "async": false
   },
   "serialize('Hello, World!')": {
@@ -29,6 +17,22 @@
   },
   "serialize(date('2020-01-01'))": {
     "value": "date(\"2020-01-01T00:00:00.000Z\")",
+    "async": false
+  },
+  "cleanOldSnapshots({ \"add(1, 2) [abcd]\": {}, \"add(1, 2) [abcd.2]\": {} })": {
+    "value": {
+      "add(1, 2)": {
+      },
+      "add(1, 2).2": {
+      }
+    },
+    "async": false
+  },
+  "cleanOldSnapshots({ \"add(1, 2)\": {} })": {
+    "value": {
+      "add(1, 2)": {
+      }
+    },
     "async": false
   }
 }
