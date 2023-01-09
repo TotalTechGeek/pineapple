@@ -1203,6 +1203,20 @@ flatten@^1.0.2:
   resolved "https://registry.npmjs.org/flatten/-/flatten-1.0.3.tgz"
   integrity sha512-dVsPA/UwQ8+2uoFe5GHtiBMu48dWLTdsuEd7CKGlZlD78r1TTWBvDuFaFGKCo/ZfEr95Uk56vZoX86OsHkUeIg==
 
+flow-parser@^0.196.3:
+  version "0.196.3"
+  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.196.3.tgz#dd923f29a6c194770a4f999f8026ef1da79d428b"
+  integrity sha512-R8wj12eHW6og+IBWeRS6aihkdac1Prh4zw1bfxtt/aeu8r5OFmQEZjnmINcjO/5Q+OKvI4Eg367ygz2SHvtH+w==
+
+flow-remove-types@^2.196.3:
+  version "2.196.3"
+  resolved "https://registry.yarnpkg.com/flow-remove-types/-/flow-remove-types-2.196.3.tgz#665ef6e80bfb656c2e170a848ccb252bbcd248b0"
+  integrity sha512-tunXyUd/jttmYafqPNV0S6+wAIhGbqNhDQHX4UFoJ7Wbwqq6utFQUcAgbn5aHz9RxA5pPI2L3f4R2I6OE8wy2A==
+  dependencies:
+    flow-parser "^0.196.3"
+    pirates "^3.0.2"
+    vlq "^0.2.1"
+
 foreground-child@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/foreground-child/-/foreground-child-2.0.0.tgz"
@@ -1876,6 +1890,11 @@ natural-compare@^1.4.0:
   resolved "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
+node-modules-regexp@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/node-modules-regexp/-/node-modules-regexp-1.0.0.tgz#8d9dbe28964a4ac5712e9131642107c71e90ec40"
+  integrity sha512-JMaRS9L4wSRIR+6PTVEikTrq/lMGEZR43a48ETeilY0Q0iMwVnccMFrUM1k+tNzmYuIU0Vh710bCUqHX+/+ctQ==
+
 node-source-walk@^4.0.0, node-source-walk@^4.2.0, node-source-walk@^4.2.2:
   version "4.3.0"
   resolved "https://registry.npmjs.org/node-source-walk/-/node-source-walk-4.3.0.tgz"
@@ -2124,6 +2143,13 @@ pify@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/pify/-/pify-4.0.1.tgz"
   integrity sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==
+
+pirates@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/pirates/-/pirates-3.0.2.tgz#7e6f85413fd9161ab4e12b539b06010d85954bb9"
+  integrity sha512-c5CgUJq6H2k6MJz72Ak1F5sN9n9wlSlJyEnwvpm9/y3WB4E3pHBDT2c6PEiS1vyJvq2bUxUAIu0EGf8Cx4Ic7Q==
+  dependencies:
+    node-modules-regexp "^1.0.0"
 
 pkg-conf@^3.1.0:
   version "3.1.0"
@@ -2773,6 +2799,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+vlq@^0.2.1:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/vlq/-/vlq-0.2.3.tgz#8f3e4328cf63b1540c0d67e1b2778386f8975b26"
+  integrity sha512-DRibZL6DsNhIgYQ+wNdWDL2SL3bKPlVrRiBqV5yuMm++op8W4kGFtaQfCs4KEJn0wBZcHVHJ3eoywX8983k1ow==
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"

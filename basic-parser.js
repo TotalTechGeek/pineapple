@@ -270,6 +270,7 @@ const TAG_TYPES = [
   'test_static',
   'pineapple_import',
   'pineapple_define',
+  'pineapple_transpile',
   'beforeAll',
   'afterAll',
   'before',

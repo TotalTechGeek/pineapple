@@ -12,7 +12,7 @@
     "async": false
   },
   "strip(#Parser.this)": {
-    "value": "import  from \nimport  from \n\n\nexport function InternalTests () \n\n\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n\nexport function getOuterDeclarations (code) \n\n\nexport function parseCode (code) \n\n\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n\nfunction multiLine (fileText, start, type) \n\n\nexport function getExports (code) \n",
+    "value": "import  from \nimport  from \n\n\nexport function InternalTests () \n\n\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n\nexport function getOuterDeclarations (code) \n\n\nexport function parseCode (code) \n\n\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n\nfunction multiLine (fileText, start, type) \n\n\nexport function getExports (code) \n",
     "async": false
   },
   "strip(#Parser.quoteIssue)": {
@@ -755,8 +755,8 @@
         "exported": false,
         "type": "function",
         "raw": "function multiLine ",
-        "index": 7873,
-        "lineNo": 297,
+        "index": 7898,
+        "lineNo": 298,
         "tags": [
         ]
       },
@@ -765,23 +765,23 @@
         "exported": true,
         "type": "function",
         "raw": "export function getExports ",
-        "index": 8851,
-        "lineNo": 336,
+        "index": 8876,
+        "lineNo": 337,
         "tags": [
           {
             "type": "test",
             "text": "#Parser.moduleExports",
-            "lineNo": 330
-          },
-          {
-            "type": "test",
-            "text": "#Parser.typicalExport",
             "lineNo": 331
           },
           {
             "type": "test",
-            "text": "#Parser.exports",
+            "text": "#Parser.typicalExport",
             "lineNo": 332
+          },
+          {
+            "type": "test",
+            "text": "#Parser.exports",
+            "lineNo": 333
           }
         ]
       }

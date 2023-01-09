@@ -39,7 +39,7 @@ export function skippingTest (name, file, tags) {
  */
 export function success (name, input, file) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
-    console.log(logSymbols.success, `Passed test (${name}):`, format(input))
+    console.log(logSymbols.success, `${chalk.bold.bgGreen(' PASS ')} ${chalk.bold(name)}:`, format(input))
   }
 
   if (process.env.OUTPUT_FORMAT === 'JSON') {
@@ -54,7 +54,7 @@ export function success (name, input, file) {
  */
 export function failure ({ name, input, message, file, data }) {
   if (process.env.OUTPUT_FORMAT === 'CONSOLE') {
-    console.log(logSymbols.error, `Failed test (${name}):`, format(input))
+    console.log(logSymbols.error, `${chalk.bgRed.bold(' FAIL ')} (${name}):`, format(input))
     console.log('>>', file)
     if (message) {
       console.log(message)

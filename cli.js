@@ -15,8 +15,11 @@ import { spawn } from 'node:child_process'
 import readline from 'node:readline'
 import os from 'os'
 import { parseCode } from './basic-parser.js'
+import { hash } from './hash.js'
 import { readFileSync, writeFileSync } from 'fs'
 import glob from 'glob'
+import { deserialize } from './snapshot.js'
+import minimatch from 'minimatch'
 
 const formatOption = new Option('-f, --format <format>', 'The output format').choices(['json', 'console']).default('console')
 
@@ -28,10 +31,14 @@ program
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
   .option('-a, --accept-all', 'Accept all snapshots.')
   .option('-u, --update-all', 'Update all snapshots.')
-  .option('-t, --typescript', 'Enables typescript.')
+  .option('-t, --transpile', 'Enables transpilation.')
+  .option('--typescript', 'Enables transpilation for TypeScript. (legacy flag)')
+  .option('--timeout <milliseconds>', 'The timeout for each test.', '5000')
   .option('--strict', 'Enables additional checks to enforce better testing, namely validating that all snapshots are used.')
   .option('--clean', 'Cleans up unused snapshots.')
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
+  .option('--fuzz-runs <amount>', 'The number of runs that fuzz tests perform.', '100')
+  .option('--snapshot-fuzz-runs <amount>', 'The number of runs that fuzz tests perform on a snapshot.', '10')
   .addOption(formatOption)
 
 if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner.')
@@ -42,6 +49,11 @@ const options = program.opts()
 if (!options.include || !options.include.length) throw new Error('Please select files to include.')
 if (!options.only && options.strict) process.env.STRICT = 'true'
 if (options.clean && options.strict) throw new Error('Strict & Clean cannot be enabled at the same time.')
+
+if (options.typescript) options.transpile = true
+if (options.fuzzRuns) process.env.FAST_CHECK_NUM_RUNS = options.fuzzRuns
+if (options.snapshotFuzzRuns) process.env.SNAPSHOT_FAST_CHECK_NUM_RUNS = options.snapshotFuzzRuns
+if (options.timeout) process.env.TEST_TIMEOUT = options.timeout
 
 // Used for the "watch" mode.
 let child
@@ -151,6 +163,12 @@ async function execute (functions, forkProcess = false) {
     return { namedImports: pluck('name', i), original: indexBy(i => i.name, i) }
   }, groupBy(i => i.fileName, functions)))
 
+  const transpileFunctions = await Promise.all(functions.filter(i => i.tags.some(i => i.type === 'pineapple_transpile')).map(async ({ name, tags, fileName }) => {
+    const files = (await deserialize(tags.find(i => i.type === 'pineapple_transpile').text))
+    const transpile = (await import(fileName))[name]
+    return { transpile, files }
+  }))
+
   const specifier = import.meta.url.split(/\/|\\/)
   specifier.pop()
   const runFile = [...specifier, 'run.js'].join('/')
@@ -167,7 +185,13 @@ async function execute (functions, forkProcess = false) {
 
   // add imports
   await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
-    if (options.typescript) { moduleSpecifier = await transpile(moduleSpecifier) }
+    if (options.transpile) {
+      const recommended = `./pineapple-runner/${hash(moduleSpecifier)}.mjs`
+      const transpileFunc = transpileFunctions.find(i => i.files.some(i =>
+        minimatch(moduleSpecifier, i, { matchBase: true })
+      ))?.transpile ?? transpile
+      moduleSpecifier = await transpileFunc(url.fileURLToPath(moduleSpecifier), path.resolve(recommended))
+    }
 
     const str = `
         import * as $$${index} from '${pathScheme(moduleSpecifier)}';
