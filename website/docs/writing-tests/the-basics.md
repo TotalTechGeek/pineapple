@@ -8,7 +8,6 @@ sidebar_position: 1
 
 In Pineapple, test cases are introduced as JSDoc annotations above a function. The most simple conditional test case is a "returns" statement.
 
-
 ```js
 /**
  * @test 1 returns 1
@@ -31,7 +30,6 @@ function async_fibonacci (n) {
 
 This will run the fibonacci function with each specified set of arguments, in this case 1, then 2, then 5, and compare the result to the right side.
 
-
 To make it easier to express this common type of test case clearly, you are able to express this type of test in several ways.
 
 **For synchronous functions: `is`, `to` and `returns` each do the same thing.** **For asynchronous functions: `resolves`, `resolves to` each do the same thing.**
@@ -48,7 +46,6 @@ function wrap (attr, value) {
   return { [attr]: value }
 }
 ```
-
 
 ### Complex Conditions
 
@@ -79,10 +76,11 @@ You may use `and`, `or`, `&&` and `||` and most of the common operators.
 Additionally, as seen above, you may do some schema validation by using `as <schema>`. The schema may either be a valid JSON Schema, a simple typescript definition (unions currently unsupported).
 
 You may also use some shorthand expressions such as `truthy` & `falsey` / `falsy`
+
 ```js
 /**
- * @test 'password1' is truthy and @ is string
- * @test 'p@ssingPa$$word1' is falsy and @ is string
+ * @test 'password1' is truthy and @ as string
+ * @test 'p@ssingPa$$word1' is falsy and @ as string
  * @returns {string} An empty string if valid, or a list of issues if invalid.
  */
 function checkPassword(pw) { 
@@ -113,7 +111,6 @@ If so, it will preserve this result & compare it on all future runs.
 If the result changes, it will prompt you again to see if you'd like to update the snapshot, unless the test is being run from a continuous integration pipeline (in which is will immediately fail the test).
 
 Snapshots are not just for capturing values, they may also capture whether a specific function is supposed to throw an exception (and with what exception it threw with).
-
 
 ## Throws / Rejects
 

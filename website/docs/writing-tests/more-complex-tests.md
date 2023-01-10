@@ -49,4 +49,6 @@ function personConsumes (substance) {
 
 However, much like in real life Pineapples are not always the best pairing for certain use cases.
 
-If you are going to be testing more complex scenarios against something stateful, it might be ideal to consider an option like [Cucumber](https://www.npmjs.com/package/@cucumber/cucumber). Pineapple's goal is not to replace all forms of testing, but instead make unit testing a more digestable experience.
+If you are going to be testing more complex scenarios against something stateful, it might be ideal to consider an option like [Cucumber](https://www.npmjs.com/package/@cucumber/cucumber) or Pineapple's built in [Scenario Testing](/docs/scenario-testing/introduction).
+
+Pineapple's goal is not to replace all forms of testing, but instead make unit and scenario testing a more digestable experience.

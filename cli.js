@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.16.1')
+  .version('0.16.2')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -95,7 +95,7 @@ if (process.env.OUTPUT_FORMAT === 'JSON') {
 
 async function main () {
   const regex = /,\s?(?![^{}]*\})/
-  options.exclude = options.exclude ? options.exclude.flatMap(i => i.split(regex)) : []
+  options.exclude = (options.exclude ? options.exclude.flatMap(i => i.split(regex)) : []).concat('**/*.d.ts')
   const files = options.include.flatMap(i => i.split(regex)).flatMap(i => glob.sync(i, {
     ignore: options.exclude
   }))

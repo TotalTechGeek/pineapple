@@ -43,6 +43,64 @@ When I deposit {amount}
 Then I should have a positive balance`
 ```
 
+## Using Your Preferred Syntax
+
+While Gherkin is a great scenario syntax, Pineapple does not strictly require it.
+
+For example, if you'd rather implement user stories, the Steps framework allows you to do so.
+
+```ts
+import { Steps } from 'pineapple'
+import { User } from './twitter'
+import assert from 'assert'
+
+const { As, I, Scenario } = Steps<{ user: User }>()
+
+As("a user with a paid subscription", function () {
+    this.user = new User('PaidPerson', true)
+})
+
+I("should have a blue checkmark", function () {
+    assert.ok(this.user.hasCheckmark(), 'Checkmark not present')
+})
+
+I("would like to be able to edit a post", async function () {
+    const post = await this.user.createPost('Unmodified Message')
+    await post.edit('Modified message')
+})
+
+As("a user without a paid subscription", function () {
+    this.user = new User('UnpaidPerson', false)
+})
+
+I("should not have a blue checkmark", function () {
+    assert.ok(!this.user.hasCheckmark(), 'Checkmark present')
+})
+
+I("would like to see an error when I edit a post", async function () {
+    const post = await this.user.createPost('Unmodified message')
+    await assert.rejects(post.edit('Modified Message'))
+})
+
+/**
+ * @test {} resolves
+ */
+export const Paid = Scenario`
+As a user with a paid subscription
+I should have a blue checkmark
+And would like to be able to edit a post`
+
+/**
+ * @test {} resolves
+ */
+export const Unpaid = Scenario`
+As a user without a paid subscription
+I should not have a blue checkmark
+And would like to see an error when I edit a post`
+```
+
+While the author recommends a strong preference for a syntax like Gherkin (due to it having a stronger: Setup -> Action -> Confirm flow), it is possible for developers to choose whichever flow fits their project better.
+
 ## Using the Fuzz & Snapshot Technology
 
 What is interesting about using Pineapple as your scenario test runner is that you can leverage some of the strengths of both testing approaches.
