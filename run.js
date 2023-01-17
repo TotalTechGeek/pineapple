@@ -142,18 +142,20 @@ export async function run (input, id, func, file) {
       let failed = null
       try {
         let count = 0
+        const snapshot = snap(file)
         await fc.assert(fc.asyncProperty(...arbs, async (...args) => {
           count++
           const countStr = count > 1 ? `.${count}` : ''
           result = await engine.run({
             [key]: [{ preserve: args }, expectation]
-          }, { func: current, id: (`${id}(${input})${countStr}`), snap: snap(file), hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
+          }, { func: current, id: (`${id}(${input})${countStr}`), snap: snapshot, hash: h, rule: input, file, args, context: current.instance, fuzzed: !arbs.constant })
           if (!result[1]) failed = result
           return result[1]
         }), {
           seed: key === 'snapshot' ? parseInt(h.substring(0, 16), 16) : undefined,
           numRuns,
-          ...(process.env.TEST_TIMEOUT && {
+          // If this is a snapshot test, but the snapshot does not exist, do not time out.
+          ...(process.env.TEST_TIMEOUT && (key !== 'snapshot' || await snapshot.find(`${id}(${input})`).exists) && {
             markInterruptAsFailure: true,
             interruptAfterTimeLimit: +process.env.TEST_TIMEOUT
           }),
