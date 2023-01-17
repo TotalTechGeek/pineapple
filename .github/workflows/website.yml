@@ -9,6 +9,7 @@ on:
       - master
     paths: 
       - website/**
+      - .github/workflows/website.yml
   
 jobs:
   build:
