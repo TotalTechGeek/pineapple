@@ -28,8 +28,6 @@ export function add(a, b) {
 
 Pineapple allows you to embed a few example test-cases in your JSDocs, making it easier to focus on your code and less on defining `it` & `expect` chains.
 
-When you omit conditions from your test cases, Pineapple will automatically capture the result of your test & snapshot it, making it easier to preserve expected behavior in your applications, and even easier for users to find examples on how to call your code.
-
 <img alt="An example of the snapshot functionality where the code is modified and the snapshot fails due to a renamed attribute" src="https://jessemitchell.me/pineapple/img/snapshot.gif" width=60% />
 
 ## Documentation
@@ -40,7 +38,7 @@ Visit our [documentation here](https://pineapple.js.org).
 
 ### Snapshots
 
-If no clause is provided (only arguments), Pineapple will request to snapshot the result & preserve it for future runs, making it easy to capture expected output of a function and pin its behavior.
+When you omit conditions from your test cases, Pineapple will automatically capture the result of your test & snapshot it, making it easier to preserve expected behavior in your applications, and even easier for users to find examples on how to call your code.
 
 ### Property Based / Fuzz Testing
 
@@ -65,6 +63,8 @@ Even in cases where you might need to write a more complex unit test, Pineapple 
 ### Continuous Test Runner
 
 By enabling the `-w` or `--watch-mode` flag, Pineapple will watch your project for changes. Any changes to a file will kick off all tests that could be potentially impacted by your change.
+
+**And Much More**
 
 ## To Install
 
