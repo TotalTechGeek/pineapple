@@ -1,6 +1,6 @@
 
 <p align="center">
-<img width=300 alt="A picture of a pineapple with a galaxy behind it with the word 'pineapple' under it." src="https://raw.githubusercontent.com/TotalTechGeek/pineapple/master/resources/pineapple.png" /><br/> <p align="center" style="font-size: 18px;">Making your software tests sweet! </p>
+<img width=400 alt="A picture of a pineapple with a galaxy behind it with the word 'pineapple' under it." src="https://raw.githubusercontent.com/TotalTechGeek/pineapple/master/resources/pineapple.png" /><br/> <p align="center" style="font-size: 18px;">Making your software tests sweet! </p>
 
 </p>
 
@@ -34,7 +34,37 @@ When you omit conditions from your test cases, Pineapple will automatically capt
 
 ## Documentation
 
-Visit our [documentation here](https://jessemitchell.me/pineapple/).
+Visit our [documentation here](https://pineapple.js.org).
+
+## Highlights
+
+### Snapshots
+
+If no clause is provided (only arguments), Pineapple will request to snapshot the result & preserve it for future runs, making it easy to capture expected output of a function and pin its behavior.
+
+### Property Based / Fuzz Testing
+
+By leveraging fast-check, Pineapple makes it simple to fuzz-test your functions with simple clauses.
+
+This pairs extremely well with the snapshot testing for capturing a variety of test-cases that would've taken time to generate by hand.
+
+```typescript
+/**
+ * Computes the sum of numbers.
+ * @test #array(#integer)
+ */
+export function sum(arr: number[]) {
+    return arr.reduce((a,b) => a + b, 0)
+}
+```
+
+### Language-Idiomatic Test Code
+
+Even in cases where you might need to write a more complex unit test, Pineapple encourages you to write normal JavaScript functions.
+
+### Continuous Test Runner
+
+By enabling the `-w` or `--watch-mode` flag, Pineapple will watch your project for changes. Any changes to a file will kick off all tests that could be potentially impacted by your change.
 
 ## To Install
 
