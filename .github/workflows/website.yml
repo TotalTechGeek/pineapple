@@ -9,6 +9,7 @@ on:
       - master
     paths: 
       - website/**
+      - .github/workflows/website.yml
   
 jobs:
   build:
@@ -28,6 +29,9 @@ jobs:
     - name: Install Dependencies
       working-directory: ./website
       run: yarn
+    - run: git config --global user.name TotalTechGeek
+    - run: git config --global user.email "TotalTechGeek@users.noreply.github.com"
+    - run: echo "machine github.com login TotalTechGeek password ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
     - name: Deploy Website
       working-directory: ./website
       run: GIT_USER=TotalTechGeek GIT_PASS=${{ secrets.GITHUB_TOKEN }} yarn deploy
