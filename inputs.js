@@ -65,7 +65,7 @@ export async function askSnapshot ({ item, rule, id, file }) {
   }
   console.log(`On test (${id.split('(')[0]}):`, rule)
   console.log(chalk.green(serialize(item)))
-  const result = await getConfirmation('Accept this snapshot?').catch(err => console.log(err))
+  const result = await getConfirmation(`${chalk.magenta('?')} Accept this snapshot?`).catch(err => console.log(err))
   return result
 }
 
@@ -90,6 +90,6 @@ export async function askSnapshotUpdate ({ item, value, rule, id, file }) {
   }
   console.log(`On test (${id.split('(')[0]}):`, rule)
   console.log(diff(value, item))
-  const result = await getConfirmation('Do you wish to update to this snapshot?')
+  const result = await getConfirmation(`${chalk.magenta('?')} Do you wish to update to this snapshot?`)
   return result
 }

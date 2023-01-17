@@ -1,10 +1,15 @@
 {
-  "createRental('Morty', 32)": {
+  "createRental('Jesse', 12)": {
     "value": {
       "type": "boat",
-      "buyer": "Morty",
-      "length": 32
+      "owner": "Jesse",
+      "length": 12
     },
+    "async": true
+  },
+  "createRental('Joe', '15')": {
+    "error": "AssertionError",
+    "message": "Length must be a number.",
     "async": true
   }
 }

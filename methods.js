@@ -81,7 +81,8 @@ engine.addMethod('snapshot', async ([inputs], context) => {
       : err
     actualError = err
     result = {
-      error: errorInfo
+      error: errorInfo,
+      ...(err.message !== errorInfo && err.message && { message: err.message })
     }
   }
 
