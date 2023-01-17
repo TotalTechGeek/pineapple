@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
     <channel>
         <title>Pineapple Blog</title>
-        <link>https://jessemitchell.me/blog</link>
+        <link>https://pineapple.js.org/blog</link>
         <description>Pineapple Blog</description>
         <lastBuildDate>Sat, 19 Nov 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
@@ -10,7 +10,7 @@
         <language>en</language>
         <item>
             <title><![CDATA[Bun Support and Continuous Testing (v0.12.0)]]></title>
-            <link>https://jessemitchell.me/blog/v0.12.0</link>
+            <link>https://pineapple.js.org/blog/v0.12.0</link>
             <guid>/v0.12.0</guid>
             <pubDate>Sat, 19 Nov 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Hey there!]]></description>
@@ -21,7 +21,7 @@
         </item>
         <item>
             <title><![CDATA[Improving Snapshots & User Output (v0.10.0)]]></title>
-            <link>https://jessemitchell.me/blog/v0.10.0</link>
+            <link>https://pineapple.js.org/blog/v0.10.0</link>
             <guid>/v0.10.0</guid>
             <pubDate>Tue, 18 Oct 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Hey everyone!]]></description>
@@ -32,7 +32,7 @@
         </item>
         <item>
             <title><![CDATA[Improving Property Based Testing (v0.9.1)]]></title>
-            <link>https://jessemitchell.me/blog/v0.9.1</link>
+            <link>https://pineapple.js.org/blog/v0.9.1</link>
             <guid>/v0.9.1</guid>
             <pubDate>Tue, 13 Sep 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Hi all!]]></description>
@@ -45,7 +45,7 @@ constant structures.</p>]]></content:encoded>
         </item>
         <item>
             <title><![CDATA[Supercharging Pineapple with Property Based Testing (v0.9.0)]]></title>
-            <link>https://jessemitchell.me/blog/v0.9.0</link>
+            <link>https://pineapple.js.org/blog/v0.9.0</link>
             <guid>/v0.9.0</guid>
             <pubDate>Sun, 22 May 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Hi all!]]></description>
@@ -57,7 +57,7 @@ constant structures.</p>]]></content:encoded>
         </item>
         <item>
             <title><![CDATA[Extending Interchange Formats & Subset Testing (v0.8.0)]]></title>
-            <link>https://jessemitchell.me/blog/v0.8.0</link>
+            <link>https://pineapple.js.org/blog/v0.8.0</link>
             <guid>/v0.8.0</guid>
             <pubDate>Wed, 18 May 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Hello!]]></description>
@@ -68,7 +68,7 @@ constant structures.</p>]]></content:encoded>
         </item>
         <item>
             <title><![CDATA[Improving Snapshots (v0.7.0)]]></title>
-            <link>https://jessemitchell.me/blog/v0.7.0</link>
+            <link>https://pineapple.js.org/blog/v0.7.0</link>
             <guid>/v0.7.0</guid>
             <pubDate>Tue, 17 May 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Hi all!]]></description>
@@ -79,7 +79,7 @@ constant structures.</p>]]></content:encoded>
         </item>
         <item>
             <title><![CDATA[Introducing Class Tests (v0.6.3)]]></title>
-            <link>https://jessemitchell.me/blog/v0.6.3</link>
+            <link>https://pineapple.js.org/blog/v0.6.3</link>
             <guid>/v0.6.3</guid>
             <pubDate>Tue, 10 May 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[This patch introduces a small quality of life improvement, which I felt was particularly necessary after introducing class-based testing:]]></description>
@@ -89,7 +89,7 @@ constant structures.</p>]]></content:encoded>
         </item>
         <item>
             <title><![CDATA[Introducing Pineapple]]></title>
-            <link>https://jessemitchell.me/blog/introducing-pineapple</link>
+            <link>https://pineapple.js.org/blog/introducing-pineapple</link>
             <guid>/introducing-pineapple</guid>
             <pubDate>Mon, 09 May 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[The Pineapple Logo]]></description>
