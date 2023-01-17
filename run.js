@@ -152,7 +152,8 @@ export async function run (input, id, func, file) {
           if (!result[1]) failed = result
           return result[1]
         }), {
-          seed: key === 'snapshot' ? parseInt(h.substring(0, 16), 16) : undefined,
+          // If it's a snapshot, or there is more than one step in the test, make it consistent.
+          seed: (key === 'snapshot' || script.length > 1) ? parseInt(h.substring(0, 16), 16) : undefined,
           numRuns,
           // If this is a snapshot test, but the snapshot does not exist, do not time out.
           ...(process.env.TEST_TIMEOUT && (key !== 'snapshot' || await snapshot.find(`${id}(${input})`).exists) && {

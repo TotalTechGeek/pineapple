@@ -1,6 +1,6 @@
 {
   "name": "pineapple",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "description": "Make your testing sweet!",
   "main": "index.js",
   "scripts": {
