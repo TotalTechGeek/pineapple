@@ -119,16 +119,20 @@ If `process.env.CI` / the environment variable `CI` is set, it will automaticall
 
 #### Does Pineapple support TypeScript?
 
-Yes. The functionality is experimental at this point in time, but you should be enable to enable it with `-t` or  `--typescript`.
+Yes! Out of the box, Pineapple supports JavaScript, TypeScript, JSX & TSX.
 
-#### Does Pineapple support Babel?
+It also supports both CommonJS and ES Modules, and a few other common module mechanisms.
 
-Not yet, but it is on the roadmap. With the recent addition of TypeScript support, it hopefully won't require too much effort.
+By using `-t` or `--transpile`, you can enable the bundling functionality.
+
+#### Does Pineapple support alternative builds / Babel?
+
+Yes. If you're using a Flow or another JavaScript framework that might need some additional transpilation, Pineapple will allow you to register a custom transpiler with the `@pineapple_transpile` annotation.
 
 #### Should I put pineapple on my pizza?
 
-The author of this project holds no opinion on this subject, but you might want to consider [Cucumber for your scenario tests](https://www.npmjs.com/package/@cucumber/cucumber).
-
-Pineapple doesn't necessarily go well with every use case, so for certain types of tests we actively encourage you to choose a framework better suited for that style of test.
+The author of this project holds no opinion on this subject, but you might want to consider that Pineapple doesn't necessarily go well with every use case, so for certain types of tests we actively encourage you to choose a framework better suited for that style of test.
 
 Pineapple is oriented towards simplifying unit tests & making it easy to run multiple test cases against functions, but if you're trying to test a series of complex processes against something stateful (transactions against a rewards points system, combat, etc), scenario tests are likely your better bet.
+
+Because of this, Pineapple does include a [scenario testing framework](https://pineapple.js.org/docs/scenario-testing/introduction) similar to [Cucumber.js](https://cucumber.io/docs/cucumber/api/?lang=javascript), but if you're trying to implement end-to-end UI tests or integration tests, Newman or Playwright or Cypress might fit the bill better.
