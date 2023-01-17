@@ -115,7 +115,7 @@ pineapple -i src/**/*.js
 
 If `process.env.CI` / the environment variable `CI` is set, it will automatically fail if a snapshot is not set or if the snapshot does not match.
 
-### Q&A
+## Q&A
 
 #### Does Pineapple support TypeScript?
 
