@@ -1,7 +1,7 @@
 {
   "name": "pineapple",
   "version": "0.16.2",
-  "description": "A testing framework for humans.",
+  "description": "Make your testing sweet!",
   "main": "index.js",
   "scripts": {
     "prepublish": "npm run build && npm run buildPackage",

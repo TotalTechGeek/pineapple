@@ -14,7 +14,7 @@ function LogoHeader () {
       <div className="container">
         <img src='./img/pineapple.png' />
         <div className={styles.buttons}>
-          <h3>A testing framework for humans.</h3>
+          <h3>Make your tests sweet!</h3>
         </div>
       </div>
     </header>
@@ -43,7 +43,7 @@ export default function Home () {
   return (
     <Layout
       title={`Hello from ${siteConfig.title}`}
-      description="A testing framework for humans.">
+      description="Make your tests sweet!">
         <Head>
           <meta property='og:image' content='./img/pineapple.png'/>
         </Head>

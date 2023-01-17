@@ -7,14 +7,14 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula')
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Pineapple',
-  tagline: 'A testing framework for humans.',
-  url: 'https://jessemitchell.me',
+  tagline: 'Make your testing sweet!',
+  url: 'https://pineapple.js.org',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.svg',
-  organizationName: 'totaltechgeek', // Usually your GitHub org/user name.
-  projectName: 'pineapple', // Usually your repo name.
+  organizationName: 'totaltechgeek',
+  projectName: 'pineapple',
   trailingSlash: false,
   presets: [
     [
@@ -24,13 +24,13 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/'
+          editUrl: 'https://github.com/TotalTechGeek/pineapple/tree/master/website'
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/'
+            'https://github.com/TotalTechGeek/pineapple/tree/master/website'
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css')
