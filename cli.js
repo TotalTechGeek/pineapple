@@ -115,7 +115,7 @@ async function main () {
 
     const execFunctions = functions.filter(i => {
       // we also always need to include files with @pineapple_define and global tags.
-      const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import')
+      const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import' || i.type === 'faker')
       return i.dependencies.has(correctPath) || global
     })
 
@@ -178,7 +178,7 @@ async function execute (functions, forkProcess = false) {
 
   let testFileString = ''
 
-  testFileString += `import { check, run, addMethod, addDefinitions, execute, hof } from '${pathScheme(runFile)}';\n`
+  testFileString += `import { check, run, addMethod, addFaker, addDefinitions, execute, hof } from '${pathScheme(runFile)}';\n`
   testFileString += `import { aggregate } from '${pathScheme(outputFile)}';\n`
 
   let counter = 0
@@ -217,7 +217,10 @@ async function execute (functions, forkProcess = false) {
       func.tags
         .filter(i => i.type === 'pineapple_define')
         .map((i) => `addDefinitions(${func.alias}, ${JSON.stringify(i.text.trim() || '')})\n`)
-        .join('')
+        .join('') + '\n' + func.tags
+      .filter(i => i.type === 'faker')
+      .map(i => `addFaker(${JSON.stringify(i.text || func.originalName || func.name)}, ${func.alias})\n`)
+      .join('')
 
     const globalLifecycle = name => func.tags
       .filter(i => i.type === name)

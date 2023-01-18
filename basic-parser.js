@@ -271,6 +271,7 @@ const TAG_TYPES = [
   'pineapple_import',
   'pineapple_define',
   'pineapple_transpile',
+  'faker',
   'beforeAll',
   'afterAll',
   'before',
