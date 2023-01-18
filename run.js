@@ -9,6 +9,9 @@ import fc from 'fast-check'
 import { argumentsToArbitraries } from './utils.js'
 import { always } from 'ramda'
 import url from 'url'
+import { faker } from '@faker-js/faker'
+const ArbitraryFaker = { ...faker }
+
 const snap = snapshotManager()
 function snapshotManager () {
   const snapshots = {}
@@ -49,7 +52,20 @@ export const check = snap.check
  * @param {(...args: any[]) => any} fn
  */
 export function addMethod (name, fn) {
-  engine.addMethod(name, data => fn(...[].concat(data)))
+  engine.addMethod(name, data => fn(...[].concat(data)), {
+    sync: fn.constructor.name !== 'AsyncFunction'
+  })
+}
+
+/**
+ * Adds a faker method to the Pineapple JSON Logic Engine.
+ * @param {string} name
+ * @param {(...args: any[]) => any} fn
+ */
+export function addFaker (name, fn) {
+  return addDefinitions(() => ({
+    [name]: (...args) => fc.nat().noShrink().map(() => fn(ArbitraryFaker, ...args))
+  }))
 }
 
 /**
@@ -143,8 +159,10 @@ export async function run (input, id, func, file) {
       try {
         let count = 0
         const snapshot = snap(file)
+        if (key === 'snapshot') ArbitraryFaker.mersenne.seed(parseInt(h.substring(0, 16), 16))
         await fc.assert(fc.asyncProperty(...arbs, async (...args) => {
           count++
+          // Hijack the seed for now, keep it simple
           const countStr = count > 1 ? `.${count}` : ''
           result = await engine.run({
             [key]: [{ preserve: args }, expectation]

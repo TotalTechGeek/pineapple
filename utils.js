@@ -142,7 +142,12 @@ function arbitraryBranchCount (obj) {
     const key = Object.keys(obj)[0]
     if (key.startsWith('#')) return 1
 
-    if (!Array.isArray(obj[key])) return 0
+    if (!Array.isArray(obj[key])) {
+      if (obj[key] && typeof obj[key] === 'object') {
+        return arbitraryBranchCount(obj[key])
+      }
+      return 0
+    }
 
     return obj[key].reduce((acc, i) => {
       acc += arbitraryBranchCount(i)

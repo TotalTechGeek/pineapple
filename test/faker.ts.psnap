@@ -1,0 +1,172 @@
+{
+  "register(#User())": {
+    "value": {
+      "success": true,
+      "message": "Welcome Jacquelyn9!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "28933992-115e-449b-aa71-0cca29a3d73d",
+        "username": "Jacquelyn9",
+        "email": "Aaron66@yahoo.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/794.jpg",
+        "password": "2OGie6J6m9ATZGT",
+        "birthdate": date("1999-07-05T08:08:45.158Z")
+      }
+    ]
+  },
+  "register(#User()).2": {
+    "value": {
+      "success": true,
+      "message": "Welcome Will_Volkman!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "649267fa-0baa-49ff-a5c2-5419851645f7",
+        "username": "Will_Volkman",
+        "email": "Shane64@gmail.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/408.jpg",
+        "password": "lRQwJ2MXfmdn9Fx",
+        "birthdate": date("1997-07-14T09:32:42.989Z")
+      }
+    ]
+  },
+  "register(#User()).3": {
+    "value": {
+      "success": true,
+      "message": "Welcome Shane54!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "ad344f67-9b99-4d6f-a5c5-cf392c7014b5",
+        "username": "Shane54",
+        "email": "Bailey.Ferry24@gmail.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/723.jpg",
+        "password": "Le_VKbm0a39_CcB",
+        "birthdate": date("1998-11-12T07:22:41.081Z")
+      }
+    ]
+  },
+  "register(#User()).4": {
+    "value": {
+      "success": true,
+      "message": "Welcome Mozell_Miller!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "7265db93-ac94-4f4a-b44c-d8a042baded9",
+        "username": "Mozell_Miller",
+        "email": "Nasir98@hotmail.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/886.jpg",
+        "password": "erBkKeqjUHABwAg",
+        "birthdate": date("1976-04-09T14:30:21.109Z")
+      }
+    ]
+  },
+  "register(#User()).5": {
+    "value": {
+      "success": true,
+      "message": "Welcome Ceasar10!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "a66adecd-4851-4093-94ce-b6d1cb824587",
+        "username": "Ceasar10",
+        "email": "Javonte_Lemke90@gmail.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1124.jpg",
+        "password": "OeN_2zSG7y3wi5a",
+        "birthdate": date("1992-02-18T02:12:43.726Z")
+      }
+    ]
+  },
+  "register(#User()).6": {
+    "value": {
+      "success": true,
+      "message": "Welcome Crystal35!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "e2766bb2-e8ce-4342-96ca-d5c26edc6ec8",
+        "username": "Crystal35",
+        "email": "Luis_Gerlach@yahoo.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1157.jpg",
+        "password": "qYERiKlxYmeGuH3",
+        "birthdate": date("1971-05-06T01:44:28.281Z")
+      }
+    ]
+  },
+  "register(#User()).7": {
+    "value": {
+      "success": true,
+      "message": "Welcome Chandler_Ebert9!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "16cd8beb-6405-4bc3-ad75-6e7eca980f33",
+        "username": "Chandler_Ebert9",
+        "email": "Destini_Bernier58@gmail.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/17.jpg",
+        "password": "IrlY6kHtzgtWEJz",
+        "birthdate": date("1956-06-29T13:50:09.925Z")
+      }
+    ]
+  },
+  "register(#User()).8": {
+    "value": {
+      "success": true,
+      "message": "Welcome Kamren_Oberbrunner!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "cc76454e-33cc-411f-a4e4-13ea4de8f830",
+        "username": "Kamren_Oberbrunner",
+        "email": "Vita_DAmore@yahoo.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1210.jpg",
+        "password": "eQtvVe_B3bwnppd",
+        "birthdate": date("1947-02-12T21:16:08.483Z")
+      }
+    ]
+  },
+  "register(#User()).9": {
+    "value": {
+      "success": true,
+      "message": "Welcome Kamryn46!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "c3269fa7-63d1-4437-8193-5f36706d75a6",
+        "username": "Kamryn46",
+        "email": "Shemar10@hotmail.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/736.jpg",
+        "password": "R9tjk_DRnEzS5K6",
+        "birthdate": date("1999-10-24T05:57:25.526Z")
+      }
+    ]
+  },
+  "register(#User()).10": {
+    "value": {
+      "success": true,
+      "message": "Welcome Jazmyn48!"
+    },
+    "async": false,
+    "input": [
+      {
+        "userId": "491c4265-4f48-42a7-b0a0-ccef031865f3",
+        "username": "Jazmyn48",
+        "email": "Telly0@hotmail.com",
+        "avatar": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/188.jpg",
+        "password": "bWWHI5xk2Yp99mt",
+        "birthdate": date("1961-10-30T10:07:59.151Z")
+      }
+    ]
+  }
+}
