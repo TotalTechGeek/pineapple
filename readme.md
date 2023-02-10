@@ -97,6 +97,7 @@ Options:
   --timeout <milliseconds>       The timeout for each test. (default: "5000")
   --strict                       Enables additional checks to enforce better testing, namely validating that all snapshots are used.
   --clean                        Cleans up unused snapshots.
+  --omit-snapshot-inputs         Omits input from being captured in snapshots for fuzz testing.
   --only <lines...>              Allows you to specify which tests you would like to run.
   --fuzz-runs <amount>           The number of runs that fuzz tests perform. (default: "100")
   --snapshot-fuzz-runs <amount>  The number of runs that fuzz tests perform on a snapshot. (default: "10")

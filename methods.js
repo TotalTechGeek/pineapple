@@ -90,7 +90,7 @@ engine.addMethod('snapshot', async ([inputs], context) => {
   result.async = promise
 
   // @ts-ignore
-  if (context.fuzzed) result.input = inputs
+  if (!process.env.OMIT_SNAPSHOT_INPUTS && context.fuzzed) result.input = inputs
 
   const { exists, value } = await context.snap.find(context.id)
 

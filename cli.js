@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.18.0')
+  .version('0.18.1')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -36,6 +36,7 @@ program
   .option('--timeout <milliseconds>', 'The timeout for each test.', '5000')
   .option('--strict', 'Enables additional checks to enforce better testing, namely validating that all snapshots are used.')
   .option('--clean', 'Cleans up unused snapshots.')
+  .option('--omit-snapshot-inputs', 'Omits input from being captured in snapshots for fuzz testing.')
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .option('--fuzz-runs <amount>', 'The number of runs that fuzz tests perform.', '100')
   .option('--snapshot-fuzz-runs <amount>', 'The number of runs that fuzz tests perform on a snapshot.', '10')
@@ -51,6 +52,7 @@ if (!options.only && options.strict) process.env.STRICT = 'true'
 if (options.clean && options.strict) throw new Error('Strict & Clean cannot be enabled at the same time.')
 
 if (options.typescript) options.transpile = true
+if (options.omitSnapshotInputs) process.env.OMIT_SNAPSHOT_INPUTS = 'true'
 if (options.fuzzRuns) process.env.FAST_CHECK_NUM_RUNS = options.fuzzRuns
 if (options.snapshotFuzzRuns) process.env.SNAPSHOT_FAST_CHECK_NUM_RUNS = options.snapshotFuzzRuns
 if (options.timeout) process.env.TEST_TIMEOUT = options.timeout
