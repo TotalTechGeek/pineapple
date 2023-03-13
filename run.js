@@ -14,6 +14,8 @@ import { faker } from '@faker-js/faker'
 // Global Log Injection //
 if (!global.currentLog) global.currentLog = ''
 global.log = (v, file, line, expr) => {
+  // get cwd
+  const cwd = process.cwd()
   let extract = i => i
   if (expr !== '@') {
     try {
@@ -23,9 +25,9 @@ global.log = (v, file, line, expr) => {
   }
 
   try {
-    global.currentLog += `${file}:${line}: ${serialize(extract(v))}\n`
+    global.currentLog += `${file.replace(cwd, '.')}:${line}: ${serialize(extract(v))}\n`
   } catch (e) {
-    global.currentLog += `${file}:${line}: ${extract(v)}\n`
+    global.currentLog += `${file.replace(cwd, '.')}:${line}: ${extract(v)}\n`
   }
 
   return v

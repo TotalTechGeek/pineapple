@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.18.2')
+  .version('0.18.3')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -118,7 +118,7 @@ async function main () {
 
     const execFunctions = functions.filter(i => {
       // we also always need to include files with @pineapple_define and global tags.
-      const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type === 'pineapple_import' || i.type === 'faker')
+      const global = i.tags.some(i => i.type === 'pineapple_define' || i.type.includes('Global') || i.type.endsWith('All') || i.type === 'pineapple_import' || i.type === 'faker')
       return i.dependencies.has(correctPath) || global
     })
 
