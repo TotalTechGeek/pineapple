@@ -12,7 +12,7 @@ import url from 'url'
 import { faker } from '@faker-js/faker'
 
 // Global Log Injection //
-let currentLog = ''
+if (!global.currentLog) global.currentLog = ''
 global.log = (v, file, line, expr) => {
   let extract = i => i
   if (expr !== '@') {
@@ -23,16 +23,16 @@ global.log = (v, file, line, expr) => {
   }
 
   try {
-    currentLog += `${file}:${line}: ${serialize(extract(v))}\n`
+    global.currentLog += `${file}:${line}: ${serialize(extract(v))}\n`
   } catch (e) {
-    currentLog += `${file}:${line}: ${extract(v)}\n`
+    global.currentLog += `${file}:${line}: ${extract(v)}\n`
   }
 
   return v
 }
 export function flush () {
-  if (currentLog) console.log(currentLog)
-  currentLog = ''
+  if (global.currentLog) console.log(global.currentLog)
+  global.currentLog = ''
 }
 // End Global Log Injection //
 
@@ -233,7 +233,6 @@ export async function run (input, id, func, file) {
 
   try {
     const [data, success, message] = await internalRun(input, func)
-
     if (!success) {
       failure({ name: id, input, message, file, data })
       flush()
