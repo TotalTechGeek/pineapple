@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.18.4')
+  .version('0.18.6')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -228,7 +228,7 @@ async function execute (functions, forkProcess = false) {
 
     const globalLifecycle = name => func.tags
       .filter(i => i.type === name)
-      .map(() => `${func.alias}()\n`)
+      .map(() => `await ${func.alias}()\n`)
       .join('')
 
     const beforeAll = globalLifecycle('beforeAll')
