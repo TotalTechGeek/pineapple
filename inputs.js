@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { serialize } from './snapshot.js'
 import { diff } from './utils.js'
+import { flush } from './run.js'
 
 async function getConfirmation (message) {
   if (typeof prompt !== 'undefined') {
@@ -64,6 +65,8 @@ export async function askSnapshot ({ item, rule, id, file }) {
     return false
   }
   console.log(`On test (${id.split('(')[0]}):`, rule)
+  flush()
+
   console.log(chalk.green(serialize(item)))
   const result = await getConfirmation(`${chalk.magenta('?')} Accept this snapshot?`).catch(err => console.log(err))
   return result
@@ -89,6 +92,8 @@ export async function askSnapshotUpdate ({ item, value, rule, id, file }) {
     return false
   }
   console.log(`On test (${id.split('(')[0]}):`, rule)
+  flush()
+
   console.log(diff(value, item))
   const result = await getConfirmation(`${chalk.magenta('?')} Do you wish to update to this snapshot?`)
   return result

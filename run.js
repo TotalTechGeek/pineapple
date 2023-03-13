@@ -10,6 +10,32 @@ import { argumentsToArbitraries } from './utils.js'
 import { always } from 'ramda'
 import url from 'url'
 import { faker } from '@faker-js/faker'
+
+// Global Log Injection //
+let currentLog = ''
+global.log = (v, file, line, expr) => {
+  let extract = i => i
+  if (expr !== '@') {
+    try {
+      const func = engine.fallback.build(parse(expr.trim(), { startRule: 'Expression' }))
+      extract = data => func({ data })
+    } catch (e) {}
+  }
+
+  try {
+    currentLog += `${file}:${line}: ${serialize(extract(v))}\n`
+  } catch (e) {
+    currentLog += `${file}:${line}: ${extract(v)}\n`
+  }
+
+  return v
+}
+export function flush () {
+  if (currentLog) console.log(currentLog)
+  currentLog = ''
+}
+// End Global Log Injection //
+
 const ArbitraryFaker = { ...faker }
 
 const snap = snapshotManager()
@@ -210,6 +236,7 @@ export async function run (input, id, func, file) {
 
     if (!success) {
       failure({ name: id, input, message, file, data })
+      flush()
       return 1
     }
   } catch (err) {
@@ -217,11 +244,13 @@ export async function run (input, id, func, file) {
       const { message } = err
       parseFailure(id, input, message, file)
     } else testRuntimeFailure(err)
+    flush()
 
     return 1
   }
 
   success(id, input, file)
+  flush()
   return 0
 }
 
