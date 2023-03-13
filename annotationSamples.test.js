@@ -9,6 +9,7 @@ export function commentTap (input) {
         input // ? @.email
             .name
     }`, // ?
-    success: true
-  }
+    success: true,
+    ...input // ?
+  } // ?
 }
