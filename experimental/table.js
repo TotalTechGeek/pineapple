@@ -2,6 +2,8 @@ import fc from 'fast-check'
 import { sequenceArbitrary } from './sequence-arbitrary.js'
 
 /**
+ * @test date() returns false
+ * @test '5' returns true
  * @param {string} str
  */
 function isNumeric (str) {

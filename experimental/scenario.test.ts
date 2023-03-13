@@ -85,6 +85,5 @@ Then I should have eaten 80 pineapples`
   */
  export const FailsDeclaration = () => {
   Given('I have {num} pineapples in my belly', function ({ num }) {
-    this.pineapples = num
   })
  }

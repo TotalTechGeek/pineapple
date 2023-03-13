@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.18.1')
+  .version('0.18.2')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -40,6 +40,7 @@ program
   .option('--only <lines...>', 'Allows you to specify which tests you would like to run.')
   .option('--fuzz-runs <amount>', 'The number of runs that fuzz tests perform.', '100')
   .option('--snapshot-fuzz-runs <amount>', 'The number of runs that fuzz tests perform on a snapshot.', '10')
+  .option('--cjs', 'Forces CommonJS to be used instead of ESM. This is not always necessary, but can be useful in some cases, particularly when using TypeScript.')
   .addOption(formatOption)
 
 if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner.')
@@ -188,7 +189,8 @@ async function execute (functions, forkProcess = false) {
   // add imports
   await Promise.all(imports.map(async ([moduleSpecifier, { namedImports, original }], index) => {
     if (options.transpile) {
-      const recommended = `./pineapple-runner/${hash(moduleSpecifier)}.mjs`
+      const extension = options.cjs ? '.cjs' : '.mjs'
+      const recommended = `./pineapple-runner/${hash(moduleSpecifier)}${extension}`
       const transpileFunc = transpileFunctions.find(i => i.files.some(i =>
         minimatch(moduleSpecifier, i, { matchBase: true })
       ))?.transpile ?? transpile

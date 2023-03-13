@@ -1,0 +1,26 @@
+{
+  "inject('join(dir, type)')": {
+    "value": "tap(join(dir, type))",
+    "async": false
+  },
+  "inject('path.join(dir, type)')": {
+    "value": "tap(path.join(dir, type))",
+    "async": false
+  },
+  "inject('const x = path.join(dir, type)')": {
+    "value": "const x =tap( path.join(dir, type))",
+    "async": false
+  },
+  "inject('const x = path.join(dir, type);')": {
+    "value": "const x =tap( path.join(dir, type));",
+    "async": false
+  },
+  "inject('path.join(dir,\\ntype),')": {
+    "value": "tap(path.join(dir,\ntype)),",
+    "async": false
+  },
+  "injectStr(#Annotations.Multiple)": {
+    "value": "\n        const z =tap( {\n            x: 1 \n        }) \n\n        const y =tap( 7); \n        const x =tap( 5) \n\ntap(        Math.max(1, 2, 3)) \n          ",
+    "async": false
+  }
+}
