@@ -1,6 +1,6 @@
 // @ts-check
 import { AsyncLogicEngine, Compiler } from 'json-logic-engine'
-import { splitEvery, equals } from 'ramda'
+import { splitEvery, equals, omit, pick } from 'ramda'
 import Ajv from 'ajv'
 import chalk from 'chalk'
 import { SpecialHoF } from './symbols.js'
@@ -12,7 +12,9 @@ import fc from 'fast-check'
 const engine = new AsyncLogicEngine()
 const ajv = new Ajv()
 
-engine.addMethod('**', ([a, b]) => a ** b, { sync: true })
+engine.addMethod('pick', ([a, b]) => pick(a, b), { sync: true, deterministic: true })
+engine.addMethod('omit', ([a, b]) => omit(a, b), { sync: true, deterministic: true })
+engine.addMethod('**', ([a, b]) => a ** b, { sync: true, deterministic: true })
 engine.addMethod('===', ([a, b]) => equals(a, b), {
   sync: true,
   deterministic: true

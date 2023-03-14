@@ -15,5 +15,18 @@
   "createRental('Jesse', 14 snapshot @.length)": {
     "value": 14,
     "async": true
+  },
+  "createRental('Jesse', 14 snapshot omit(['length'], @))": {
+    "value": {
+      "type": "boat",
+      "owner": "Jesse"
+    },
+    "async": true
+  },
+  "createRental('Jesse', 14 snapshot pick(['name', 'length'], @))": {
+    "value": {
+      "length": 14
+    },
+    "async": true
   }
 }
