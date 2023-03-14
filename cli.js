@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.18.6')
+  .version('0.18.7')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -41,6 +41,7 @@ program
   .option('--fuzz-runs <amount>', 'The number of runs that fuzz tests perform.', '100')
   .option('--snapshot-fuzz-runs <amount>', 'The number of runs that fuzz tests perform on a snapshot.', '10')
   .option('--cjs', 'Forces CommonJS to be used instead of ESM. This is not always necessary, but can be useful in some cases, particularly when using TypeScript.')
+  .option('--rollup', 'Forces rollup to be used instead of ESBuild. This is not always necessary, but can be useful in some cases.')
   .addOption(formatOption)
 
 if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner.')
@@ -194,7 +195,7 @@ async function execute (functions, forkProcess = false) {
       const transpileFunc = transpileFunctions.find(i => i.files.some(i =>
         minimatch(moduleSpecifier, i, { matchBase: true })
       ))?.transpile ?? transpile
-      moduleSpecifier = url.pathToFileURL(await transpileFunc(url.fileURLToPath(moduleSpecifier), path.resolve(recommended))).href
+      moduleSpecifier = url.pathToFileURL(await transpileFunc(url.fileURLToPath(moduleSpecifier), path.resolve(recommended), options.rollup)).href
     }
 
     const str = `

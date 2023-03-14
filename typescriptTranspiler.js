@@ -3,6 +3,11 @@ import fs from 'fs/promises'
 import path from 'path'
 import { injectStr } from './annotation.js'
 
+import { rollup } from 'rollup'
+import virtual from '@rollup/plugin-virtual'
+import sucrase from '@rollup/plugin-sucrase'
+import commonjs from '@rollup/plugin-commonjs'
+
 const loaderDict = {
   cjs: 'js'
 }
@@ -15,9 +20,14 @@ function replaceLoader (loader) {
  * @param input - The file to transpile
  * @returns A URL to the transpiled file.
  */
-export async function transpile (input, file) {
+export async function transpile (input, file, rollup = false) {
   /* Transpiling the file to JavaScript. */
+  if (rollup) await rollupGenerate(input, file)
+  else await esbuildGenerate(input, file)
+  return file
+}
 
+async function esbuildGenerate (input, file) {
   try {
     await esbuild.build({
       stdin: {
@@ -30,7 +40,7 @@ export async function transpile (input, file) {
       sourcemap: 'inline',
       bundle: true,
       nodePaths: [''],
-      format: file.endsWith('cjs') ? 'cjs' : 'esm',
+      format: file.endsWith('esm') ? 'esm' : 'cjs',
       packages: 'external',
       logLevel: 'silent'
     })
@@ -41,10 +51,66 @@ export async function transpile (input, file) {
       sourcemap: 'inline',
       bundle: true,
       nodePaths: [''],
-      format: file.endsWith('cjs') ? 'cjs' : 'esm',
+      format: file.endsWith('esm') ? 'esm' : 'commonjs',
       packages: 'external'
     })
   }
+}
 
-  return file
+async function rollupGenerate (input, file) {
+  let bundle
+
+  try {
+    bundle = await rollup({
+      cache: true,
+      input: file,
+      /* Telling Rollup to include the sourcemap in the output file. */
+      output: {
+        sourcemap: 'inline',
+        format: file.endsWith('esm') ? 'esm' : 'commonjs'
+      },
+      plugins: [
+        virtual({
+          [input]: injectStr(await fs.readFile(input, 'utf-8'), `global.log(@data, "${input}", @line, @expr)`)
+        }),
+        /* A plugin that converts CommonJS modules to ES6, so they can be included in a Rollup bundle. */
+        commonjs(),
+        /* A plugin that transpiles TypeScript to JavaScript. */
+        sucrase({
+          inlineSourceMap: true,
+          incremental: true,
+          transforms: ['typescript'],
+          exclude: ['node_modules/**']
+        })
+      ]
+    })
+  } catch (err) {
+    bundle = await rollup({
+      cache: true,
+      input: file,
+      /* Telling Rollup to include the sourcemap in the output file. */
+      output: {
+        sourcemap: 'inline',
+        format: file.endsWith('esm') ? 'esm' : 'commonjs'
+      },
+      plugins: [
+        /* A plugin that converts CommonJS modules to ES6, so they can be included in a Rollup bundle. */
+        commonjs(),
+        /* A plugin that transpiles TypeScript to JavaScript. */
+        sucrase({
+          inlineSourceMap: true,
+          incremental: true,
+          transforms: ['typescript'],
+          exclude: ['node_modules/**']
+        })
+      ]
+    })
+  }
+
+  /* Writing the transpiled file to the file system. */
+  await bundle.write({
+    sourcemap: 'inline',
+    file,
+    format: file.endsWith('esm') ? 'esm' : 'commonjs'
+  })
 }
