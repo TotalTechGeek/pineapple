@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.18.9')
+  .version('0.18.10')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -145,7 +145,7 @@ const getFileFunctions = file => {
       filename: file,
       directory: '.',
       filter: str => !str.includes('/node_modules/'),
-      noTypeDefinitions: true
+      noTypeDefinitions: false
     }))
     // attach the dependencies to the files.
     return functions.map(i => ({ ...i, dependencies }))
