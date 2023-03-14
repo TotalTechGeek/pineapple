@@ -184,6 +184,7 @@ export function getOuterDeclarations (code) {
  */
 export function parseCode (code) {
   code = code.replace(/\r\n/g, '\n')
+  const virtualDependencies = grabVirtualDependencies(code)
   const fileLines = code.split('\n')
 
   // first, get the outer declarations (things that can be tested by Pineapple)
@@ -209,7 +210,8 @@ export function parseCode (code) {
   const result = declarations.map(i => {
     const step1 = {
       ...i,
-      tags: getTags(fileLines, i.lineNo - 2)
+      tags: getTags(fileLines, i.lineNo - 2),
+      virtualDependencies
     }
 
     // if (!step1.tags.length) return null
@@ -382,4 +384,24 @@ export function getExports (code) {
   }
 
   return exported
+}
+
+function * pathFromRegex (regex, file, position) {
+  let match
+  while ((match = regex.exec(file)) !== null) yield match[position]
+}
+
+/**
+ * @test '// import("./organizations.js")'
+ * @returns {string[]}
+ */
+export function grabVirtualDependencies (str) {
+  /* eslint-disable prefer-regex-literals */
+  const importFunctionRegex = new RegExp('\\/\\/\\s*(require|import)\\s*\\(["\']([a-zA-z_0-9/.]+)[\'"]\\)', 'g')
+
+  const modules = [
+    ...pathFromRegex(importFunctionRegex, str, 2)
+  ]
+
+  return modules
 }
