@@ -40,7 +40,7 @@ async function esbuildGenerate (input, file) {
       sourcemap: 'inline',
       bundle: true,
       nodePaths: [''],
-      format: file.endsWith('esm') ? 'esm' : 'cjs',
+      format: file.endsWith('cjs') ? 'cjs' : 'esm',
       packages: 'external',
       logLevel: 'silent'
     })
@@ -51,7 +51,7 @@ async function esbuildGenerate (input, file) {
       sourcemap: 'inline',
       bundle: true,
       nodePaths: [''],
-      format: file.endsWith('esm') ? 'esm' : 'commonjs',
+      format: file.endsWith('cjs') ? 'cjs' : 'esm',
       packages: 'external'
     })
   }
@@ -67,7 +67,7 @@ async function rollupGenerate (input, file) {
       /* Telling Rollup to include the sourcemap in the output file. */
       output: {
         sourcemap: 'inline',
-        format: file.endsWith('esm') ? 'esm' : 'commonjs'
+        format: file.endsWith('cjs') ? 'cjs' : 'esm'
       },
       plugins: [
         virtual({
@@ -91,7 +91,7 @@ async function rollupGenerate (input, file) {
       /* Telling Rollup to include the sourcemap in the output file. */
       output: {
         sourcemap: 'inline',
-        format: file.endsWith('esm') ? 'esm' : 'commonjs'
+        format: file.endsWith('cjs') ? 'cjs' : 'esm'
       },
       plugins: [
         /* A plugin that converts CommonJS modules to ES6, so they can be included in a Rollup bundle. */
@@ -111,6 +111,6 @@ async function rollupGenerate (input, file) {
   await bundle.write({
     sourcemap: 'inline',
     file,
-    format: file.endsWith('esm') ? 'esm' : 'commonjs'
+    format: file.endsWith('cjs') ? 'cjs' : 'esm'
   })
 }
