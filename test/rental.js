@@ -3,6 +3,9 @@ import assert from 'assert'
 /**
  * @test 'Jesse', 12
  * @test 'Joe', '15'
+ * @test 'Jesse', 14 snapshot @.length
+ * @test 'Jesse', 14 snapshot omit(['length'], @)
+ * @test 'Jesse', 14 snapshot pick(['name', 'length'], @)
  * @param {string} owner
  * @param {number} length
  */
