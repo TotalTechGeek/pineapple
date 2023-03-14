@@ -63,7 +63,7 @@ async function rollupGenerate (input, file) {
   try {
     bundle = await rollup({
       cache: true,
-      input: file,
+      input,
       /* Telling Rollup to include the sourcemap in the output file. */
       output: {
         sourcemap: 'inline',
@@ -87,7 +87,7 @@ async function rollupGenerate (input, file) {
   } catch (err) {
     bundle = await rollup({
       cache: true,
-      input: file,
+      input,
       /* Telling Rollup to include the sourcemap in the output file. */
       output: {
         sourcemap: 'inline',
