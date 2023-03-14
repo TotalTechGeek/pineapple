@@ -11,5 +11,9 @@
     "error": "AssertionError",
     "message": "Length must be a number.",
     "async": true
+  },
+  "createRental('Jesse', 14 snapshot @.length)": {
+    "value": 14,
+    "async": true
   }
 }

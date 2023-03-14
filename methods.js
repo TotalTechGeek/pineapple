@@ -64,59 +64,69 @@ function generateErrorText (error) {
   return chalk.red(JSON.stringify(error))
 }
 
-engine.addMethod('snapshot', async ([inputs], context) => {
-  let result = null
-  let promise = false
-  // workaround to get the actualError to the output.
-  let actualError = null
-  try {
-    const call = getDataSpecialSnapshot(context.func.apply(null, inputs))
-    if (call && call.then) {
-      promise = true
+engine.addMethod('snapshot', {
+  asyncMethod: async ([inputs, extract], context) => {
+    inputs = await engine.run(inputs, context)
+
+    let result = null
+    let promise = false
+    // workaround to get the actualError to the output.
+    let actualError = null
+    try {
+      const call = getDataSpecialSnapshot(context.func.apply(null, inputs))
+      if (call && call.then) {
+        promise = true
+      }
+      result = { value: await call }
+    } catch (err) {
+      const errorInfo = err instanceof Error
+        ? (err.constructor.name === 'Error' ? err.message : err.constructor.name)
+        : err
+      actualError = err
+      result = {
+        error: errorInfo,
+        ...(err.message !== errorInfo && err.message && { message: err.message })
+      }
     }
-    result = { value: await call }
-  } catch (err) {
-    const errorInfo = err instanceof Error
-      ? (err.constructor.name === 'Error' ? err.message : err.constructor.name)
-      : err
-    actualError = err
-    result = {
-      error: errorInfo,
-      ...(err.message !== errorInfo && err.message && { message: err.message })
+
+    if (result.value && extract) {
+      result.value = await engine.run(extract, { ...context, data: result.value })
     }
-  }
 
-  // @ts-ignore
-  result.async = promise
+    // @ts-ignore
+    result.async = promise
 
-  // @ts-ignore
-  if (!process.env.OMIT_SNAPSHOT_INPUTS && context.fuzzed) result.input = inputs
+    // @ts-ignore
+    if (!process.env.OMIT_SNAPSHOT_INPUTS && context.fuzzed) result.input = inputs
 
-  const { exists, value } = await context.snap.find(context.id)
+    const { exists, value } = await context.snap.find(context.id)
 
-  // @ts-ignore
-  if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id, file: context.file })) {
-    await context.snap.set(context.id, result)
-    return [result, true]
-  }
-
-  if (equals(value, result)) {
-    return [result, true]
-  }
-
-  if (exists) {
-    // We have a snapshot, but it's different, so we need to ask the user if they want to update the snapshot
-    if (await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id, file: context.file })) {
+    // @ts-ignore
+    if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id, file: context.file })) {
       await context.snap.set(context.id, result)
       return [result, true]
     }
-    return [{ ...result, actualError }, false, diff(value, result)]
-  }
 
-  return [{ ...result, actualError }, false, 'There is no snapshot for this test.']
+    if (equals(value, result)) {
+      return [result, true]
+    }
+
+    if (exists) {
+      // We have a snapshot, but it's different, so we need to ask the user if they want to update the snapshot
+      if (await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id, file: context.file })) {
+        await context.snap.set(context.id, result)
+        return [result, true]
+      }
+      return [{ ...result, actualError }, false, diff(value, result)]
+    }
+
+    return [{ ...result, actualError }, false, 'There is no snapshot for this test.']
+  },
+  traverse: false
 }, {
   useContext: true
-})
+}
+)
 
 engine.addMethod('to', async ([inputs, output], context) => {
   try {

@@ -3,6 +3,7 @@ import assert from 'assert'
 /**
  * @test 'Jesse', 12
  * @test 'Joe', '15'
+ * @test 'Jesse', 14 snapshot @.length
  * @param {string} owner
  * @param {number} length
  */
