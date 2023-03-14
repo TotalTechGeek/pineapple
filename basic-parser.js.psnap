@@ -12,7 +12,7 @@
     "async": false
   },
   "strip(#Parser.this)": {
-    "value": "import  from \nimport  from \n\n\nexport function InternalTests () \n\n\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n\nexport function getOuterDeclarations (code) \n\n\nexport function parseCode (code) \n\n\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n\nfunction multiLine (fileText, start, type) \n\n\nexport function getExports (code) \n",
+    "value": "import  from \nimport  from \n\n\nexport function InternalTests () \n\n\nexport function strip (code) \n\nfunction matchExpr (stripped, types = ) \n\n\nexport function getOuterDeclarations (code) \n\n\nexport function parseCode (code) \n\n\nfunction getTags (fileText, end, onlyLines = null, tagTypes = TAG_TYPES) \n\nconst TAG_TYPES = [\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  ,\n  \n]\n\n\nfunction multiLine (fileText, start, type) \n\n\nexport function getExports (code) \n\nfunction * pathFromRegex (regex, file, position) \n\n\nexport function grabVirtualDependencies (str) \n",
     "async": false
   },
   "strip(#Parser.quoteIssue)": {
@@ -87,6 +87,8 @@
         "index": 0,
         "lineNo": 1,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -97,6 +99,8 @@
         "index": 51,
         "lineNo": 1,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       }
     ],
@@ -117,6 +121,8 @@
             "text": "void",
             "lineNo": 3
           }
+        ],
+        "virtualDependencies": [
         ]
       }
     ],
@@ -137,6 +143,8 @@
             "text": "1,\n2 returns 3",
             "lineNo": 3
           }
+        ],
+        "virtualDependencies": [
         ]
       }
     ],
@@ -158,6 +166,8 @@
             "lineNo": 4
           }
         ],
+        "virtualDependencies": [
+        ],
         "originalName": "add"
       }
     ],
@@ -173,6 +183,8 @@
         "index": 189,
         "lineNo": 8,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -193,6 +205,8 @@
             "text": "3 ~> 'hi hi hi' returns undefined",
             "lineNo": 21
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -213,6 +227,8 @@
             "text": "3 ~> 'hi hi hi' returns truthy",
             "lineNo": 33
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -233,6 +249,8 @@
             "text": "['ø'], 1 ~> 'Testø' returns undefined",
             "lineNo": 45
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -253,6 +271,8 @@
             "text": "1 ~> 'Hello' returns undefined",
             "lineNo": 64
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -273,6 +293,8 @@
             "text": "1 ~> 'Hello' returns undefined",
             "lineNo": 76
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -293,6 +315,8 @@
             "text": "1 ~> 'He!lo' returns undefined",
             "lineNo": 88
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -313,6 +337,8 @@
             "text": "1 ~> 'Hell0' returns undefined",
             "lineNo": 100
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -333,6 +359,8 @@
             "text": "'Hello' ~> '' returns truthy",
             "lineNo": 112
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -378,6 +406,8 @@
             "text": "['password01'] ~> 'yeet'",
             "lineNo": 136
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -388,6 +418,8 @@
         "index": 5236,
         "lineNo": 164,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -398,6 +430,8 @@
         "index": 5747,
         "lineNo": 176,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -408,6 +442,8 @@
         "index": 6367,
         "lineNo": 191,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -443,6 +479,8 @@
             "text": "\"Attempt: $0 $1\" ~> #string, #string returns cat('Attempt: ', args.0, ' ', args.1)",
             "lineNo": 205
           }
+        ],
+        "virtualDependencies": [
         ]
       }
     ],
@@ -463,6 +501,8 @@
             "text": "",
             "lineNo": 2
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -478,6 +518,8 @@
             "text": "void returns isPrime(@)",
             "lineNo": 15
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -488,6 +530,8 @@
         "index": 285,
         "lineNo": 21,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -503,6 +547,8 @@
             "text": "",
             "lineNo": 25
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -528,6 +574,8 @@
             "text": "1 returns @.level === 6",
             "lineNo": 38
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -538,6 +586,8 @@
         "index": 723,
         "lineNo": 45,
         "tags": [
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -553,6 +603,8 @@
             "text": "",
             "lineNo": 48
           }
+        ],
+        "virtualDependencies": [
         ]
       },
       {
@@ -578,6 +630,8 @@
             "text": "'United Kingdom' resolves falsy",
             "lineNo": 62
           }
+        ],
+        "virtualDependencies": [
         ]
       }
     ],
@@ -598,6 +652,9 @@
             "text": "Parser",
             "lineNo": 5
           }
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -643,6 +700,9 @@
             "text": "#Parser.setupTest",
             "lineNo": 66
           }
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -653,6 +713,9 @@
         "index": 3910,
         "lineNo": 153,
         "tags": [
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -683,6 +746,9 @@
             "text": "'module.exports = {}'",
             "lineNo": 167
           }
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -728,6 +794,9 @@
             "text": "#Parser.this",
             "lineNo": 182
           }
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -735,9 +804,12 @@
         "exported": false,
         "type": "function",
         "raw": "function getTags ",
-        "index": 6364,
-        "lineNo": 242,
+        "index": 6451,
+        "lineNo": 244,
         "tags": [
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -745,9 +817,12 @@
         "exported": false,
         "type": "const",
         "raw": "const TAG_TYPES ",
-        "index": 7146,
-        "lineNo": 268,
+        "index": 7233,
+        "lineNo": 270,
         "tags": [
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -755,9 +830,12 @@
         "exported": false,
         "type": "function",
         "raw": "function multiLine ",
-        "index": 7909,
-        "lineNo": 299,
+        "index": 7996,
+        "lineNo": 301,
         "tags": [
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       },
       {
@@ -765,24 +843,45 @@
         "exported": true,
         "type": "function",
         "raw": "export function getExports ",
-        "index": 8887,
-        "lineNo": 338,
+        "index": 8974,
+        "lineNo": 340,
         "tags": [
           {
             "type": "test",
             "text": "#Parser.moduleExports",
-            "lineNo": 332
+            "lineNo": 334
           },
           {
             "type": "test",
             "text": "#Parser.typicalExport",
-            "lineNo": 333
+            "lineNo": 335
           },
           {
             "type": "test",
             "text": "#Parser.exports",
-            "lineNo": 334
+            "lineNo": 336
           }
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
+        ]
+      },
+      {
+        "name": "grabVirtualDependencies",
+        "exported": true,
+        "type": "function",
+        "raw": "export function grabVirtualDependencies ",
+        "index": 10652,
+        "lineNo": 398,
+        "tags": [
+          {
+            "type": "test",
+            "text": "'// import(\"./organizations.js\")'",
+            "lineNo": 395
+          }
+        ],
+        "virtualDependencies": [
+          "./organizations.js"
         ]
       }
     ],
@@ -807,6 +906,12 @@
       "XYZ": "X",
       "Y": "Y"
     },
+    "async": false
+  },
+  "grabVirtualDependencies('// import(\"./organizations.js\")')": {
+    "value": [
+      "./organizations.js"
+    ],
     "async": false
   }
 }

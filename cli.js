@@ -25,7 +25,7 @@ const formatOption = new Option('-f, --format <format>', 'The output format').ch
 
 program
   .name('pineapple')
-  .version('0.19.0')
+  .version('0.19.1')
   .option('-i, --include <files...>', 'Comma separated globs of files to include.')
   .option('-e, --exclude <files...>', 'Comma separated globs of files to exclude.')
   .option('-w, --watch-mode', 'Will run tests only when a file is modified.')
@@ -140,6 +140,8 @@ const getFileFunctions = file => {
   const functions = getFunctions(readFileSync(file).toString(), url.pathToFileURL(file).href)
 
   if (functions.length) {
+    const { virtualDependencies } = functions[0]
+
     // grab the dependencies for a given file
     const dependencies = new Set(dependencyTree.toList({
       filename: file,
@@ -147,6 +149,17 @@ const getFileFunctions = file => {
       filter: str => !str.includes('/node_modules/'),
       noTypeDefinitions: false
     }))
+
+    // add the virtual dependencies
+    virtualDependencies.forEach(toFile => {
+      dependencyTree.toList({
+        filename: path.resolve(file, '../' + toFile),
+        directory: '.',
+        filter: str => !str.includes('/node_modules/'),
+        noTypeDefinitions: false
+      }).forEach(i => dependencies.add(i))
+    })
+
     // attach the dependencies to the files.
     return functions.map(i => ({ ...i, dependencies }))
   }
