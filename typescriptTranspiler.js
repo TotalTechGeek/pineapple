@@ -35,19 +35,21 @@ const externalShim = {
     build.onResolve({ filter: /.+/ }, args => {
       if (nativeModules.has(args.path)) return { external: true }
       if (args.path.startsWith('node:')) return { external: true }
+      if (args.path.startsWith('.')) return
+
       // check if the dependency is a node_module
       // split the path based on the slash
       const splitPath = args.path.split('/')
-
       if (packageFile) {
         // check if the first part of the path is a node_module
-        if (packageFile.dependencies[splitPath[0]] || packageFile.devDependencies[splitPath[0]]) {
-          return { external: true }
-        }
+        if (packageFile.dependencies[splitPath[0]] || packageFile.devDependencies[splitPath[0]]) return { external: true }
+        if (packageFile.dependencies[args.path] || packageFile.devDependencies[args.path]) return { external: true }
       } else {
         // if the first part of the path is a node_module, by actually checking node_modules
         if (existsSync(path.join(process.cwd(), 'node_modules', splitPath[0]))) return { external: true }
       }
+
+      if (args.importer.includes('node_modules')) return { external: true }
     })
     return build
   }
