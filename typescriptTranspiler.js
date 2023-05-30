@@ -51,8 +51,6 @@ const externalShim = {
       }
 
       if (args.importer.includes('node_modules')) return { external: true }
-
-      console.log(args.path)
     })
     return build
   }
@@ -63,14 +61,14 @@ const externalShim = {
  * @param input - The file to transpile
  * @returns A URL to the transpiled file.
  */
-export async function transpile (input, file, rollup = false) {
+export async function transpile (input, file, { rollup = false, shim = false } = {}) {
   /* Transpiling the file to JavaScript. */
   if (rollup) await rollupGenerate(input, file)
-  else await esbuildGenerate(input, file)
+  else await esbuildGenerate(input, file, shim)
   return file
 }
 
-async function esbuildGenerate (input, file) {
+async function esbuildGenerate (input, file, shim) {
   try {
     await esbuild.build({
       stdin: {
@@ -81,7 +79,7 @@ async function esbuildGenerate (input, file) {
       },
       outfile: file,
       sourcemap: 'inline',
-      plugins: [externalShim],
+      ...(shim ? { plugins: [externalShim] } : { plugins: 'external' }),
       bundle: true,
       nodePaths: [''],
       format: file.endsWith('cjs') ? 'cjs' : 'esm',
@@ -94,7 +92,7 @@ async function esbuildGenerate (input, file) {
       sourcemap: 'inline',
       bundle: true,
       nodePaths: [''],
-      plugins: [externalShim],
+      ...(shim ? { plugins: [externalShim] } : { plugins: 'external' }),
       format: file.endsWith('cjs') ? 'cjs' : 'esm'
     })
   }

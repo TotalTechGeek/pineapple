@@ -42,6 +42,7 @@ program
   .option('--snapshot-fuzz-runs <amount>', 'The number of runs that fuzz tests perform on a snapshot.', '10')
   .option('--cjs', 'Forces CommonJS to be used instead of ESM. This is not always necessary, but can be useful in some cases, particularly when using TypeScript.')
   .option('--rollup', 'Forces rollup to be used instead of ESBuild. This is not always necessary, but can be useful in some cases.')
+  .option('--shim-resolution', 'Tries to shim the resolution of ESBuild so that it will bundle aliased paths that start with @ while packages are kept external.')
   .addOption(formatOption)
 
 if (os.platform() !== 'win32') program.option('--bun', 'Uses Bun as the test runner.')
@@ -208,7 +209,7 @@ async function execute (functions, forkProcess = false) {
       const transpileFunc = transpileFunctions.find(i => i.files.some(i =>
         minimatch(moduleSpecifier, i, { matchBase: true })
       ))?.transpile ?? transpile
-      moduleSpecifier = url.pathToFileURL(await transpileFunc(url.fileURLToPath(moduleSpecifier), path.resolve(recommended), options.rollup)).href
+      moduleSpecifier = url.pathToFileURL(await transpileFunc(url.fileURLToPath(moduleSpecifier), path.resolve(recommended), { rollup: options.rollup, shim: options.shimResolution })).href
     }
 
     const str = `
