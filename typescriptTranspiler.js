@@ -1,5 +1,6 @@
 import esbuild from 'esbuild'
 import fs from 'fs/promises'
+import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { injectStr } from './annotation.js'
 
@@ -13,6 +14,43 @@ const loaderDict = {
 }
 function replaceLoader (loader) {
   return loaderDict[loader] || loader
+}
+
+const externalShim = {
+  name: 'ExternalShim',
+  setup (build) {
+    let packageFile = null
+
+    // eslint-disable-next-line node/no-deprecated-api
+    const nativeModules = new Set(Object.keys(process.binding('natives')))
+
+    // try traversing up the directory tree to find a package.json
+    let dir = process.cwd()
+    do {
+      try {
+        packageFile = JSON.parse(readFileSync(path.join(dir, 'package.json'), 'utf-8'))
+      } catch (err) {}
+    } while (dir !== (dir = path.dirname(dir)) && !packageFile)
+
+    build.onResolve({ filter: /.+/ }, args => {
+      if (nativeModules.has(args.path)) return { external: true }
+      if (args.path.startsWith('node:')) return { external: true }
+      // check if the dependency is a node_module
+      // split the path based on the slash
+      const splitPath = args.path.split('/')
+
+      if (packageFile) {
+        // check if the first part of the path is a node_module
+        if (packageFile.dependencies[splitPath[0]] || packageFile.devDependencies[splitPath[0]]) {
+          return { external: true }
+        }
+      } else {
+        // if the first part of the path is a node_module, by actually checking node_modules
+        if (existsSync(path.join(process.cwd(), 'node_modules', splitPath[0]))) return { external: true }
+      }
+    })
+    return build
+  }
 }
 
 /**
@@ -38,10 +76,10 @@ async function esbuildGenerate (input, file) {
       },
       outfile: file,
       sourcemap: 'inline',
+      plugins: [externalShim],
       bundle: true,
       nodePaths: [''],
       format: file.endsWith('cjs') ? 'cjs' : 'esm',
-      packages: 'external',
       logLevel: 'silent'
     })
   } catch (err) {
@@ -51,8 +89,8 @@ async function esbuildGenerate (input, file) {
       sourcemap: 'inline',
       bundle: true,
       nodePaths: [''],
-      format: file.endsWith('cjs') ? 'cjs' : 'esm',
-      packages: 'external'
+      plugins: [externalShim],
+      format: file.endsWith('cjs') ? 'cjs' : 'esm'
     })
   }
 }
