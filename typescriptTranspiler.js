@@ -79,7 +79,7 @@ async function esbuildGenerate (input, file, shim) {
       },
       outfile: file,
       sourcemap: 'inline',
-      ...(shim ? { plugins: [externalShim] } : { plugins: 'external' }),
+      ...(shim ? { plugins: [externalShim] } : { packages: 'external' }),
       bundle: true,
       nodePaths: [''],
       format: file.endsWith('cjs') ? 'cjs' : 'esm',
@@ -92,7 +92,7 @@ async function esbuildGenerate (input, file, shim) {
       sourcemap: 'inline',
       bundle: true,
       nodePaths: [''],
-      ...(shim ? { plugins: [externalShim] } : { plugins: 'external' }),
+      ...(shim ? { plugins: [externalShim] } : { packages: 'external' }),
       format: file.endsWith('cjs') ? 'cjs' : 'esm'
     })
   }
