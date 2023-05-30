@@ -83,7 +83,10 @@ async function esbuildGenerate (input, file, shim) {
       bundle: true,
       nodePaths: [''],
       format: file.endsWith('cjs') ? 'cjs' : 'esm',
-      logLevel: 'silent'
+      logLevel: 'silent',
+      // Right now, Pineapple is not meant for this type of front-end testing,
+      // so we are treating png and css files as empty.
+      loader: { '.css': 'empty', '.png': 'empty' }
     })
   } catch (err) {
     await esbuild.build({
@@ -93,7 +96,8 @@ async function esbuildGenerate (input, file, shim) {
       bundle: true,
       nodePaths: [''],
       ...(shim ? { plugins: [externalShim] } : { packages: 'external' }),
-      format: file.endsWith('cjs') ? 'cjs' : 'esm'
+      format: file.endsWith('cjs') ? 'cjs' : 'esm',
+      loader: { '.css': 'empty', '.png': 'empty' }
     })
   }
 }
