@@ -6,7 +6,7 @@ import { sequenceArbitrary } from './sequence-arbitrary.js'
  * @test '5' returns true
  * @param {string} str
  */
-function isNumeric (str) {
+export function isNumeric (str) {
   if (typeof str !== 'string') return false
   return !isNaN(str) && !isNaN(parseFloat(str))
 }
