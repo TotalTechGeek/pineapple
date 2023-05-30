@@ -47,9 +47,12 @@ const externalShim = {
       } else {
         // if the first part of the path is a node_module, by actually checking node_modules
         if (existsSync(path.join(process.cwd(), 'node_modules', splitPath[0]))) return { external: true }
+        if (existsSync(path.join(process.cwd(), 'node_modules', args.path))) return { external: true }
       }
 
       if (args.importer.includes('node_modules')) return { external: true }
+
+      console.log(args.path)
     })
     return build
   }
