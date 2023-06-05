@@ -5,6 +5,8 @@ import { serialize } from './snapshot.js'
 import fc from 'fast-check'
 import { ConstantFunc } from './symbols.js'
 
+const basicSub = { var: '' }
+
 // The following is used as a "simple way" to keep track of whether a complex structure generated from arbitraries is actually constant.
 // This allows us to avoid a bunch of duplicate test effort when someone writes something like:
 // { name: 'Jesse', image: #commonPicture }, where #commonPicture is defined as a constant.
@@ -44,13 +46,15 @@ const tupleConstApplication = item => {
   return { '#constant': item }
 }
 
+const simplifyArbitraries = new Set(['#oneof'])
+
 /**
  * Used to touch up the logic so that statements that aren't completely valid with arbitraries are made valid,
  * like #record({ id: #integer }) and { id: #integer } become the same.
  * @param {*} item
  * @returns
  */
-function touchUpArbitrary (item) {
+function touchUpArbitrary (item, force = false) {
   if (!item) return item
   if (typeof item === 'number') return item
   if (typeof item === 'string') return item
@@ -75,10 +79,23 @@ function touchUpArbitrary (item) {
         }
       }
     }
+
+    // todo: improve the testing around this
+    if (item[key] && item[key].map && simplifyArbitraries.has(key)) {
+      return {
+        [key]: item[key].map(touchUpArbitrary).map(i => {
+        // detect if any are not objects and wrap them in #constant
+          if (typeof i !== 'object') return { '#constant': i }
+          if (i === null) return { '#constant': null }
+          if (i === undefined) return { '#constant': undefined }
+          return touchUpArbitrary(i, true)
+        })
+      }
+    }
   }
 
   if (key === 'obj') {
-    if (item[key].some(i => (Object.keys(i || {})[0] || '').startsWith('#'))) {
+    if (force === true || item[key].some(i => (Object.keys(i || {})[0] || '').startsWith('#'))) {
       const result = {
         '#record': {
           obj: item[key]
@@ -99,7 +116,7 @@ function touchUpArbitrary (item) {
   }
 
   if (key === 'list') {
-    if (item[key].some(i => (Object.keys(i || {})[0] || '').startsWith('#'))) {
+    if (force === true || item[key].some(i => (Object.keys(i || {})[0] || '').startsWith('#'))) {
       const result = {
         '#tuple': {
           list: item[key]
@@ -156,8 +173,6 @@ function arbitraryBranchCount (obj) {
   }
   return 0
 }
-
-const basicSub = { var: '' }
 
 /**
  * Substitute any arbitraries with a "var" expression so that we can perform a map operation

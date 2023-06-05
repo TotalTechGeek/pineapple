@@ -38,3 +38,10 @@ export function template (templateString) {
   /** @param {string} replace */
   return replace => templateString.replace(/\$0/g, replace.replace(/\$/g, '$$$$'))
 }
+
+/**
+ * @test #oneof('Hello', 1, null, undefined, {}, { a: 1 }, [1, 2], [1]) returns @ or null === args.0
+ */
+export function checkConstantCoercion (result) {
+  return result
+}
