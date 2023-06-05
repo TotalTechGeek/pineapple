@@ -9,7 +9,8 @@ import fc from 'fast-check'
 import { argumentsToArbitraries } from './utils.js'
 import { always } from 'ramda'
 import url from 'url'
-import { faker } from '@faker-js/faker'
+// Todo: Add support for other locales.
+import { Faker, en } from '@faker-js/faker'
 
 // Global Log Injection //
 if (!global.currentLog) global.currentLog = ''
@@ -38,7 +39,7 @@ export function flush () {
 }
 // End Global Log Injection //
 
-const ArbitraryFaker = { ...faker, seed: faker.seed }
+const ArbitraryFaker = new Faker({ locale: [en] })
 
 const snap = snapshotManager()
 function snapshotManager () {
