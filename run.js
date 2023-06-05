@@ -38,7 +38,7 @@ export function flush () {
 }
 // End Global Log Injection //
 
-const ArbitraryFaker = { ...faker }
+const ArbitraryFaker = { ...faker, seed: faker.seed }
 
 const snap = snapshotManager()
 function snapshotManager () {
@@ -187,7 +187,7 @@ export async function run (input, id, func, file) {
       try {
         let count = 0
         const snapshot = snap(file)
-        if (key === 'snapshot') ArbitraryFaker.mersenne.seed(parseInt(h.substring(0, 16), 16))
+        if (key === 'snapshot') ArbitraryFaker.seed(parseInt(h.substring(0, 16), 16))
         await fc.assert(fc.asyncProperty(...arbs, async (...args) => {
           count++
           // Hijack the seed for now, keep it simple

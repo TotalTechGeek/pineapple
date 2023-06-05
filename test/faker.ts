@@ -14,7 +14,7 @@ type User = {
  */
 export function User (faker: Faker): User {
     return {
-        userId: faker.datatype.uuid(),
+        userId: faker.string.uuid(),
         username: faker.internet.userName(),
         email: faker.internet.email(),
         avatar: faker.image.avatar(),
@@ -28,7 +28,7 @@ export function User (faker: Faker): User {
  */
 export function InvalidUser (faker: Faker): User {
     return {
-        userId: faker.datatype.uuid(),
+        userId: faker.string.uuid(),
         username: faker.internet.userName(),
         email: faker.internet.email(),
         avatar: faker.image.avatar(),

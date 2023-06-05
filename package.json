@@ -1,6 +1,6 @@
 {
   "name": "pineapple",
-  "version": "0.19.4",
+  "version": "0.20.0",
   "description": "Make your testing sweet!",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "@typescript-eslint/typescript-estree": "5.43.0"
   },
   "dependencies": {
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.0.2",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-sucrase": "^5.0.1",
     "@rollup/plugin-virtual": "^3.0.1",
