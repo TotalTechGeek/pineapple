@@ -1748,10 +1748,10 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
-json-logic-engine@^1.1.22:
-  version "1.1.22"
-  resolved "https://registry.npmjs.org/json-logic-engine/-/json-logic-engine-1.1.22.tgz"
-  integrity sha512-/MDsgT2389QoajA8yHvAadPCAoXlCK6w1Jd06YX4Iq+afTOpxR2wj2OXScfLR3T2ILRs1KVmu9PUBcondMMYwA==
+json-logic-engine@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/json-logic-engine/-/json-logic-engine-1.2.6.tgz#51e1e85746c60d76bbe78ae4ba35b80842a2dfbe"
+  integrity sha512-0nWMTcdtpxIWxu8qd7monnAaTJERVcgCSLrMq7IlwjCqghuiQVeGwKeoPvs3J7tzf1SImpUSLLrK3NR57+6q1w==
 
 json-parse-better-errors@^1.0.1:
   version "1.0.2"
