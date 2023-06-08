@@ -16,6 +16,6 @@ export async function createRental (owner, length, type = 'boat') {
     type,
     owner,
     length,
-    createdAt: new Date()
+    date: new Date().getTime()
   }
 }

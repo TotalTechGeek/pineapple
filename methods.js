@@ -34,6 +34,17 @@ engine.addMethod('as', {
   traverse: true
 })
 
+engine.addMethod('typeof', i => {
+  const type = typeof i
+  if (type === 'object') {
+    if (i === null) return 'null'
+    if (Array.isArray(i)) return 'array'
+    // get the constructor name
+    if (i.constructor) return i.constructor.name.toLowerCase()
+  }
+  return type
+}, { sync: true, deterministic: true })
+
 engine.addMethod('combine', (data) => Object.assign({}, ...data), {
   sync: true,
   deterministic: true
@@ -106,7 +117,7 @@ engine.addMethod('snapshot', {
     // @ts-ignore
     if (!process.env.OMIT_SNAPSHOT_INPUTS && context.fuzzed) result.input = inputs
 
-    const { exists, value, transform } = await context.snap.find(context.id)
+    const { exists, value, meta } = await context.snap.find(context.id)
 
     // @ts-ignore
     if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id, file: context.file })) {
@@ -114,10 +125,12 @@ engine.addMethod('snapshot', {
       return [result, true]
     }
 
-    const compareResult = transform ? await engine.run(transform, result) : result
-    const compareValue = transform ? await engine.run(transform, value) : value
+    let checkError = false
+    if (meta?.check) checkError = !await engine.run(meta.check, { expected: value, actual: result })
+    const compareResult = meta?.transform ? await engine.run(meta.transform, result) : result
+    const compareValue = meta?.transform ? await engine.run(meta.transform, value) : value
 
-    if (equals(compareValue, compareResult)) return [result, true]
+    if (!checkError && equals(compareValue, compareResult)) return [result, true]
 
     if (exists) {
       const answer = await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id, file: context.file })

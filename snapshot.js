@@ -23,16 +23,16 @@ export function snapshot (file = './pineapple-snapshot') {
     return {
       exists: key in (await data),
       value: (await data)[key],
-      transform: (await data)[`${key}.transform`]
+      meta: (await data)[`${key}.meta`]
     }
   }
 
   // todo: make this not hammer disk.
-  const set = async function (key, value, transform) {
+  const set = async function (key, value, meta) {
     if (!this.data) this.data = await data
     this.data[key] = value
-    if (transform) this.data[`${key}.transform`] = transform
-    else if (this.data[`${key}.transform`]) delete this.data[`${key}.transform`]
+    if (meta) this.data[`${key}.meta`] = meta
+    else if (this.data[`${key}.meta`]) delete this.data[`${key}.meta`]
     await fs.writeFile(file, serialize(this.data))
   }
 

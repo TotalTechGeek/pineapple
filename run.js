@@ -76,17 +76,17 @@ function snapshotManager () {
       const remaining = await snapshots[file].notAccessed
       if (mode === 'clean') {
         for (const item of Array.from(remaining).filter(i => {
-          if (i.endsWith('.transform')) {
+          if (i.endsWith('.meta')) {
             // todo: make this clean up when the original is gone from the snapshot via manual edit
             return remaining.has(
-              i.substring(0, i.lastIndexOf('.transform'))
+              i.substring(0, i.lastIndexOf('.meta'))
             )
           }
           return true
         })) await snapshots[file].remove(item)
       } else if (remaining.size) {
         tests.push(...Array.from(remaining).map(item => [file, item]).filter(([, item]) => {
-          return !item.endsWith('.transform')
+          return !item.endsWith('.meta')
         }))
       }
     }

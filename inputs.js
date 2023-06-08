@@ -4,7 +4,7 @@ import { diff } from './utils.js'
 import { flush } from './run.js'
 import { getDiff } from 'json-difference'
 
-async function getConfirmation (message, choices = ['Yes', 'No ']) {
+async function getConfirmation (message, choices = ['Yes', 'No '], defaultChoice = null) {
   if (typeof prompt !== 'undefined') {
     const result = prompt(`${message} (Y/N)`).toLowerCase()
     console.log()
@@ -14,11 +14,12 @@ async function getConfirmation (message, choices = ['Yes', 'No ']) {
     const currentMode = process.stdin.isRaw
     if (process.stdin.setRawMode) process.stdin.setRawMode(true)
 
-    process.stdout.write(message + ' ')
-    let choice = choices[0]
-    process.stdout.write(choices[0])
+    let position = choices.indexOf(defaultChoice)
+    if (position === -1) position = 0
 
-    let position = 0
+    process.stdout.write(message + ' ')
+    let choice = choices[position]
+    process.stdout.write(choices[position])
 
     const func = data => {
       if (data[0] === 13) {
@@ -79,6 +80,11 @@ export async function askSnapshot ({ item, rule, id, file }) {
   return result
 }
 
+// Used by the askSnapshotUpdate function to store the user's choice
+// this is ugly code, but it's stored within the inputs.js file so it's not too bad
+let snapshotChoice
+let snapshotChoiceMode
+
 /**
  * It asks the user if they want to update the snapshot
  * @param {{ item: any, rule: string, id: string, value: any, file: string }} data
@@ -109,8 +115,43 @@ export async function askSnapshotUpdate ({ item, value, rule, id, file }) {
       // This means that fields were modified, which means we can offer to omit the fields
       console.log(chalk.yellow('\nSome of the fields have been modified, you can choose to omit them.'))
 
-      const result = await getConfirmation(`${chalk.magenta('?')} Do you wish to update to this snapshot?`, ['Yes ', 'No  ', 'Omit'])
-      if (result === 'Omit') return { omitDeep: [{ var: '' }, differences.edited.map(i => i[0])] }
+      const result = await getConfirmation(`${chalk.magenta('?')} Do you wish to update to this snapshot?`, ['Yes ', 'No  ', 'Omit'], snapshotChoice)
+      snapshotChoice = result
+      if (result === 'Omit') {
+        const transform = { omitDeep: [{ var: '' }, differences.edited.map(i => i[0])] }
+        const mode = await getConfirmation(`${chalk.magenta('?')} What checks do you want to perform on the omitted fields?`, ['Type  ', 'None  ', 'Truthy'], snapshotChoiceMode)
+        snapshotChoiceMode = mode
+
+        if (mode === 'Type  ') {
+          return {
+            transform,
+            check: {
+              and: differences.edited.map(i => ({
+                '===': [
+                  { typeof: { var: `actual.${i[0]}` } },
+                  { typeof: { var: `expected.${i[0]}` } }
+                ]
+              }))
+            }
+          }
+        }
+
+        if (mode === 'Truthy') {
+          return {
+            transform,
+            check: {
+              and: differences.edited.map(i => ({
+                '===': [
+                  { '!!': { var: `actual.${i[0]}` } },
+                  { '!!': { var: `expected.${i[0]}` } }
+                ]
+              }))
+            }
+          }
+        }
+
+        return { transform }
+      }
       return result === 'Yes '
     }
   }

@@ -1,0 +1,582 @@
+{
+  "changing(#person.fullName)": {
+    "value": {
+      "date": 1686255163259
+    },
+    "async": false,
+    "input": [
+      "Julia Grady"
+    ]
+  },
+  "changing(#person.fullName).2": {
+    "value": {
+      "date": 1686255167447
+    },
+    "async": false,
+    "input": [
+      "Adrian Blanda"
+    ]
+  },
+  "changing(#person.fullName).3": {
+    "value": {
+      "date": 1686255168366
+    },
+    "async": false,
+    "input": [
+      "Connie Johnston"
+    ]
+  },
+  "changing(#person.fullName).4": {
+    "value": {
+      "date": 1686255169188
+    },
+    "async": false,
+    "input": [
+      "Lauren Homenick"
+    ]
+  },
+  "changing(#person.fullName).5": {
+    "value": {
+      "date": 1686255170709
+    },
+    "async": false,
+    "input": [
+      "Lester Rath"
+    ]
+  },
+  "changing(#person.fullName).6": {
+    "value": {
+      "date": 1686255171574
+    },
+    "async": false,
+    "input": [
+      "Essie Legros"
+    ]
+  },
+  "changing(#person.fullName).7": {
+    "value": {
+      "date": 1686255172433
+    },
+    "async": false,
+    "input": [
+      "Alfred Gibson"
+    ]
+  },
+  "changing(#person.fullName).8": {
+    "value": {
+      "date": 1686255173186
+    },
+    "async": false,
+    "input": [
+      "Alfonso Ledner"
+    ]
+  },
+  "changing(#person.fullName).9": {
+    "value": {
+      "date": 1686255173947
+    },
+    "async": false,
+    "input": [
+      "Clifton Kiehn"
+    ]
+  },
+  "changing(#person.fullName).10": {
+    "value": {
+      "date": 1686255174762
+    },
+    "async": false,
+    "input": [
+      "Elaine Botsford"
+    ]
+  },
+  "TruthyTest(#boolean)": {
+    "value": null,
+    "async": false,
+    "input": [
+      false
+    ]
+  },
+  "TruthyTest(#boolean).2": {
+    "value": 1.9989062278384333,
+    "async": false,
+    "input": [
+      true
+    ]
+  },
+  "TruthyTest(#boolean).3": {
+    "value": null,
+    "async": false,
+    "input": [
+      false
+    ]
+  },
+  "TruthyTest(#boolean).4": {
+    "value": null,
+    "async": false,
+    "input": [
+      false
+    ]
+  },
+  "TruthyTest(#boolean).5": {
+    "value": null,
+    "async": false,
+    "input": [
+      false
+    ]
+  },
+  "TruthyTest(#boolean).6": {
+    "value": null,
+    "async": false,
+    "input": [
+      false
+    ]
+  },
+  "TruthyTest(#boolean).7": {
+    "value": null,
+    "async": false,
+    "input": [
+      false
+    ]
+  },
+  "TruthyTest(#boolean).8": {
+    "value": 1.930991211471164,
+    "async": false,
+    "input": [
+      true
+    ]
+  },
+  "TruthyTest(#boolean).9": {
+    "value": 1.7576144710731985,
+    "async": false,
+    "input": [
+      true
+    ]
+  },
+  "TruthyTest(#boolean).10": {
+    "value": 1.3533316207277866,
+    "async": false,
+    "input": [
+      true
+    ]
+  },
+  "changing(#person.fullName).meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).2.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).3.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).4.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).5.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).6.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).7.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).8.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).9.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changing(#person.fullName).10.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.date"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.date"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.date"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "TruthyTest(#boolean).2.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "!!": {
+                "var": "actual.value"
+              }
+            },
+            {
+              "!!": {
+                "var": "expected.value"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "TruthyTest(#boolean).8.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "!!": {
+                "var": "actual.value"
+              }
+            },
+            {
+              "!!": {
+                "var": "expected.value"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "TruthyTest(#boolean).9.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "!!": {
+                "var": "actual.value"
+              }
+            },
+            {
+              "!!": {
+                "var": "expected.value"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "TruthyTest(#boolean).10.meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "!!": {
+                "var": "actual.value"
+              }
+            },
+            {
+              "!!": {
+                "var": "expected.value"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
