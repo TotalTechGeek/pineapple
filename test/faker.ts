@@ -52,3 +52,12 @@ export function register(user: User) {
         message: `Welcome ${user.username}!`
     }
 }
+
+/**
+ * Making use of faker's helpers.
+ * @test #person.fullName returns cat('Hi ', args.0, '!')
+ * @test #airline.airline().name returns cat("Hi ", args.0, "!")
+ */
+export function sayHi(name: string) {
+    return `Hi ${name}!`
+}

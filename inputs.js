@@ -2,20 +2,23 @@ import chalk from 'chalk'
 import { serialize } from './snapshot.js'
 import { diff } from './utils.js'
 import { flush } from './run.js'
+import { getDiff } from 'json-difference'
 
-async function getConfirmation (message) {
+async function getConfirmation (message, choices = ['Yes', 'No ']) {
   if (typeof prompt !== 'undefined') {
     const result = prompt(`${message} (Y/N)`).toLowerCase()
     console.log()
-    return result === 'y' || result === 'yes'
+    return result === 'y' || result === 'yes' ? 'Yes' : 'No '
   }
   return new Promise(resolve => {
     const currentMode = process.stdin.isRaw
     if (process.stdin.setRawMode) process.stdin.setRawMode(true)
 
     process.stdout.write(message + ' ')
-    let choice = true
-    process.stdout.write('Yes')
+    let choice = choices[0]
+    process.stdout.write(choices[0])
+
+    let position = 0
 
     const func = data => {
       if (data[0] === 13) {
@@ -30,15 +33,19 @@ async function getConfirmation (message) {
       if (data === '\x1B[B') {
         process.stdout.write('\r')
         process.stdout.write(message + ' ')
-        process.stdout.write('No ')
-        choice = false
+        position++
+        if (position >= choices.length) position = 0
+        process.stdout.write(choices[position])
+        choice = choices[position]
       }
 
       if (data === '\x1B[A') {
         process.stdout.write('\r')
         process.stdout.write(message + ' ')
-        process.stdout.write('Yes')
-        choice = true
+        position--
+        if (position < 0) position = choices.length - 1
+        process.stdout.write(choices[position])
+        choice = choices[position]
       }
     }
 
@@ -95,6 +102,19 @@ export async function askSnapshotUpdate ({ item, value, rule, id, file }) {
   flush()
 
   console.log(diff(value, item))
+
+  if (typeof value === typeof item && value && item && typeof value === 'object') {
+    const differences = getDiff(value, item, true)
+    if (differences.added.length === 0 && differences.removed.length === 0) {
+      // This means that fields were modified, which means we can offer to omit the fields
+      console.log(chalk.yellow('\nSome of the fields have been modified, you can choose to omit them.'))
+
+      const result = await getConfirmation(`${chalk.magenta('?')} Do you wish to update to this snapshot?`, ['Yes ', 'No  ', 'Omit'])
+      if (result === 'Omit') return { omitDeep: [{ var: '' }, differences.edited.map(i => i[0])] }
+      return result === 'Yes '
+    }
+  }
+
   const result = await getConfirmation(`${chalk.magenta('?')} Do you wish to update to this snapshot?`)
-  return result
+  return result === 'Yes'
 }

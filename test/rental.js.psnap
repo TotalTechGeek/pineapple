@@ -3,7 +3,8 @@
     "value": {
       "type": "boat",
       "owner": "Jesse",
-      "length": 12
+      "length": 12,
+      "createdAt": date("2023-06-08T17:37:51.793Z")
     },
     "async": true
   },
@@ -19,7 +20,8 @@
   "createRental('Jesse', 14 snapshot omit(['length'], @))": {
     "value": {
       "type": "boat",
-      "owner": "Jesse"
+      "owner": "Jesse",
+      "createdAt": date("2023-06-08T17:37:53.035Z")
     },
     "async": true
   },
@@ -28,5 +30,25 @@
       "length": 14
     },
     "async": true
+  },
+  "createRental('Jesse', 12).transform": {
+    "omitDeep": [
+      {
+        "var": ""
+      },
+      [
+        "value.createdAt"
+      ]
+    ]
+  },
+  "createRental('Jesse', 14 snapshot omit(['length'], @)).transform": {
+    "omitDeep": [
+      {
+        "var": ""
+      },
+      [
+        "value.createdAt"
+      ]
+    ]
   }
 }

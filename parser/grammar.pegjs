@@ -278,7 +278,10 @@ ArithmeticExpression0
   / NonArithmeticExpression
 
 FunctionCall
-  = _ id:Identifier _ '(' _ args:FunctionArgs _ ').' getId:Identifier {
+  = _ '#' id:Identifier _ '(' _ args:FunctionArgs _ ').' getId:Identifier {
+    return { get: [{ ['#' + id]: args.length <= 1 ? args[0] : args }, getId] }
+  }
+  / _ id:Identifier _ '(' _ args:FunctionArgs _ ').' getId:Identifier {
     return { get: [{ [id]: args.length <= 1 ? args[0] : args }, getId] }
   }
   / _ '#' id:Identifier _ '(' _ args:FunctionArgs _ ')' {

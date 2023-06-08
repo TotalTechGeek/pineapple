@@ -15,6 +15,7 @@ export async function createRental (owner, length, type = 'boat') {
   return {
     type,
     owner,
-    length
+    length,
+    createdAt: new Date()
   }
 }

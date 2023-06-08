@@ -1748,6 +1748,11 @@ js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+json-difference@^1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/json-difference/-/json-difference-1.9.1.tgz#648aa806da2e3c4b7db24c34f6b04963b542fec2"
+  integrity sha512-5c2xaHKMkTq6T9KfCh4r3PVHQObpOyKMZzrySCAoYPBYJ0VqKDUW7dioddKLNS9z4Jey7yyMNSTH3bNF95Z1Nw==
+
 json-logic-engine@^1.2.6:
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/json-logic-engine/-/json-logic-engine-1.2.6.tgz#51e1e85746c60d76bbe78ae4ba35b80842a2dfbe"
