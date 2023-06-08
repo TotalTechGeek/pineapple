@@ -1,6 +1,6 @@
 {
   "name": "pineapple",
-  "version": "0.20.3",
+  "version": "0.21.0",
   "description": "Make your testing sweet!",
   "main": "index.js",
   "scripts": {
@@ -31,9 +31,10 @@
     "debounce": "^1.2.1",
     "dependency-tree": "^8.1.2",
     "esbuild": "^0.16.10",
-    "fast-check": "^3.3.0",
+    "fast-check": "^3.10.0",
     "glob": "^8.0.3",
     "jest-diff": "^27.5.1",
+    "json-difference": "^1.9.1",
     "json-logic-engine": "^1.2.6",
     "ramda": "^0.28.0",
     "ramda-adjunct": "^3.0.0",

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { diff as jestDiff } from 'jest-diff'
+import { diffStringsUnified } from 'jest-diff'
 import engine from './methods.js'
 import { serialize } from './snapshot.js'
 import fc from 'fast-check'
@@ -29,10 +29,18 @@ function checkConstantFunction (name) {
  * @returns The function diffTouchup is being returned.
  */
 export function diff (expected, received) {
-  const result = jestDiff(expected, received)
-  if (result.includes('Comparing two different types')) {
-    return `${result}\n  ${chalk.green(`- Expected: ${serialize(expected).replace(/\n/g, '\n  ')}`)}\n${chalk.red(`  - Received: ${serialize(received).replace(/\n/g, '\n  ')}`)}`
+  if (typeof expected !== typeof received) {
+    return `Comparing two different types of values. Expected ${chalk.green(typeof expected)} but received ${chalk.red(typeof received)}.\n${chalk.green(`- Expected: ${serialize(expected).replace(/\n/g, '\n  ')}`)}\n${chalk.red(`- Received: ${serialize(received).replace(/\n/g, '\n  ')}`)}`
   }
+
+  const result = diffStringsUnified(
+    serialize(expected),
+    serialize(received),
+    {
+      changeColor: i => i
+    }
+  )
+
   return result
 }
 

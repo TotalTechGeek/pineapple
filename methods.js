@@ -1,6 +1,6 @@
 // @ts-check
 import { AsyncLogicEngine, Compiler } from 'json-logic-engine'
-import { splitEvery, equals, omit, pick } from 'ramda'
+import { splitEvery, equals, omit, pick, dissocPath } from 'ramda'
 import Ajv from 'ajv'
 import chalk from 'chalk'
 import { SpecialHoF } from './symbols.js'
@@ -14,6 +14,11 @@ const ajv = new Ajv()
 
 engine.addMethod('pick', ([a, b]) => pick(a, b), { sync: true, deterministic: true })
 engine.addMethod('omit', ([a, b]) => omit(a, b), { sync: true, deterministic: true })
+engine.addMethod('omitDeep', ([a, b]) => {
+  let res = a
+  for (const path of b) res = dissocPath(path.split('.'), res)
+  return res
+}, { sync: true, deterministic: true })
 engine.addMethod('**', ([a, b]) => a ** b, { sync: true, deterministic: true })
 engine.addMethod('===', ([a, b]) => equals(a, b), {
   sync: true,
@@ -28,6 +33,17 @@ engine.addMethod('as', {
   },
   traverse: true
 })
+
+engine.addMethod('typeof', i => {
+  const type = typeof i
+  if (type === 'object') {
+    if (i === null) return 'null'
+    if (Array.isArray(i)) return 'array'
+    // get the constructor name
+    if (i.constructor) return i.constructor.name.toLowerCase()
+  }
+  return type
+}, { sync: true, deterministic: true })
 
 engine.addMethod('combine', (data) => Object.assign({}, ...data), {
   sync: true,
@@ -101,7 +117,7 @@ engine.addMethod('snapshot', {
     // @ts-ignore
     if (!process.env.OMIT_SNAPSHOT_INPUTS && context.fuzzed) result.input = inputs
 
-    const { exists, value } = await context.snap.find(context.id)
+    const { exists, value, meta } = await context.snap.find(context.id)
 
     // @ts-ignore
     if (!exists && await askSnapshot({ item: result, rule: context.rule, id: context.id, file: context.file })) {
@@ -109,14 +125,18 @@ engine.addMethod('snapshot', {
       return [result, true]
     }
 
-    if (equals(value, result)) {
-      return [result, true]
-    }
+    let checkError = false
+    if (meta?.check) checkError = !await engine.run(meta.check, { expected: value, actual: result })
+    const compareResult = meta?.transform ? await engine.run(meta.transform, result) : result
+    const compareValue = meta?.transform ? await engine.run(meta.transform, value) : value
+
+    if (!checkError && equals(compareValue, compareResult)) return [result, true]
 
     if (exists) {
+      const answer = await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id, file: context.file })
       // We have a snapshot, but it's different, so we need to ask the user if they want to update the snapshot
-      if (await askSnapshotUpdate({ item: result, value, rule: context.rule, id: context.id, file: context.file })) {
-        await context.snap.set(context.id, result)
+      if (answer) {
+        await context.snap.set(context.id, result, typeof answer === 'object' ? answer : undefined)
         return [result, true]
       }
       return [{ ...result, actualError }, false, diff(value, result)]

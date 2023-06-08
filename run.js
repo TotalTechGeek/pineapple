@@ -7,10 +7,27 @@ import { SpecialHoF, ConstantFunc } from './symbols.js'
 import { failure, parseFailure, success, testRuntimeFailure, snapshotsUnused } from './outputs.js'
 import fc from 'fast-check'
 import { argumentsToArbitraries } from './utils.js'
-import { always } from 'ramda'
+import { always, once } from 'ramda'
 import url from 'url'
+
 // Todo: Add support for other locales.
 import { Faker, en } from '@faker-js/faker'
+
+const init = once(() => {
+  // Adding in each of the Faker Methods as Arbitrary Generators
+  const realms = Object.keys(ArbitraryFaker).filter(i => !i.startsWith('_') && !i.includes('efinition') && !i.includes('helpers'))
+  for (const realm of realms) {
+    const definitions = Object.keys(ArbitraryFaker[realm]).reduce((acc, method) => {
+      const fn = ArbitraryFaker[realm][method]
+      if (typeof fn === 'function') {
+        const key = `${realm}.${method}`
+        acc[key] = (...args) => fc.nat().noShrink().map(() => fn(...args))
+      }
+      return acc
+    }, {})
+    addDefinitions(() => definitions)
+  }
+})
 
 // Global Log Injection //
 if (!global.currentLog) global.currentLog = ''
@@ -57,8 +74,21 @@ function snapshotManager () {
     const tests = []
     for (const file in snapshots) {
       const remaining = await snapshots[file].notAccessed
-      if (mode === 'clean') for (const item of Array.from(remaining)) await snapshots[file].remove(item)
-      else if (remaining.size) tests.push(...Array.from(remaining).map(item => [file, item]))
+      if (mode === 'clean') {
+        for (const item of Array.from(remaining).filter(i => {
+          if (i.endsWith('.meta')) {
+            // todo: make this clean up when the original is gone from the snapshot via manual edit
+            return remaining.has(
+              i.substring(0, i.lastIndexOf('.meta'))
+            )
+          }
+          return true
+        })) await snapshots[file].remove(item)
+      } else if (remaining.size) {
+        tests.push(...Array.from(remaining).map(item => [file, item]).filter(([, item]) => {
+          return !item.endsWith('.meta')
+        }))
+      }
     }
 
     if (tests.length) {
@@ -149,6 +179,9 @@ class FuzzError extends Error {
  * @param {string} file
  */
 export async function run (input, id, func, file) {
+  // This will run any necessary setup code.
+  init()
+
   /**
      * @param {string} input
      * @param {string} id
