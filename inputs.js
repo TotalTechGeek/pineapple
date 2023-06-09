@@ -77,7 +77,7 @@ export async function askSnapshot ({ item, rule, id, file }) {
 
   console.log(chalk.green(serialize(item)))
   const result = await getConfirmation(`${chalk.magenta('?')} Accept this snapshot?`).catch(err => console.log(err))
-  return result
+  return result === 'Yes'
 }
 
 // Used by the askSnapshotUpdate function to store the user's choice
