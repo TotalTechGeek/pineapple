@@ -112,6 +112,11 @@ export async function askSnapshotUpdate ({ item, value, rule, id, file }) {
   if (typeof value === typeof item && value && item && typeof value === 'object') {
     const differences = getDiff(value, item, true)
     if (differences.added.length === 0 && differences.removed.length === 0) {
+      differences.edited = differences.edited.map(i => [
+        i[0].replace(/\[/g, '.').replace(/\]/g, ''),
+        i[1]
+      ])
+
       // This means that fields were modified, which means we can offer to omit the fields
       console.log(chalk.yellow('\nSome of the fields have been modified, you can choose to omit them.'))
 

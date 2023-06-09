@@ -578,5 +578,43 @@
         }
       ]
     }
+  },
+  "arrayReturned(void)": {
+    "value": {
+      "arr": [
+        date("2023-06-09T17:56:16.141Z")
+      ]
+    },
+    "async": false
+  },
+  "arrayReturned(void).meta": {
+    "transform": {
+      "omitDeep": [
+        {
+          "var": ""
+        },
+        [
+          "value.arr.0"
+        ]
+      ]
+    },
+    "check": {
+      "and": [
+        {
+          "===": [
+            {
+              "typeof": {
+                "var": "actual.value.arr.0"
+              }
+            },
+            {
+              "typeof": {
+                "var": "expected.value.arr.0"
+              }
+            }
+          ]
+        }
+      ]
+    }
   }
 }
